@@ -1,13 +1,12 @@
 default: compile
 
-PROC=$(nproc)
 
 compile:
 	mkdir -p build
-	cd build && cmake .. && make -j${NPROC}
+	cd build && cmake .. && bash -c "make -j$$(nproc)"
 
 run:
-	bin/ararchnonoia
+	bin/arachnonoia
 
 clean:
 	rm -r build bin

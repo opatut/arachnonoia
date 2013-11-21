@@ -1,13 +1,14 @@
 cmake_minimum_required(VERSION 2.8.0)
 
-project(ararchnonoia)
+project(arachnonoia)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-extras/")
 
 find_package(SFML 2 COMPONENTS audio graphics system window REQUIRED)
 find_package(Bullet REQUIRED)
+find_package(GLM REQUIRED)
 
-add_definitions(-Wall -Wextra -g -pedantic -fPIC -std=c++0x -DBOOST_FILESYSTEM_VERSION=3)
+add_definitions(-Wall -Wextra -g -pedantic -fPIC -std=c++0x -Wno-unused-parameter)
 set(CMAKE_BUILD_TYPE "Debug")
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -17,6 +18,7 @@ include_directories(
     "${CMAKE_SOURCE_DIR}/engine/src/"
     ${SFML_INCLUDE_DIRS}
     ${BULLET_INCLUDE_DIRS}
+    ${GLM_INCLUDE_DIRS}
 )
 
 aux_source_directory(src/ sources)
