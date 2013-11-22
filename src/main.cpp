@@ -29,13 +29,15 @@ int main() {
                     window.close();
                 }
             }
+
+            stack.current()->event(event);
         }
 
         // update
         stack.current()->update(dt);
 
         // render
-        window.clear();
+        window.clear(sf::Color(171, 171, 161));
         stack.current()->draw(window);
         window.display();
     }

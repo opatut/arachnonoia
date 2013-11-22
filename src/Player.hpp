@@ -9,6 +9,7 @@ class Player : public Entity {
 public:
     Player();
 
+    void onUpdate(double dt);
     void onDraw(sf::RenderTarget& target);
 
 private:

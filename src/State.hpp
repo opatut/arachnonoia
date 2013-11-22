@@ -13,9 +13,11 @@ public:
 
     void update(double dt);
     void draw(sf::RenderTarget& target);
+    void event(sf::Event& event);
 
     virtual void onUpdate(double dt);
     virtual void onDraw(sf::RenderTarget& target);
+    virtual void onEvent(sf::Event& event);
 
     void add(std::shared_ptr<Entity> entity);
 

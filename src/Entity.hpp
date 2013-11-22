@@ -10,6 +10,7 @@ public:
 
     virtual void onUpdate(double dt);
     virtual void onDraw(sf::RenderTarget& target);
+    virtual void onEvent(sf::Event& event);
 
     glm::vec2 position;
     float rotation;
