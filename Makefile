@@ -1,4 +1,4 @@
-default: compile
+default: compile run
 
 
 compile:
