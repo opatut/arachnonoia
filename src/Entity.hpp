@@ -13,8 +13,8 @@ public:
     virtual void onDraw(sf::RenderTarget& target);
     virtual void onHandleEvent(sf::Event& event);
 
-    glm::vec2 position;
-    float rotation;
+    glm::vec2 m_position;
+    float m_rotation;
 };
 
 #endif
