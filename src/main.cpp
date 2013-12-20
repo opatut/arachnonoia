@@ -18,8 +18,7 @@ int main() {
     states.push(std::make_shared<GameState>());
 
     while(window.isOpen()) {
-        double dt = clock.getElapsedTime().asSeconds();
-        clock.restart();
+        double dt = clock.restart().asSeconds();
 
         sf::Event event;
         while (window.pollEvent(event)) {
