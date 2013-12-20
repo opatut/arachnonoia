@@ -1,10 +1,11 @@
 #include <iostream>
+#include <stack>
+
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
 #include "Root.hpp"
-#include "Stack.hpp"
 #include "GameState.hpp"
 
 int main() {
@@ -13,10 +14,10 @@ int main() {
 
     Root::instance().resources.addTexture("player", "data/player.png");
 
-    Stack stack;
-    stack.push(std::make_shared<GameState>());
+    std::stack<std::shared_ptr<State>> states;
+    states.push(std::make_shared<GameState>());
 
-    while (window.isOpen()) {
+    while(window.isOpen()) {
         double dt = clock.getElapsedTime().asSeconds();
         clock.restart();
 
@@ -30,15 +31,15 @@ int main() {
                 }
             }
 
-            stack.current()->event(event);
+            states.top()->handleEvent(event);
         }
 
         // update
-        stack.current()->update(dt);
+        states.top()->update(dt);
 
         // render
         window.clear(sf::Color(171, 171, 161));
-        stack.current()->draw(window);
+        states.top()->draw(window);
         window.display();
     }
 

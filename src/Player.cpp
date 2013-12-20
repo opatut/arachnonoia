@@ -4,7 +4,6 @@
 #include "Root.hpp"
 
 Player::Player()
-    : Entity()
 {
     position = glm::vec2(0, 0);
     m_sprite.setTexture(* Root::instance().resources.getTexture("player").get());

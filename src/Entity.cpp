@@ -1,7 +1,6 @@
 #include "Entity.hpp"
 
-Entity::Entity() {}
-
+Entity::~Entity() {}
 void Entity::onUpdate(double dt) {}
 void Entity::onDraw(sf::RenderTarget& target) {}
-void Entity::onEvent(sf::Event& event) {}
+void Entity::onHandleEvent(sf::Event& event) {}

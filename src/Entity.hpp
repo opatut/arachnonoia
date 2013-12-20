@@ -6,11 +6,12 @@
 
 class Entity {
 public:
-    Entity();
+    Entity() = default;
+    virtual ~Entity() = 0;
 
     virtual void onUpdate(double dt);
     virtual void onDraw(sf::RenderTarget& target);
-    virtual void onEvent(sf::Event& event);
+    virtual void onHandleEvent(sf::Event& event);
 
     glm::vec2 position;
     float rotation;

@@ -1,7 +1,5 @@
 #include "State.hpp"
 
-State::State() {}
-
 void State::update(double dt) {
     onUpdate(dt);
     for(auto entity : m_entities) {
@@ -16,16 +14,12 @@ void State::draw(sf::RenderTarget& target) {
     }
 }
 
-void State::event(sf::Event& event) {
-    onEvent(event);
+void State::handleEvent(sf::Event& event) {
+    onHandleEvent(event);
     for(auto entity : m_entities) {
-        entity->onEvent(event);
+        entity->onHandleEvent(event);
     }
 }
-
-void State::onUpdate(double dt) {}
-void State::onDraw(sf::RenderTarget& target) {}
-void State::onEvent(sf::Event& event) {}
 
 void State::add(std::shared_ptr<Entity> entity) {
     m_entities.push_back(entity);
