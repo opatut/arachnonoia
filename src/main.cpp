@@ -4,9 +4,13 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <cereal/archives/json.hpp>
+#include <cereal/cereal.hpp>
 
 #include "Root.hpp"
 #include "GameState.hpp"
+#include "Level.hpp"
+
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Arachnonoia");
@@ -16,6 +20,13 @@ int main() {
 
     std::stack<std::shared_ptr<State>> states;
     states.push(std::make_shared<GameState>());
+
+    Level level;
+    level.width = 10;
+    level.height = 20;
+
+    cereal::JSONOutputArchive ar(std::cout);
+    ar(cereal::make_nvp("level", level));
 
     while(window.isOpen()) {
         double dt = clock.restart().asSeconds();

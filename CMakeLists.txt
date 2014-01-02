@@ -13,6 +13,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 # set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(
+    "${CMAKE_SOURCE_DIR}/src/"
+    "${CMAKE_SOURCE_DIR}/external/cereal/include/"
     ${SFML_INCLUDE_DIRS}
     ${BULLET_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}
