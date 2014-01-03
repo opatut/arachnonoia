@@ -16,7 +16,7 @@ EditorState::EditorState()
 void EditorState::onInit() {
     for(int i = 0; i < 5; ++i) {
         std::shared_ptr<Wall> wall = std::make_shared<Wall>();
-        wall->m_position = glm::vec2(i * 1.5 - 3, 1);
+        wall->setPosition(glm::vec2(i * 1.5 - 3, 1));
         add(wall);
     }
 
@@ -76,7 +76,7 @@ void EditorState::onDraw(sf::RenderTarget& target) {
 
     // draw current entity highlight
     sf::CircleShape highlight;
-    highlight.setPosition(m_currentEntity->m_position.x, m_currentEntity->m_position.y);
+    highlight.setPosition(m_currentEntity->position().x, m_currentEntity->position().y);
     float r = 3 * m_pixelSize;
     highlight.setRadius(r);
     highlight.setOrigin(r, r);
@@ -118,30 +118,30 @@ void EditorState::startMode(EditorMode mode) {
     if(m_mode == NONE) {
         return;
     } else if(m_mode == GRAB) {
-        m_modeStartValue = m_currentEntity->m_position;
+        m_modeStartValue = m_currentEntity->position();
     } else if(m_mode == ROTATE) {
-        m_modeStartValue.x = m_currentEntity->m_rotation;
+        m_modeStartValue.x = m_currentEntity->rotation();
     } else if(m_mode == SCALE) {
-        m_modeStartValue = m_currentEntity->m_scale;
+        m_modeStartValue = m_currentEntity->scale();
     }
 }
 
 void EditorState::updateMode() {
     auto mp = getMousePosition();
-    glm::vec2 entity_start = m_currentEntity->m_position - m_modeStartPosition;
-    glm::vec2 entity_mouse = m_currentEntity->m_position - mp;
+    glm::vec2 entity_start = m_currentEntity->position() - m_modeStartPosition;
+    glm::vec2 entity_mouse = m_currentEntity->position() - mp;
     float entity_start_length = glm::length(entity_start);
     float entity_mouse_length = glm::length(entity_mouse);
 
     if(m_mode == GRAB) {
-        m_currentEntity->m_position = m_modeStartValue + (mp - m_modeStartPosition);
+        m_currentEntity->setPosition(m_modeStartValue + (mp - m_modeStartPosition));
     } else if(m_mode == ROTATE) {
         float angle = glm::orientedAngle(glm::normalize(entity_start), glm::normalize(entity_mouse));
         if(entity_start == entity_mouse) angle = 0; // -nan failsafe
-        m_currentEntity->m_rotation = m_modeStartValue.x + angle;
+        m_currentEntity->setRotation(m_modeStartValue.x + angle);
     } else if(m_mode == SCALE) {
         float scale = ((entity_mouse_length != 0) ? (entity_mouse_length / entity_start_length) : 0.f);
-        m_currentEntity->m_scale = m_modeStartValue * scale;
+        m_currentEntity->setScale(m_modeStartValue * scale);
     }
 }
 
@@ -151,11 +151,11 @@ void EditorState::commitMode() {
 
 void EditorState::cancelMode() {
     if(m_mode == GRAB) {
-        m_currentEntity->m_position = m_modeStartValue ;
+        m_currentEntity->setPosition(m_modeStartValue);
     } else if(m_mode == ROTATE) {
-        m_currentEntity->m_rotation = m_modeStartValue.x;
+        m_currentEntity->setRotation(m_modeStartValue.x);
     } else if(m_mode == SCALE) {
-        m_currentEntity->m_scale = m_modeStartValue;
+        m_currentEntity->setScale(m_modeStartValue);
     }
 
     m_mode = NONE;

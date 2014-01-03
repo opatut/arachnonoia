@@ -62,14 +62,15 @@ void State::add(std::shared_ptr<Entity> entity) {
     m_entities.push_back(entity);
 
     // if there is no physics shape set, the entity probably doesn't like physics so leave it alone
-    if(entity->m_physicsShape != nullptr && m_usePhysics) {
+    if(entity->physicsShape() != nullptr && m_usePhysics) {
         EntityMotionState* motionstate = new EntityMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)), entity);
+        entity->setMotionState(motionstate);
         btScalar mass = 1;
         btVector3 inertia(0, 0, 0);
-        entity->m_physicsShape->calculateLocalInertia(mass, inertia);
-        btRigidBody::btRigidBodyConstructionInfo construction_info(mass, motionstate, entity->m_physicsShape, inertia);
-        entity->m_physicsBody = new btRigidBody(construction_info);
-        m_dynamicsWorld->addRigidBody(entity->m_physicsBody);
+        entity->physicsShape()->calculateLocalInertia(mass, inertia);
+        btRigidBody::btRigidBodyConstructionInfo construction_info(mass, motionstate, entity->physicsShape(), inertia);
+        entity->setPhysicsBody(new btRigidBody(construction_info));
+        m_dynamicsWorld->addRigidBody(entity->physicsBody());
     }
 }
 

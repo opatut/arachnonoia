@@ -11,7 +11,7 @@ void GameState::onInit() {
 
 void GameState::onUpdate(double dt) {
     m_zoom = 6;
-    m_center = m_player->m_position;
+    m_center = m_player->position();
 }
 
 void GameState::onDraw(sf::RenderTarget& target) {
