@@ -9,15 +9,20 @@ const std::string Wall::types[] = {
     "blah"
 };
 
-Wall::Wall()
-{
+Wall::Wall() {
     m_type = types[0];
 
     m_position = glm::vec2(0, 0);
     m_sprite.setTexture(* Root().resources.getTexture("wall-" + m_type).get());
+
+    // maybe split this physics stuff out into its own function if the logic becomes complex
+    m_physicsShape = new btBoxShape(btVector3(1, 1, 0));
 }
 
 void Wall::onUpdate(double dt) {
+    btTransform trans;
+    m_physicsBody->getMotionState()->getWorldTransform(trans);
+    std::cout << trans.getOrigin().getY() << std::endl;
 }
 
 void Wall::onDraw(sf::RenderTarget& target) {

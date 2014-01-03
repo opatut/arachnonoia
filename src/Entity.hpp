@@ -3,10 +3,11 @@
 
 #include <glm/glm.hpp>
 #include <SFML/Graphics.hpp>
+#include <btBulletDynamicsCommon.h>
 
 class Entity {
 public:
-    Entity() = default;
+    Entity();
     virtual ~Entity() = 0;
 
     virtual void onUpdate(double dt);
@@ -15,6 +16,9 @@ public:
 
     glm::vec2 m_position;
     float m_rotation;
-};
 
+    // physics stuff
+    btCollisionShape* m_physicsShape;
+    btRigidBody* m_physicsBody;
+};
 #endif
