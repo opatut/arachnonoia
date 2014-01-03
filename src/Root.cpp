@@ -1,6 +1,5 @@
 #include "Root.hpp"
 
-Root& Root::instance() {
-    static Root _instance;
-    return _instance;
-}
+ResourceManager Root::resources;
+GameState Root::game_state;
+EditorState Root::editor_state;

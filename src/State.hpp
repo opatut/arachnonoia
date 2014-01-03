@@ -11,6 +11,8 @@ class State {
 public:
     State() = default;
 
+    virtual void init() = 0;
+
     void update(double dt);
     void draw(sf::RenderTarget& target);
     void handleEvent(sf::Event& event);

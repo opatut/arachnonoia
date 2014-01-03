@@ -2,7 +2,9 @@
 
 #include <iostream>
 
-GameState::GameState() {
+GameState::GameState() {}
+
+void GameState::init() {
     m_player = std::make_shared<Player>();
     add(m_player);
 }

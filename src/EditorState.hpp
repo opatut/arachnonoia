@@ -1,21 +1,18 @@
-#ifndef GAMESTATE_HPP
-#define GAMESTATE_HPP
+#ifndef EDITORSTATE_HPP
+#define EDITORSTATE_HPP
 
 #include <memory>
 
 #include "State.hpp"
 #include "Player.hpp"
 
-class GameState : public State {
+class EditorState : public State {
 public:
-    GameState();
+    EditorState();
     void init();
 
     void onUpdate(double dt);
     void onDraw(sf::RenderTarget& target);
-
-private:
-    std::shared_ptr<Player> m_player;
 
 };
 

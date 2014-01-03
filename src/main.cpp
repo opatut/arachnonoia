@@ -16,24 +16,30 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Arachnonoia");
     sf::Clock clock;
 
-    Root::instance().resources.addTexture("player", "data/player.png");
+    Root().resources.addTexture("player", "data/player.png");
 
-    std::stack<std::shared_ptr<State>> states;
-    states.push(std::make_shared<GameState>());
+    // Initialize all the states
+    Root().editor_state.init();
+    Root().game_state.init();
 
-    Level level;
-    level.width = 10;
-    level.height = 20;
+    // Setup game stack
+    std::stack<State*> states;
+    // states.push(&Root().game_state);
+    states.push(&Root().editor_state);
 
-    cereal::JSONOutputArchive ar(std::cout);
-    ar(cereal::make_nvp("level", level));
+    // Level level;
+    // level.width = 10;
+    // level.height = 20;
+
+    // cereal::JSONOutputArchive ar(std::cout);
+    // ar(cereal::make_nvp("level", level));
 
     while(window.isOpen()) {
         double dt = clock.restart().asSeconds();
 
         sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
+        while(window.pollEvent(event)) {
+            if(event.type == sf::Event::Closed) {
                 window.close();
             } else if(event.type == sf::Event::KeyPressed) {
                 if(event.key.code == sf::Keyboard::Escape) {
