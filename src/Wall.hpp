@@ -2,6 +2,9 @@
 #define WALL_HPP
 
 #include <SFML/Graphics.hpp>
+#include <cereal/types/string.hpp>
+#include <cereal/types/base_class.hpp>
+#include <cereal/types/polymorphic.hpp>
 
 #include "Entity.hpp"
 
@@ -13,10 +16,15 @@ public:
     void onUpdate(double dt) override;
     void onDraw(sf::RenderTarget& target) override;
 
+    template<class Archive>
+    void serialize(Archive& ar) {
+        ar(cereal::make_nvp("entity", cereal::base_class<Entity>(this)));
+        ar(cereal::make_nvp("m_type", m_type));
+    }
+
 private:
     std::string m_type;
     sf::Sprite m_sprite;
-
 };
 
 #endif
