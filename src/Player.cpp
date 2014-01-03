@@ -35,7 +35,7 @@ void Player::onDraw(sf::RenderTarget& target) {
     target.draw(body);
 
     // right leg
-    glm::vec2 foot(0.5, 0.2);
-    glm::vec2 root(0, 0);
-    float l1 = 0.2, l2 = 0.5;
+    // glm::vec2 foot(0.5, 0.2);
+    // glm::vec2 root(0, 0);
+    // float l1 = 0.2, l2 = 0.5;
 }
