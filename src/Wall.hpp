@@ -10,8 +10,8 @@ public:
     static const std::string types[2];
     Wall();
 
-    void onUpdate(double dt);
-    void onDraw(sf::RenderTarget& target);
+    void onUpdate(double dt) override;
+    void onDraw(sf::RenderTarget& target) override;
 
 private:
     std::string m_type;
