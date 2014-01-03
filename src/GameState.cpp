@@ -4,7 +4,7 @@
 
 GameState::GameState() {}
 
-void GameState::init() {
+void GameState::onInit() {
     m_player = std::make_shared<Player>();
     add(m_player);
 }

@@ -9,8 +9,8 @@ class MenuState : public State {
 public:
     MenuState();
 
-    void onUpdate(double dt);
-    void onDraw(sf::RenderTarget& target);
+    void onUpdate(double dt) override;
+    void onDraw(sf::RenderTarget& target) override;
 };
 
 #endif

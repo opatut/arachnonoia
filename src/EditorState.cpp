@@ -5,7 +5,7 @@
 EditorState::EditorState() {
 }
 
-void EditorState::init() {
+void EditorState::onInit() {
 }
 
 void EditorState::onUpdate(double dt) {
