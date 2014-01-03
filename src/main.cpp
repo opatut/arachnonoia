@@ -17,6 +17,7 @@ int main() {
     sf::Clock clock;
 
     Root().resources.addTexture("player", "data/player.png");
+    Root().resources.addTexture("wall-box", "data/box.png");
 
     // Initialize all the states
     Root().editor_state.init();

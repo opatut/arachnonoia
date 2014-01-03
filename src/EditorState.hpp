@@ -13,6 +13,10 @@ public:
 
     void onUpdate(double dt);
     void onDraw(sf::RenderTarget& target);
+    void onHandleEvent(sf::Event& event);
+
+private:
+    std::shared_ptr<Entity> m_currentEntity;
 
 };
 
