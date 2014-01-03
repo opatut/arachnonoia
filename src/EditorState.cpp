@@ -19,7 +19,7 @@ EditorState::EditorState()
 void EditorState::onInit() {
     for(int i = 0; i < 5; ++i) {
         std::shared_ptr<Wall> wall = std::make_shared<Wall>();
-        wall->m_position = glm::vec2(i * 1.5 - 3, 1);
+        wall->setPosition(glm::vec2(i * 1.5 - 3, 1));
         add(wall);
     }
 
@@ -86,7 +86,7 @@ void EditorState::onDraw(sf::RenderTarget& target) {
 
     // draw current entity highlight
     sf::CircleShape highlight;
-    highlight.setPosition(m_currentEntity->m_position.x, m_currentEntity->m_position.y);
+    highlight.setPosition(m_currentEntity->position().x, m_currentEntity->position().y);
     float r = 3 * m_pixelSize;
     highlight.setRadius(r);
     highlight.setOrigin(r, r);
@@ -96,9 +96,9 @@ void EditorState::onDraw(sf::RenderTarget& target) {
     target.draw(highlight);
 
     glm::vec2 s = m_currentEntity->getSize();
-    sf::RectangleShape rect(sf::Vector2f(s.x * m_currentEntity->m_scale.x, s.y * m_currentEntity->m_scale.y));
-    rect.setPosition(m_currentEntity->m_position.x, m_currentEntity->m_position.y);
-    rect.setRotation(m_currentEntity->m_rotation);
+    sf::RectangleShape rect(sf::Vector2f(s.x * m_currentEntity->scale().x, s.y * m_currentEntity->scale().y));
+    rect.setPosition(m_currentEntity->position().x, m_currentEntity->position().y);
+    rect.setRotation(m_currentEntity->rotation());
     rect.setOrigin(rect.getSize().x / 2, rect.getSize().y / 2);
     rect.setOutlineColor(sf::Color(255, 128, 255, 200));
     rect.setOutlineThickness(m_pixelSize);
@@ -140,18 +140,18 @@ void EditorState::startMode(EditorMode mode) {
     if(m_mode == NONE) {
         return;
     } else if(m_mode == GRAB) {
-        m_modeStartValue = m_currentEntity->m_position;
+        m_modeStartValue = m_currentEntity->position();
     } else if(m_mode == ROTATE) {
-        m_modeStartValue.x = m_currentEntity->m_rotation;
+        m_modeStartValue.x = m_currentEntity->rotation();
     } else if(m_mode == SCALE) {
-        m_modeStartValue = m_currentEntity->m_scale;
+        m_modeStartValue = m_currentEntity->scale();
     }
 }
 
 void EditorState::updateMode() {
     auto mp = getMousePosition();
-    glm::vec2 entity_start = m_currentEntity->m_position - m_modeStartPosition;
-    glm::vec2 entity_mouse = m_currentEntity->m_position - mp;
+    glm::vec2 entity_start = m_currentEntity->position() - m_modeStartPosition;
+    glm::vec2 entity_mouse = m_currentEntity->position() - mp;
     float entity_start_length = glm::length(entity_start);
     float entity_mouse_length = glm::length(entity_mouse);
 
@@ -163,7 +163,7 @@ void EditorState::updateMode() {
             diff.y = round(diff.y * 10) / 10.0;
         }
 
-        m_currentEntity->m_position = m_modeStartValue + diff;
+        m_currentEntity->setPosition(m_modeStartValue + diff);
         setStatus("Move: " + std::to_string(diff.x) + "|" + std::to_string(diff.y));
     } else if(m_mode == ROTATE) {
         float angle = glm::orientedAngle(glm::normalize(entity_start), glm::normalize(entity_mouse));
@@ -173,14 +173,14 @@ void EditorState::updateMode() {
             angle = round(angle/15)*15;
         }
 
-        m_currentEntity->m_rotation = m_modeStartValue.x + angle;
+        m_currentEntity->setRotation(m_modeStartValue.x + angle);
         setStatus("Rotate: " + std::to_string((int)angle));
     } else if(m_mode == SCALE) {
         float scale = ((entity_mouse_length != 0) ? (entity_mouse_length / entity_start_length) : 0.f);
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
             scale = round(scale*10)/10.0;
         }
-        m_currentEntity->m_scale = m_modeStartValue * scale;
+        m_currentEntity->setScale(m_modeStartValue * scale);
         setStatus("Scale: " + std::to_string(scale));
     }
 }
@@ -191,11 +191,11 @@ void EditorState::commitMode() {
 
 void EditorState::cancelMode() {
     if(m_mode == GRAB) {
-        m_currentEntity->m_position = m_modeStartValue ;
+        m_currentEntity->setPosition(m_modeStartValue);
     } else if(m_mode == ROTATE) {
-        m_currentEntity->m_rotation = m_modeStartValue.x;
+        m_currentEntity->setRotation(m_modeStartValue.x);
     } else if(m_mode == SCALE) {
-        m_currentEntity->m_scale = m_modeStartValue;
+        m_currentEntity->setScale(m_modeStartValue);
     }
 
     m_mode = NONE;

@@ -15,8 +15,8 @@ void EntityMotionState::getWorldTransform(btTransform &worldTrans) const {
 
 void EntityMotionState::setWorldTransform(const btTransform &worldTrans) {
     btQuaternion rot = worldTrans.getRotation();
-    m_entity->m_rotation = rot.getAngle();
+    m_entity->setRotation(rot.getAngle());
     btVector3 pos = worldTrans.getOrigin();
-    m_entity->m_position = glm::vec2(pos.x(), pos.y());
+    m_entity->setPosition(glm::vec2(pos.x(), pos.y()));
     m_pos1 = worldTrans;
 }
