@@ -37,6 +37,13 @@ public:
     btRigidBody *physicsBody() const;
     void setPhysicsBody(btRigidBody *new_physicsBody);
 
+    template<class Archive>
+    void serialize(Archive& ar) {
+        ar(cereal::make_nvp("position", m_position));
+        ar(cereal::make_nvp("scale",    m_scale));
+        ar(cereal::make_nvp("rotation", m_rotation));
+    }
+
 protected:
     glm::vec2 m_position = glm::vec2(0, 0);
     glm::vec2 m_scale = glm::vec2(1, 1);
@@ -47,13 +54,6 @@ protected:
     btCollisionShape* m_physicsShape = nullptr;
     EntityMotionState* m_motionState = nullptr;
     btRigidBody* m_physicsBody = nullptr;
-
-    template<class Archive>
-    void serialize(Archive& ar) {
-        ar(cereal::make_nvp("position", m_position));
-        ar(cereal::make_nvp("scale",    m_scale));
-        ar(cereal::make_nvp("rotation", m_rotation));
-    }
 };
 
 #endif
