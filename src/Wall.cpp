@@ -30,3 +30,7 @@ void Wall::onDraw(sf::RenderTarget& target) {
     target.draw(m_sprite);
 }
 
+glm::vec2 Wall::getSize() {
+    return glm::vec2(m_sprite.getTexture()->getSize().x, m_sprite.getTexture()->getSize().y);
+}
+

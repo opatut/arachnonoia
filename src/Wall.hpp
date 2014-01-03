@@ -16,6 +16,8 @@ public:
     void onUpdate(double dt) override;
     void onDraw(sf::RenderTarget& target) override;
 
+    glm::vec2 getSize();
+
     template<class Archive>
     void serialize(Archive& ar) {
         ar(cereal::make_nvp("entity", cereal::base_class<Entity>(this)));

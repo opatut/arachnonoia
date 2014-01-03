@@ -95,6 +95,16 @@ void EditorState::onDraw(sf::RenderTarget& target) {
     highlight.setOutlineColor(sf::Color(255, 128, 0));
     target.draw(highlight);
 
+    glm::vec2 s = m_currentEntity->getSize();
+    sf::RectangleShape rect(sf::Vector2f(s.x * m_currentEntity->m_scale.x, s.y * m_currentEntity->m_scale.y));
+    rect.setPosition(m_currentEntity->m_position.x, m_currentEntity->m_position.y);
+    rect.setRotation(m_currentEntity->m_rotation);
+    rect.setOrigin(rect.getSize().x / 2, rect.getSize().y / 2);
+    rect.setOutlineColor(sf::Color(255, 128, 255, 200));
+    rect.setOutlineThickness(m_pixelSize);
+    rect.setFillColor(sf::Color::Transparent);
+    target.draw(rect);
+
     auto mp = getMousePosition();
 
     if(m_mode != NONE) {
