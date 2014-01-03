@@ -29,11 +29,12 @@ protected:
     std::vector<std::shared_ptr<Entity>> m_entities;
 
     // physics stuff
-    btBroadphaseInterface* m_broadphase;
-    btDefaultCollisionConfiguration* m_collisionConfiguration;
-    btCollisionDispatcher* m_collisionDispatcher;
-    btSequentialImpulseConstraintSolver* m_solver;
-    btDiscreteDynamicsWorld* m_dynamicsWorld;
+    bool m_usePhysics;
+    btBroadphaseInterface* m_broadphase = nullptr;
+    btDefaultCollisionConfiguration* m_collisionConfiguration = nullptr;
+    btCollisionDispatcher* m_collisionDispatcher = nullptr;
+    btSequentialImpulseConstraintSolver* m_solver = nullptr;
+    btDiscreteDynamicsWorld* m_dynamicsWorld = nullptr;
 };
 
 #endif

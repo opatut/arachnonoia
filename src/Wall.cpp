@@ -19,11 +19,7 @@ Wall::Wall() {
     m_physicsShape = new btBoxShape(btVector3(1, 1, 0));
 }
 
-void Wall::onUpdate(double dt) {
-    btTransform trans;
-    m_physicsBody->getMotionState()->getWorldTransform(trans);
-    std::cout << trans.getOrigin().getY() << std::endl;
-}
+void Wall::onUpdate(double dt) {}
 
 void Wall::onDraw(sf::RenderTarget& target) {
     m_sprite.setPosition(m_position.x, m_position.y);

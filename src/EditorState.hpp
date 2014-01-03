@@ -17,7 +17,6 @@ public:
 
 private:
     std::shared_ptr<Entity> m_currentEntity;
-
 };
 
 #endif

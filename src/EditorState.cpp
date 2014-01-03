@@ -4,7 +4,10 @@
 
 #include "Wall.hpp"
 
-EditorState::EditorState() {
+EditorState::EditorState()
+{
+    // we don't want physics in the editor :(
+    m_usePhysics = false;
 }
 
 void EditorState::onInit() {
