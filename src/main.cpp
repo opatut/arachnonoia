@@ -11,13 +11,18 @@
 #include "GameState.hpp"
 #include "Level.hpp"
 
-
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Arachnonoia");
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Arachnonoia", sf::Style::Default, settings);
+
     sf::Clock clock;
+
+    Root().window = &window;
 
     Root().resources.addTexture("player", "data/player.png");
     Root().resources.addTexture("wall-box", "data/box.png");
+    Root().resources.addFont("default", "data/OpenSans-Regular.ttf");
 
     // Initialize all the states
     Root().editor_state.init();
@@ -44,7 +49,7 @@ int main() {
                 window.close();
             } else if(event.type == sf::Event::KeyPressed) {
                 if(event.key.code == sf::Keyboard::Escape) {
-                    window.close();
+                    // window.close();
                 }
             }
 

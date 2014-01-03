@@ -17,14 +17,24 @@ public:
     void draw(sf::RenderTarget& target);
     void handleEvent(sf::Event& event);
 
-    virtual void onUpdate(double dt) {}
-    virtual void onDraw(sf::RenderTarget& target) {}
-    virtual void onHandleEvent(sf::Event& event) {}
+    virtual void onUpdate(double dt);
+    virtual void onDraw(sf::RenderTarget& target);
+    virtual void onHandleEvent(sf::Event& event);
 
     void add(std::shared_ptr<Entity> entity);
 
+    glm::vec2 getMousePosition();
+
 protected:
+    void drawEntities(sf::RenderTarget& target);
+    void setView(sf::RenderTarget& target);
+
     std::vector<std::shared_ptr<Entity>> m_entities;
+
+    float m_zoom;
+    glm::vec2 m_center;
+    sf::View m_view;
+    float m_pixelSize;
 
 };
 

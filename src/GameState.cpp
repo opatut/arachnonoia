@@ -10,17 +10,12 @@ void GameState::init() {
 }
 
 void GameState::onUpdate(double dt) {
-
+    m_zoom = 6;
+    m_center = m_player->m_position;
 }
 
 void GameState::onDraw(sf::RenderTarget& target) {
-    sf::View view;
-    float zoom = 6;
-    float w = zoom;
-    float h = w / target.getSize().x * target.getSize().y;
-    view.reset(sf::FloatRect(m_player->m_position.x-w/2, m_player->m_position.y-h/2, w, h));
-    //view.setViewport(sf::FloatRect(0.f, 0.f, 0.5f, 1.f));
-    target.setView(view);
+    setView(target);
 
     // draw some background stuff
     for(int x = -10; x < 10; ++x) {
@@ -32,4 +27,6 @@ void GameState::onDraw(sf::RenderTarget& target) {
             target.draw(rect);
         }
     }
+
+    drawEntities(target);
 }
