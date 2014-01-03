@@ -10,7 +10,7 @@
 EditorState::EditorState() {
 }
 
-void EditorState::init() {
+void EditorState::onInit() {
     for(int i = 0; i < 5; ++i) {
         std::shared_ptr<Wall> wall = std::make_shared<Wall>();
         wall->m_position = glm::vec2(i * 1.5 - 3, 1);

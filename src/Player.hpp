@@ -9,8 +9,8 @@ class Player : public Entity {
 public:
     Player();
 
-    void onUpdate(double dt);
-    void onDraw(sf::RenderTarget& target);
+    void onUpdate(double dt) override;
+    void onDraw(sf::RenderTarget& target) override;
 
 private:
     sf::Sprite m_sprite;

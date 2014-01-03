@@ -9,10 +9,10 @@
 class GameState : public State {
 public:
     GameState();
-    void init();
 
-    void onUpdate(double dt);
-    void onDraw(sf::RenderTarget& target);
+    void onInit() override;
+    void onUpdate(double dt) override;
+    void onDraw(sf::RenderTarget& target) override;
 
 private:
     std::shared_ptr<Player> m_player;

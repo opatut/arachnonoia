@@ -16,11 +16,11 @@ public:
     };
 
     EditorState();
-    void init();
 
-    void onHandleEvent(sf::Event& event);
-    void onUpdate(double dt);
-    void onDraw(sf::RenderTarget& target);
+    void onInit() override;
+    void onHandleEvent(sf::Event& event) override;
+    void onUpdate(double dt) override;
+    void onDraw(sf::RenderTarget& target) override;
 
     void startMode(EditorMode mode);
     void updateMode();
