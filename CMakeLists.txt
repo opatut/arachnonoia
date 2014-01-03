@@ -14,10 +14,10 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 include_directories(
     "${CMAKE_SOURCE_DIR}/src/"
-    "${CMAKE_SOURCE_DIR}/external/cereal/include/"
-    ${SFML_INCLUDE_DIRS}
-    ${BULLET_INCLUDE_DIRS}
-    ${GLM_INCLUDE_DIRS}
+    SYSTEM "${CMAKE_SOURCE_DIR}/external/cereal/include/"
+    SYSTEM ${SFML_INCLUDE_DIRS}
+    SYSTEM ${BULLET_INCLUDE_DIRS}
+    SYSTEM ${GLM_INCLUDE_DIRS}
 )
 
 aux_source_directory(src/ sources)
