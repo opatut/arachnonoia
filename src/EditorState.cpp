@@ -58,6 +58,8 @@ void EditorState::onHandleEvent(sf::Event& event) {
 }
 
 void EditorState::onUpdate(double dt) {
+    m_statusTime -= dt;
+
     m_zoom = 6;
 
     float speed = 1;
@@ -107,13 +109,15 @@ void EditorState::onDraw(sf::RenderTarget& target) {
     // reset the view
     target.setView(target.getDefaultView());
 
-    sf::Text text;
-    text.setFont(* Root().resources.getFont("default"));
-    text.setPosition(20, 20);
-    text.setString("Status: " + std::to_string(m_mode));
-    text.setColor(sf::Color::White);
-    text.setCharacterSize(12);
-    target.draw(text);
+    if(m_statusTime > 0) {
+        sf::Text text;
+        text.setFont(* Root().resources.getFont("default"));
+        text.setPosition(20, 20);
+        text.setString(m_statusText);
+        text.setColor(sf::Color(255, 255, 255, (int)(m_statusTime * 255 / 1.5)));
+        text.setCharacterSize(12);
+        target.draw(text);
+    }
 
     setView(target);
 }
@@ -142,14 +146,32 @@ void EditorState::updateMode() {
     float entity_mouse_length = glm::length(entity_mouse);
 
     if(m_mode == GRAB) {
-        m_currentEntity->setPosition(m_modeStartValue + (mp - m_modeStartPosition));
+        glm::vec2 diff = mp - m_modeStartPosition;
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+            diff.x = round(diff.x * 10) / 10.0;
+            diff.y = round(diff.y * 10) / 10.0;
+        }
+
+        m_currentEntity->setPosition(m_modeStartValue + diff);
+        setStatus("Move: " + std::to_string(diff.x) + "|" + std::to_string(diff.y));
     } else if(m_mode == ROTATE) {
         float angle = glm::orientedAngle(glm::normalize(entity_start), glm::normalize(entity_mouse));
         if(entity_start == entity_mouse) angle = 0; // -nan failsafe
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+            angle = round(angle/15)*15;
+        }
+
         m_currentEntity->setRotation(m_modeStartValue.x + angle);
+        setStatus("Rotate: " + std::to_string((int)angle));
     } else if(m_mode == SCALE) {
         float scale = ((entity_mouse_length != 0) ? (entity_mouse_length / entity_start_length) : 0.f);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+            scale = round(scale*10)/10.0;
+        }
         m_currentEntity->setScale(m_modeStartValue * scale);
+        setStatus("Scale: " + std::to_string(scale));
     }
 }
 
@@ -167,4 +189,9 @@ void EditorState::cancelMode() {
     }
 
     m_mode = NONE;
+}
+
+void EditorState::setStatus(const std::string& text) {
+    m_statusText = text;
+    m_statusTime = 1.5f;
 }

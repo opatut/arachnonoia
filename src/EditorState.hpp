@@ -27,12 +27,18 @@ public:
     void commitMode();
     void cancelMode();
 
+protected:
+    void setStatus(const std::string& text);
+
 private:
     std::shared_ptr<Entity> m_currentEntity;
 
     EditorMode m_mode;
     glm::vec2 m_modeStartPosition;
     glm::vec2 m_modeStartValue;
+
+    std::string m_statusText;
+    float m_statusTime;
 
 };
 
