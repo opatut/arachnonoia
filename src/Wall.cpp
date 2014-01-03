@@ -29,3 +29,4 @@ void Wall::onDraw(sf::RenderTarget& target) {
     m_sprite.setRotation(m_rotation);
     target.draw(m_sprite);
 }
+

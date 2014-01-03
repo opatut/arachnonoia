@@ -4,6 +4,9 @@
 #include <glm/glm.hpp>
 #include <SFML/Graphics.hpp>
 #include <btBulletDynamicsCommon.h>
+#include <cereal/cereal.hpp>
+#include <cereal/types/polymorphic.hpp>
+#include "CerealGLM.hpp"
 
 class EntityMotionState;
 
@@ -39,12 +42,18 @@ protected:
     glm::vec2 m_scale = glm::vec2(1, 1);
     float m_rotation = 0.f;
 
-    // physics stuff
     // We check whether we need to initialize physics by checking these members against
     // nullptr, so let's set them to that so that we may check again later.
     btCollisionShape* m_physicsShape = nullptr;
     EntityMotionState* m_motionState = nullptr;
     btRigidBody* m_physicsBody = nullptr;
+
+    template<class Archive>
+    void serialize(Archive& ar) {
+        ar(cereal::make_nvp("position", m_position));
+        ar(cereal::make_nvp("scale",    m_scale));
+        ar(cereal::make_nvp("rotation", m_rotation));
+    }
 };
 
 #endif

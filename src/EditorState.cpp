@@ -1,6 +1,9 @@
 #include "EditorState.hpp"
 
 #include <iostream>
+#include <cereal/archives/json.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/memory.hpp>
 
 #include "Wall.hpp"
 #include "Root.hpp"
@@ -35,6 +38,11 @@ void EditorState::onHandleEvent(sf::Event& event) {
             cancelMode();
         } else if(event.key.code == sf::Keyboard::Return) {
             commitMode();
+        } else if(event.key.code == sf::Keyboard::F5) {
+            std::cout << "saving... " << std::endl;
+
+            cereal::JSONOutputArchive ar(std::cout);
+            ar(cereal::make_nvp("entities", m_entities));
         }
     }
 
