@@ -25,7 +25,7 @@ public:
 
     void add(std::shared_ptr<Entity> entity);
 
-private:
+protected:
     std::vector<std::shared_ptr<Entity>> m_entities;
 
     // physics stuff

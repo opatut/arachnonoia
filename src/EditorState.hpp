@@ -13,6 +13,10 @@ public:
     void onInit() override;
     void onUpdate(double dt) override;
     void onDraw(sf::RenderTarget& target) override;
+    void onHandleEvent(sf::Event& event) override;
+
+private:
+    std::shared_ptr<Entity> m_currentEntity;
 
 };
 
