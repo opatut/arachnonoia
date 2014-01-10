@@ -23,6 +23,7 @@ int main() {
     Root().resources.addTexture("player", "data/player.png");
     Root().resources.addTexture("wall-box", "data/box.png");
     Root().resources.addFont("default", "data/OpenSans-Regular.ttf");
+    Root().resources.addFont("mono", "data/UbuntuMono-R.ttf");
 
     // Initialize all the states
     Root().editor_state.init();

@@ -12,7 +12,8 @@ public:
         NONE,
         GRAB,
         ROTATE,
-        SCALE
+        SCALE,
+        FOLLOW
     };
 
     EditorState();
@@ -32,10 +33,13 @@ protected:
 
 private:
     std::shared_ptr<Entity> m_currentEntity;
+    std::map<std::shared_ptr<Entity>, std::string> m_entityNumbers;
 
     EditorMode m_mode;
     glm::vec2 m_modeStartPosition;
     glm::vec2 m_modeStartValue;
+
+    std::string m_followModeInput;
 
     std::string m_statusText;
     float m_statusTime;
