@@ -178,6 +178,7 @@ void EditorState::onDraw(sf::RenderTarget& target) {
     // reset the view
     target.setView(target.getDefaultView());
 
+    // TODO: Replace by experimental threadlet
     if(m_statusTime > 0) {
         sf::Text text;
         text.setFont(* Root().resources.getFont("mono"));
