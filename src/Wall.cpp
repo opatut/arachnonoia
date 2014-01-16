@@ -1,6 +1,6 @@
 #include "Wall.hpp"
 
-#include <iostream>
+#include <Thor/Math.hpp>
 
 #include "Root.hpp"
 
@@ -26,7 +26,7 @@ void Wall::onDraw(sf::RenderTarget& target) {
     m_sprite.setOrigin(m_sprite.getTexture()->getSize().x / 2, m_sprite.getTexture()->getSize().y / 2);
     m_sprite.setPosition(m_position.x, m_position.y);
     m_sprite.setScale(m_scale.x, m_scale.y);
-    m_sprite.setRotation(m_rotation);
+    m_sprite.setRotation(thor::toDegree(m_rotation));
     target.draw(m_sprite);
 }
 

@@ -24,6 +24,8 @@ void Player::onUpdate(double dt) {
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         m_physicsBody->applyCentralForce(btVector3(0, 5, 0));
     }
+
+    std::cout << m_rotation << std::endl;
 }
 
 void Player::onDraw(sf::RenderTarget& target) {
@@ -47,7 +49,7 @@ void Player::onAdd(State* state) {
     m_physicsBody->setDamping(0.5, 5);
 
     // Set up spider feet
-    for(auto i = 0; i < 4; ++i) {
+    for(auto i = 0; i < 5; ++i) {
         auto foot = std::make_shared<Foot>();
         foot->setPosition(glm::vec2(0.4*(i-2), 0.2));
         state->add(foot);
@@ -58,8 +60,8 @@ void Player::onAdd(State* state) {
         frameInB.setOrigin(foot->physicsBody()->getWorldTransform().getOrigin());
 
         auto constraint = new btGeneric6DofSpringConstraint(*m_physicsBody, *foot->physicsBody(), frameInA, frameInB, true);
-        constraint->setLinearLowerLimit(btVector3(0.1, 0.1, 0));
-        constraint->setLinearUpperLimit(btVector3(0.3, 0.3, 0));
+        constraint->setLinearLowerLimit(btVector3(0.0, 0.1, 0));
+        constraint->setLinearUpperLimit(btVector3(0.0, 0.3, 0));
         constraint->setAngularLowerLimit(btVector3(0.0, 0.0, -M_PI));
         constraint->setAngularUpperLimit(btVector3(0.0, 0.0, -M_PI));
 

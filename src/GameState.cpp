@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <Thor/Math.hpp>
+
 #include "Wall.hpp"
 
 GameState::GameState() {}
@@ -13,6 +15,7 @@ void GameState::onInit() {
     for(int i = -5; i < 5; ++i) {
         auto wall = std::make_shared<Wall>();
         wall->setPosition(glm::vec2(i, 5));
+        wall->setRotation(thor::random(-0.5f, 0.5f));
         add(wall);
     }
 }
