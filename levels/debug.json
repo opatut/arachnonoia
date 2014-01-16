@@ -16,7 +16,8 @@
                             "y": 0.00390625
                         },
                         "rotation": 0.6204140782356262207,
-                        "mass": 0
+                        "mass": 0,
+                        "zlevel": 0
                     },
                     "m_type": "box"
                 }
@@ -37,7 +38,8 @@
                             "y": 0.00390625
                         },
                         "rotation": 0,
-                        "mass": 0
+                        "mass": 0,
+                        "zlevel": 0
                     },
                     "m_type": "box"
                 }
@@ -58,7 +60,8 @@
                             "y": 0.0057061132974922657013
                         },
                         "rotation": 0,
-                        "mass": 0
+                        "mass": 0,
+                        "zlevel": 0
                     },
                     "m_type": "box"
                 }
@@ -79,7 +82,8 @@
                             "y": 0.00390625
                         },
                         "rotation": 0,
-                        "mass": 0
+                        "mass": 0,
+                        "zlevel": 0
                     },
                     "m_type": "box"
                 }
@@ -100,7 +104,8 @@
                             "y": 0.00390625
                         },
                         "rotation": -0.69757568836212158203,
-                        "mass": 0
+                        "mass": 0,
+                        "zlevel": 0
                     },
                     "m_type": "box"
                 }

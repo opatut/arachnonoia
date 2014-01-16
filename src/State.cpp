@@ -110,6 +110,8 @@ glm::vec2 State::getMousePosition() {
 }
 
 void State::drawEntities(sf::RenderTarget& target) {
+    std::sort(m_entities.begin(), m_entities.end(), [](std::shared_ptr<Entity> a, std::shared_ptr<Entity> b) { return a->zLevel() - b->zLevel(); });
+
     for(auto entity : m_entities) {
         entity->onDraw(target);
     }

@@ -39,8 +39,8 @@ int main() {
 
     // Setup game stack
     std::stack<State*> states;
-    states.push(&Root().game_state);
-    // states.push(&Root().editor_state);
+    // states.push(&Root().game_state);
+    states.push(&Root().editor_state);
 
     // Level level;
     // level.width = 10;

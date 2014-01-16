@@ -43,6 +43,14 @@ void Entity::setRotation(float rot)
     m_rotation = rot;
 }
 
+int Entity::zLevel() const {
+    return m_zLevel;
+}
+
+void Entity::setZLevel(int z_level) {
+    m_zLevel = z_level;
+}
+
 void Entity::setPhysicsPosition(const glm::vec2& new_position) {
     if(m_physicsBody) {
 //        auto transform = m_physicsBody->getWorldTransform();

@@ -66,6 +66,16 @@ void EditorState::onHandleEvent(sf::Event& event) {
                     m_currentEntity.reset();
                     setStatus("Deleted.");
                 }
+            } else if(event.key.code == sf::Keyboard::Add) {
+                if(m_currentEntity) {
+                    m_currentEntity->setZLevel(m_currentEntity->zLevel() + 1);
+                    setStatus("Z-Level ++ " + std::to_string(m_currentEntity->zLevel()));
+                }
+            } else if(event.key.code == sf::Keyboard::Subtract) {
+                if(m_currentEntity) {
+                    m_currentEntity->setZLevel(m_currentEntity->zLevel() - 1);
+                    setStatus("Z-Level -- " + std::to_string(m_currentEntity->zLevel()));
+                }
             }
         }
 
