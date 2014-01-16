@@ -41,7 +41,9 @@ void State::update(double dt) {
 void State::draw(sf::RenderTarget& target) {
     onDraw(target);
 
-    m_dynamicsWorld->debugDrawWorld();
+    if(m_debugDrawEnabled) {
+        m_dynamicsWorld->debugDrawWorld();
+    }
 }
 
 void State::handleEvent(sf::Event& event) {

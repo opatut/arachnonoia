@@ -18,6 +18,8 @@ void GameState::onInit() {
         wall->setRotation(thor::random(-0.5f, 0.5f));
         add(wall);
     }
+
+    m_debugDrawEnabled = true;
 }
 
 void GameState::onUpdate(double dt) {

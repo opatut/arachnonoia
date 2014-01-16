@@ -48,6 +48,7 @@ protected:
     btSequentialImpulseConstraintSolver* m_solver = nullptr;
     btDiscreteDynamicsWorld* m_dynamicsWorld = nullptr;
     DebugDraw* m_debugDrawer = nullptr;
+    bool m_debugDrawEnabled = false;
 };
 
 #endif
