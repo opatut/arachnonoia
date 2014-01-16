@@ -2,11 +2,17 @@
 
 #include <iostream>
 
+#include "Wall.hpp"
+
 GameState::GameState() {}
 
 void GameState::onInit() {
     m_player = std::make_shared<Player>();
     add(m_player);
+
+    auto wall = std::make_shared<Wall>();
+    wall->setPosition(glm::vec2(0, 1));
+    add(wall);
 }
 
 void GameState::onUpdate(double dt) {

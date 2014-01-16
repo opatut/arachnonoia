@@ -9,17 +9,15 @@
 #include "Wall.hpp"
 #include "Root.hpp"
 
+#define GLM_FORCE_RADIANS
 #include <glm/gtx/vector_angle.hpp>
 
 EditorState::EditorState()
-{
-    // we don't want physics in the editor :(
-    m_usePhysics = false;
-}
+{}
 
 void EditorState::onInit() {
     for(int i = 0; i < 5; ++i) {
-        std::shared_ptr<Wall> wall = std::make_shared<Wall>();
+        auto wall = std::make_shared<Wall>();
         wall->setPosition(glm::vec2(i * 1.5 - 3, 1));
         add(wall);
     }

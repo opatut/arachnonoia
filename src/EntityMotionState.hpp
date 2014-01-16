@@ -19,7 +19,7 @@ public:
 
 protected:
     std::shared_ptr<Entity> m_entity;
-    btTransform m_pos1;
+    btTransform m_transform;
 };
 
 #endif // ENTITYMOTIONSTATE_HPP

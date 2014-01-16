@@ -3,23 +3,24 @@
 #include "Root.hpp"
 #include "EntityMotionState.hpp"
 
-#include <iostream>
-
 void State::init() {
-    if(m_usePhysics) {
-        m_broadphase = new btDbvtBroadphase();
-        m_collisionConfiguration = new btDefaultCollisionConfiguration();
-        m_collisionDispatcher = new btCollisionDispatcher(m_collisionConfiguration);
-        m_solver = new btSequentialImpulseConstraintSolver;
-        m_dynamicsWorld = new btDiscreteDynamicsWorld(m_collisionDispatcher, m_broadphase, m_solver, m_collisionConfiguration);
+    m_broadphase = new btDbvtBroadphase();
+    m_collisionConfiguration = new btDefaultCollisionConfiguration();
+    m_collisionDispatcher = new btCollisionDispatcher(m_collisionConfiguration);
+    m_solver = new btSequentialImpulseConstraintSolver;
+    m_dynamicsWorld = new btDiscreteDynamicsWorld(m_collisionDispatcher, m_broadphase, m_solver, m_collisionConfiguration);
+    m_debugDrawer = new DebugDraw();
 
-        m_dynamicsWorld->setGravity(btVector3(0, 1, 0));
-    }
+    m_debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+    m_dynamicsWorld->setDebugDrawer(m_debugDrawer);
+
+    m_dynamicsWorld->setGravity(btVector3(0, 0.5, 0));
 
     onInit();
 }
 
 State::~State() {
+    delete m_debugDrawer;
     delete m_dynamicsWorld;
     delete m_solver;
     delete m_collisionDispatcher;
@@ -29,16 +30,18 @@ State::~State() {
 
 void State::update(double dt) {
     onUpdate(dt);
+
     for(auto entity : m_entities) {
         entity->onUpdate(dt);
     }
 
-    if(m_usePhysics)
-        m_dynamicsWorld->stepSimulation(dt, 10);
+    m_dynamicsWorld->stepSimulation(dt, 10);
 }
 
 void State::draw(sf::RenderTarget& target) {
     onDraw(target);
+
+    m_dynamicsWorld->debugDrawWorld();
 }
 
 void State::handleEvent(sf::Event& event) {
@@ -61,17 +64,18 @@ void State::onHandleEvent(sf::Event& event) {}
 void State::add(std::shared_ptr<Entity> entity) {
     m_entities.push_back(entity);
 
-    // if there is no physics shape set, the entity probably doesn't like physics so leave it alone
-    if(entity->physicsShape() != nullptr && m_usePhysics) {
-        EntityMotionState* motionstate = new EntityMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)), entity);
+    // If there is no physics shape set, the entity probably doesn't like physics so leave it alone
+    if(entity->physicsShape() != nullptr) {
+        EntityMotionState* motionstate = new EntityMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(entity->position().x, entity->position().y, 0)), entity);
         entity->setMotionState(motionstate);
-        btScalar mass = 1;
         btVector3 inertia(0, 0, 0);
-        entity->physicsShape()->calculateLocalInertia(mass, inertia);
-        btRigidBody::btRigidBodyConstructionInfo construction_info(mass, motionstate, entity->physicsShape(), inertia);
+        entity->physicsShape()->calculateLocalInertia(entity->mass(), inertia);
+        btRigidBody::btRigidBodyConstructionInfo construction_info(entity->mass(), motionstate, entity->physicsShape(), inertia);
         entity->setPhysicsBody(new btRigidBody(construction_info));
         m_dynamicsWorld->addRigidBody(entity->physicsBody());
     }
+
+    entity->onAdd();
 }
 
 glm::vec2 State::getMousePosition() {

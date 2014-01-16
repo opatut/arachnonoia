@@ -7,6 +7,7 @@
 #include <btBulletDynamicsCommon.h>
 
 #include "Entity.hpp"
+#include "DebugDraw.hpp"
 
 class State {
 public:
@@ -39,12 +40,12 @@ protected:
     float m_pixelSize;
 
     // physics stuff
-    bool m_usePhysics;
     btBroadphaseInterface* m_broadphase = nullptr;
     btDefaultCollisionConfiguration* m_collisionConfiguration = nullptr;
     btCollisionDispatcher* m_collisionDispatcher = nullptr;
     btSequentialImpulseConstraintSolver* m_solver = nullptr;
     btDiscreteDynamicsWorld* m_dynamicsWorld = nullptr;
+    DebugDraw* m_debugDrawer = nullptr;
 };
 
 #endif

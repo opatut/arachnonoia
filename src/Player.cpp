@@ -6,17 +6,24 @@
 
 Player::Player()
 {
-    m_position = glm::vec2(0, 0);
     m_sprite.setTexture(* Root().resources.getTexture("player").get());
+
+    m_mass = 1.f;
+    m_physicsShape = new btSphereShape(0.5);
 }
 
 void Player::onUpdate(double dt) {
-    float speed = 0.5;
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        m_position.x -= dt * speed;
+        m_physicsBody->applyCentralForce(btVector3(-5, 0, 0));
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        m_position.x += dt * speed;
+        m_physicsBody->applyCentralForce(btVector3(5, 0, 0));
+    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        m_physicsBody->applyCentralForce(btVector3(0, -5, 0));
+    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+        m_physicsBody->applyCentralForce(btVector3(0, 5, 0));
     }
+
+    std::cout << "player: " << m_physicsBody->getWorldTransform().getOrigin().x() << "/" << m_physicsBody->getWorldTransform().getOrigin().y() << std::endl;
 }
 
 void Player::onDraw(sf::RenderTarget& target) {
@@ -38,4 +45,8 @@ void Player::onDraw(sf::RenderTarget& target) {
     // glm::vec2 foot(0.5, 0.2);
     // glm::vec2 root(0, 0);
     // float l1 = 0.2, l2 = 0.5;
+}
+
+void Player::onAdd() {
+    m_physicsBody->forceActivationState(DISABLE_DEACTIVATION);
 }

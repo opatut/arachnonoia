@@ -18,23 +18,31 @@ public:
     virtual void onUpdate(double dt);
     virtual void onDraw(sf::RenderTarget& target);
     virtual void onHandleEvent(sf::Event& event);
+    virtual void onAdd();
 
     virtual glm::vec2 getSize();
 
     glm::vec2 position() const;
-    void setPosition(const glm::vec2 &new_position);
-
-    glm::vec2 scale() const;
-    void setScale(const glm::vec2 &new_scale);
+    void setPosition(const glm::vec2& position);
 
     float rotation() const;
-    void setRotation(float new_rotation);
+    void setRotation(float rotation);
+
+    void setPhysicsPosition(const glm::vec2& new_position);
+
+    void setPhysicsRotation(float new_rotation);
+
+    glm::vec2 scale() const;
+    void setScale(const glm::vec2& new_scale);
+
+    btScalar mass() const;
+    void setMass(const btScalar &new_mass);
 
     btCollisionShape *physicsShape() const;
-    void setPhysicsShape(btCollisionShape *new_physicsShape);
+    void setPhysicsShape(btCollisionShape* new_physicsShape);
 
     EntityMotionState *motionState() const;
-    void setMotionState(EntityMotionState *new_motionState);
+    void setMotionState(EntityMotionState* new_motionState);
 
     btRigidBody *physicsBody() const;
     void setPhysicsBody(btRigidBody *new_physicsBody);
@@ -44,12 +52,14 @@ public:
         ar(cereal::make_nvp("position", m_position));
         ar(cereal::make_nvp("scale",    m_scale));
         ar(cereal::make_nvp("rotation", m_rotation));
+        ar(cereal::make_nvp("mass", m_mass));
     }
 
 protected:
     glm::vec2 m_position = glm::vec2(0, 0);
-    glm::vec2 m_scale = glm::vec2(1, 1);
     float m_rotation = 0.f;
+    glm::vec2 m_scale = glm::vec2(0.01, 0.01);
+    btScalar m_mass = 0.f;
 
     // We check whether we need to initialize physics by checking these members against
     // nullptr, so let's set them to that so that we may check again later.

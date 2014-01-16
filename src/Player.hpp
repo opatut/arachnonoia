@@ -11,6 +11,7 @@ public:
 
     void onUpdate(double dt) override;
     void onDraw(sf::RenderTarget& target) override;
+    void onAdd();
 
 private:
     sf::Sprite m_sprite;

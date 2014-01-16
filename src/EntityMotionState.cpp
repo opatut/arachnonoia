@@ -4,13 +4,13 @@
 
 EntityMotionState::EntityMotionState(const btTransform &initialpos, std::shared_ptr<Entity> entity) :
     m_entity(entity),
-    m_pos1(initialpos)
+    m_transform(initialpos)
 {}
 
 EntityMotionState::~EntityMotionState() {}
 
 void EntityMotionState::getWorldTransform(btTransform &worldTrans) const {
-    worldTrans = m_pos1;
+    worldTrans = m_transform;
 }
 
 void EntityMotionState::setWorldTransform(const btTransform &worldTrans) {
@@ -18,5 +18,5 @@ void EntityMotionState::setWorldTransform(const btTransform &worldTrans) {
     m_entity->setRotation(rot.getAngle());
     btVector3 pos = worldTrans.getOrigin();
     m_entity->setPosition(glm::vec2(pos.x(), pos.y()));
-    m_pos1 = worldTrans;
+    m_transform = worldTrans;
 }
