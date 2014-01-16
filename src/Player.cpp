@@ -24,8 +24,6 @@ void Player::onUpdate(double dt) {
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         m_physicsBody->applyCentralForce(btVector3(0, 5, 0));
     }
-
-    std::cout << m_rotation << std::endl;
 }
 
 void Player::onDraw(sf::RenderTarget& target) {

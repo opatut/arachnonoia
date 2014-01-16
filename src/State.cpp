@@ -8,7 +8,16 @@
 #include <cereal/types/vector.hpp>
 #include <cereal/types/memory.hpp>
 
+State::~State() {
+    deinitializeWorld();
+}
+
 void State::init() {
+    initializeWorld();
+    onInit();
+}
+
+void State::initializeWorld() {
     m_broadphase = new btDbvtBroadphase();
     m_collisionConfiguration = new btDefaultCollisionConfiguration();
     m_collisionDispatcher = new btCollisionDispatcher(m_collisionConfiguration);
@@ -20,11 +29,9 @@ void State::init() {
     m_dynamicsWorld->setDebugDrawer(m_debugDrawer);
 
     m_dynamicsWorld->setGravity(btVector3(0, 0.5, 0));
-
-    onInit();
 }
 
-State::~State() {
+void State::deinitializeWorld() {
     delete m_debugDrawer;
     delete m_dynamicsWorld;
     delete m_solver;
@@ -70,7 +77,11 @@ void State::onHandleEvent(sf::Event& event) {}
 
 void State::add(std::shared_ptr<Entity> entity) {
     m_entities.push_back(entity);
+    initializeEntity(entity);
+    entity->onAdd(this);
+}
 
+void State::initializeEntity(std::shared_ptr<Entity> entity) {
     // If there is no physics shape set, the entity probably doesn't like physics so leave it alone
     if(entity->physicsShape() != nullptr) {
         EntityMotionState* motionstate = new EntityMotionState(btTransform(btQuaternion(0, 0, entity->rotation()), btVector3(entity->position().x, entity->position().y, 0)), entity);
@@ -89,8 +100,6 @@ void State::add(std::shared_ptr<Entity> entity) {
 
         m_dynamicsWorld->addRigidBody(entity->physicsBody());
     }
-
-    entity->onAdd(this);
 }
 
 glm::vec2 State::getMousePosition() {
@@ -124,6 +133,13 @@ void State::loadFromFile(const std::string& filename) {
     cereal::JSONInputArchive ar(stream);
     ar(cereal::make_nvp("entities", m_entities));
     stream.close();
+
+    // reset the physics world
+    deinitializeWorld();
+    initializeWorld();
+    for(auto entity: m_entities) {
+        initializeEntity(entity);
+    }
 }
 
 void State::saveToFile(const std::string& filename) {
