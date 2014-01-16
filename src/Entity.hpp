@@ -29,6 +29,9 @@ public:
     float rotation() const;
     void setRotation(float rot);
 
+    int zLevel() const;
+    void setZLevel(int z_level);
+
     void setPhysicsPosition(const glm::vec2& new_position);
 
     void setPhysicsRotation(float new_rotation);
@@ -53,7 +56,8 @@ public:
         ar(cereal::make_nvp("position", m_position));
         ar(cereal::make_nvp("scale",    m_scale));
         ar(cereal::make_nvp("rotation", m_rotation));
-        ar(cereal::make_nvp("mass", m_mass));
+        ar(cereal::make_nvp("mass",     m_mass));
+        ar(cereal::make_nvp("zlevel",   m_zLevel));
     }
 
 protected:
@@ -61,12 +65,16 @@ protected:
     float m_rotation = 0.f;
     glm::vec2 m_scale = glm::vec2(0.01, 0.01);
     btScalar m_mass = 0.f;
+    int m_zLevel = 0;
 
     // We check whether we need to initialize physics by checking these members against
     // nullptr, so let's set them to that so that we may check again later.
     btCollisionShape* m_physicsShape = nullptr;
     EntityMotionState* m_motionState = nullptr;
     btRigidBody* m_physicsBody = nullptr;
+
+public:
+    State* m_state;
 };
 
 #endif

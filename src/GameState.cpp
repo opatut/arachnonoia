@@ -5,23 +5,28 @@
 #include <Thor/Math.hpp>
 
 #include "Wall.hpp"
+#include "Pair.hpp"
 
-GameState::GameState() {}
+GameState::GameState() {
+    m_zoom = 12;
+    m_debugDrawEnabled = true;
+}
 
 void GameState::onInit() {
+    loadFromFile("levels/debug.json");
+
     m_player = std::make_shared<Player>();
     add(m_player);
 
-    for(int i = -5; i < 5; ++i) {
-        auto wall = std::make_shared<Wall>();
-        wall->setPosition(glm::vec2(i, 5));
-        wall->setRotation(thor::random(-0.5f, 0.5f));
-        add(wall);
-    }
+    std::shared_ptr<Pair> pair = std::make_shared<Pair>();
+    add(pair);
 }
 
 void GameState::onUpdate(double dt) {
-    m_zoom = 6;
+    // m_zoom = 6;
+    float targetZoom = 6 + m_player->physicsBody()->getLinearVelocity().length();
+    float zoomSpeed = 1;
+    m_zoom = m_zoom * (1 - dt * zoomSpeed) + targetZoom * (dt * zoomSpeed);
     m_center = m_player->position();
 }
 
@@ -40,4 +45,12 @@ void GameState::onDraw(sf::RenderTarget& target) {
     }
 
     drawEntities(target);
+}
+
+void GameState::onHandleEvent(sf::Event& event) {
+    if(event.type == sf::Event::KeyPressed) {
+        if(event.key.code == sf::Keyboard::Period) {
+            m_debugDrawEnabled = !m_debugDrawEnabled;
+        }
+    }
 }
