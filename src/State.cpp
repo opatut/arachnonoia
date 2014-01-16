@@ -3,6 +3,11 @@
 #include "Root.hpp"
 #include "EntityMotionState.hpp"
 
+#include <fstream>
+#include <cereal/archives/json.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/memory.hpp>
+
 void State::init() {
     m_broadphase = new btDbvtBroadphase();
     m_collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -110,4 +115,24 @@ void State::setView(sf::RenderTarget& target) {
 
 btDiscreteDynamicsWorld* State::dynamicsWorld() const {
     return m_dynamicsWorld;
+}
+
+void State::loadFromFile(const std::string& filename) {
+    std::ifstream stream;
+    stream.open(filename);
+
+    cereal::JSONInputArchive ar(stream);
+    ar(cereal::make_nvp("entities", m_entities));
+    stream.close();
+}
+
+void State::saveToFile(const std::string& filename) {
+    std::ofstream stream;
+    stream.open(filename);
+
+    cereal::JSONOutputArchive ar(stream);
+    ar(cereal::make_nvp("entities", m_entities));
+    ar.finishNode();
+
+    stream.close();
 }

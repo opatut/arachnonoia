@@ -12,12 +12,14 @@ void GameState::onInit() {
     m_player = std::make_shared<Player>();
     add(m_player);
 
-    for(int i = -5; i < 5; ++i) {
-        auto wall = std::make_shared<Wall>();
-        wall->setPosition(glm::vec2(i, 5));
-        wall->setRotation(thor::random(-0.5f, 0.5f));
-        add(wall);
-    }
+    // for(int i = -5; i < 5; ++i) {
+    //     auto wall = std::make_shared<Wall>();
+    //     wall->setPosition(glm::vec2(i, 5));
+    //     wall->setRotation(thor::random(-0.5f, 0.5f));
+    //     add(wall);
+    // }
+
+    loadFromFile("levels/debug.json");
 
     m_debugDrawEnabled = true;
 }

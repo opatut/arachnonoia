@@ -3,9 +3,6 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-#include <cereal/archives/json.hpp>
-#include <cereal/types/vector.hpp>
-#include <cereal/types/memory.hpp>
 
 #include <Thor/Math.hpp>
 
@@ -24,8 +21,7 @@ void EditorState::onInit() {
         wall->setPosition(glm::vec2(i * 1.5 - 3, 1));
         add(wall);
     }
-
-    m_currentEntity = m_entities[2];
+    // m_currentEntity = m_entities[2];
 }
 
 void EditorState::onHandleEvent(sf::Event& event) {
@@ -51,6 +47,7 @@ void EditorState::onHandleEvent(sf::Event& event) {
                     m_currentEntity = m_entityNumbers.begin()->first;
                     commitMode();
                 } else if(m_entityNumbers.size() == 0) {
+                    m_currentEntity.reset();
                     cancelMode();
                 }
             }
@@ -63,6 +60,12 @@ void EditorState::onHandleEvent(sf::Event& event) {
                 if(m_mode == NONE) startMode(SCALE);
             } else if(event.key.code == sf::Keyboard::F) {
                 if(m_mode == NONE) startMode(FOLLOW);
+            } else if(event.key.code == sf::Keyboard::X || event.key.code == sf::Keyboard::Delete) {
+                if(m_mode == NONE && m_currentEntity) {
+                    m_entities.erase(std::remove(m_entities.begin(), m_entities.end(), m_currentEntity), m_entities.end());
+                    m_currentEntity.reset();
+                    setStatus("Deleted.");
+                }
             }
         }
 
@@ -116,25 +119,27 @@ void EditorState::onDraw(sf::RenderTarget& target) {
     drawEntities(target);
 
     // draw current entity highlight
-    sf::CircleShape highlight;
-    highlight.setPosition(m_currentEntity->position().x, m_currentEntity->position().y);
-    float r = 3 * m_pixelSize;
-    highlight.setRadius(r);
-    highlight.setOrigin(r, r);
-    highlight.setFillColor(sf::Color(255, 128, 0, 128));
-    highlight.setOutlineThickness(m_pixelSize);
-    highlight.setOutlineColor(sf::Color(255, 128, 0));
-    target.draw(highlight);
+    if(m_currentEntity) {
+        sf::CircleShape highlight;
+        highlight.setPosition(m_currentEntity->position().x, m_currentEntity->position().y);
+        float r = 3 * m_pixelSize;
+        highlight.setRadius(r);
+        highlight.setOrigin(r, r);
+        highlight.setFillColor(sf::Color(255, 128, 0, 128));
+        highlight.setOutlineThickness(m_pixelSize);
+        highlight.setOutlineColor(sf::Color(255, 128, 0));
+        target.draw(highlight);
 
-    glm::vec2 s = m_currentEntity->getSize();
-    sf::RectangleShape rect(sf::Vector2f(s.x * m_currentEntity->scale().x, s.y * m_currentEntity->scale().y));
-    rect.setPosition(m_currentEntity->position().x, m_currentEntity->position().y);
-    rect.setRotation(thor::toDegree(m_currentEntity->rotation()));
-    rect.setOrigin(rect.getSize().x / 2, rect.getSize().y / 2);
-    rect.setOutlineColor(sf::Color(255, 128, 255, 200));
-    rect.setOutlineThickness(m_pixelSize);
-    rect.setFillColor(sf::Color::Transparent);
-    target.draw(rect);
+        glm::vec2 s = m_currentEntity->getSize();
+        sf::RectangleShape rect(sf::Vector2f(s.x * m_currentEntity->scale().x, s.y * m_currentEntity->scale().y));
+        rect.setPosition(m_currentEntity->position().x, m_currentEntity->position().y);
+        rect.setRotation(thor::toDegree(m_currentEntity->rotation()));
+        rect.setOrigin(rect.getSize().x / 2, rect.getSize().y / 2);
+        rect.setOutlineColor(sf::Color(255, 128, 255, 200));
+        rect.setOutlineThickness(m_pixelSize);
+        rect.setFillColor(sf::Color::Transparent);
+        target.draw(rect);
+    }
 
     // auto mp = getMousePosition();
     // if(m_mode != NONE) {
@@ -191,7 +196,7 @@ void EditorState::onDraw(sf::RenderTarget& target) {
         sf::RectangleShape cmdbox;
         cmdbox.setSize(sf::Vector2f(Root().window->getSize().x, 20));
         cmdbox.setPosition(0, Root().window->getSize().y - cmdbox.getSize().y);
-        cmdbox.setFillColor(sf::Color::Black);
+        cmdbox.setFillColor(sf::Color(0, 0, 0, text.getColor().a));
 
         target.draw(cmdbox);
         target.draw(text);
@@ -201,6 +206,11 @@ void EditorState::onDraw(sf::RenderTarget& target) {
 }
 
 void EditorState::startMode(EditorMode mode) {
+    // do not start an entity mode if no entity selected
+    if(!m_currentEntity && (mode == GRAB || mode == ROTATE || mode == SCALE)) {
+        return;
+    }
+
     m_mode = mode;
 
     m_modeStartPosition = getMousePosition();
@@ -271,10 +281,16 @@ void EditorState::startMode(EditorMode mode) {
 
 void EditorState::updateMode() {
     auto mp = getMousePosition();
-    glm::vec2 entity_start = m_currentEntity->position() - m_modeStartPosition;
-    glm::vec2 entity_mouse = m_currentEntity->position() - mp;
-    float entity_start_length = glm::length(entity_start);
-    float entity_mouse_length = glm::length(entity_mouse);
+
+    glm::vec2 entity_start, entity_mouse;
+    float entity_start_length = 0, entity_mouse_length = 0;
+
+    if(m_currentEntity) {
+        entity_start = m_currentEntity->position() - m_modeStartPosition;
+        entity_mouse = m_currentEntity->position() - mp;
+        entity_start_length = glm::length(entity_start);
+        entity_mouse_length = glm::length(entity_mouse);
+    }
 
     if(m_mode == GRAB) {
         glm::vec2 diff = mp - m_modeStartPosition;
@@ -288,14 +304,16 @@ void EditorState::updateMode() {
         setStatus("Move: " + std::to_string(diff.x) + "|" + std::to_string(diff.y));
     } else if(m_mode == ROTATE) {
         float angle = glm::orientedAngle(glm::normalize(entity_start), glm::normalize(entity_mouse));
+        std::cout << angle << std::endl;
         if(entity_start == entity_mouse) angle = 0; // -nan failsafe
 
+        float step = thor::toRadian(15.f);
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-            angle = round(angle/15)*15;
+            angle = round(angle/step)*step;
         }
 
         m_currentEntity->setRotation(m_modeStartValue.x + angle);
-        setStatus("Rotate: " + std::to_string((int)angle));
+        setStatus("Rotate: " + std::to_string((int)thor::toDegree(angle)));
     } else if(m_mode == SCALE) {
         float scale = ((entity_mouse_length != 0) ? (entity_mouse_length / entity_start_length) : 0.f);
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
@@ -314,31 +332,13 @@ void EditorState::updateMode() {
 
 void EditorState::commitMode() {
     if(m_mode == SAVE) {
-        const std::string& filename = "levels/" + m_typingString;
-
-        std::cout << "saving to file: " << filename << std::endl;
-        std::ofstream stream;
-        stream.open(filename);
-
-        cereal::JSONOutputArchive ar(stream);
-        ar(cereal::make_nvp("entities", m_entities));
-        ar.finishNode();
-
-        stream.close();
+        std::string filename = "levels/" + m_typingString;
+        saveToFile(filename);
         setStatus("Saved to " + filename + ".");
     } else if(m_mode == LOAD) {
         std::string filename = "levels/" + m_typingString;
-
-        std::cout << "loading from file: " << filename << std::endl;
-        std::ifstream stream;
-        stream.open(filename);
-
-        cereal::JSONInputArchive ar(stream);
-        ar(cereal::make_nvp("entities", m_entities));
-
-        m_currentEntity = m_entities[0];
-
-        stream.close();
+        loadFromFile(filename);
+        m_currentEntity.reset();
         setStatus("Loaded from " + filename + ".");
     }
 
@@ -346,12 +346,14 @@ void EditorState::commitMode() {
 }
 
 void EditorState::cancelMode() {
-    if(m_mode == GRAB) {
-        m_currentEntity->setPosition(m_modeStartValue);
-    } else if(m_mode == ROTATE) {
-        m_currentEntity->setRotation(m_modeStartValue.x);
-    } else if(m_mode == SCALE) {
-        m_currentEntity->setScale(m_modeStartValue);
+    if(m_currentEntity) {
+        if(m_mode == GRAB) {
+            m_currentEntity->setPosition(m_modeStartValue);
+        } else if(m_mode == ROTATE) {
+            m_currentEntity->setRotation(m_modeStartValue.x);
+        } else if(m_mode == SCALE) {
+            m_currentEntity->setScale(m_modeStartValue);
+        }
     }
 
     m_mode = NONE;

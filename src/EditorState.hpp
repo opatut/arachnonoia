@@ -46,7 +46,7 @@ private:
     std::string m_followModeInput;
 
     std::string m_statusText;
-    float m_statusTime;
+    float m_statusTime = 1000.f;
 
 };
 
