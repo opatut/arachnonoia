@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include <iostream>
+
 EntityMotionState::EntityMotionState(const btTransform &initialpos, std::shared_ptr<Entity> entity) :
     m_entity(entity),
     m_transform(initialpos)
@@ -15,7 +17,7 @@ void EntityMotionState::getWorldTransform(btTransform &worldTrans) const {
 
 void EntityMotionState::setWorldTransform(const btTransform &worldTrans) {
     btQuaternion rot = worldTrans.getRotation();
-    m_entity->setRotation(rot.getAngle());
+    m_entity->setRotation(rot.getAngle() * rot.getAxis().z());
     btVector3 pos = worldTrans.getOrigin();
     m_entity->setPosition(glm::vec2(pos.x(), pos.y()));
     m_transform = worldTrans;
