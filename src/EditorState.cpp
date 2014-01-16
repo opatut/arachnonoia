@@ -54,17 +54,19 @@ void EditorState::onHandleEvent(sf::Event& event) {
                 }
 
             }
+        } else {
+            if(event.key.code == sf::Keyboard::G) {
+                if(m_mode == NONE) startMode(GRAB);
+            } else if(event.key.code == sf::Keyboard::R) {
+                if(m_mode == NONE) startMode(ROTATE);
+            } else if(event.key.code == sf::Keyboard::S) {
+                if(m_mode == NONE) startMode(SCALE);
+            } else if(event.key.code == sf::Keyboard::F) {
+                if(m_mode == NONE) startMode(FOLLOW);
+            }
         }
 
-        if(event.key.code == sf::Keyboard::G) {
-            if(m_mode == NONE) startMode(GRAB);
-        } else if(event.key.code == sf::Keyboard::R) {
-            if(m_mode == NONE) startMode(ROTATE);
-        } else if(event.key.code == sf::Keyboard::S) {
-            if(m_mode == NONE) startMode(SCALE);
-        } else if(event.key.code == sf::Keyboard::F) {
-            if(m_mode == NONE) startMode(FOLLOW);
-        } else if(event.key.code == sf::Keyboard::Escape) {
+        if(event.key.code == sf::Keyboard::Escape) {
             cancelMode();
         } else if(event.key.code == sf::Keyboard::Return) {
             commitMode();
@@ -219,7 +221,7 @@ void EditorState::startMode(EditorMode mode) {
 
         // initialize the entity numbers
         m_entityNumbers.clear();
-        static const std::string FOLLOW_CHARS = "QWE"; // uppercase letters only
+        static const std::string FOLLOW_CHARS = "ASDFGHJKL"; // uppercase letters only
         int N = FOLLOW_CHARS.length();
 
         int len = std::max(1, (int)ceil(log(visible_entities.size()) / log(N)));
@@ -227,10 +229,33 @@ void EditorState::startMode(EditorMode mode) {
         for(auto entity: visible_entities) {
             std::string number = "";
             for(int i = 0; i < len; i++) {
-                number += FOLLOW_CHARS[index%(int)pow(N, i+1)];
+                int p = (int)pow(N, i);
+                int val = index % (p*N) - index % p;
+                int num = val / p;
+                number += FOLLOW_CHARS[num];
             }
             m_entityNumbers[entity] = number;
             index++;
+        }
+
+        for(auto entity: visible_entities) {
+            const std::string& number = m_entityNumbers[entity];
+            int matching_chars = 0;
+            for(auto other: visible_entities) {
+                if(other == entity) continue;
+
+                const std::string& other_number = m_entityNumbers[other];
+
+                for(int i = 0; i < len; ++i) {
+                    if(number[i] == other_number[i]) {
+                        if(matching_chars < i+1)
+                            matching_chars = i+1;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            m_entityNumbers[entity] = number.substr(0, matching_chars+1);
         }
     }
 }
