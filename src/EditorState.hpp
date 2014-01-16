@@ -13,7 +13,9 @@ public:
         GRAB,
         ROTATE,
         SCALE,
-        FOLLOW
+        FOLLOW,
+        SAVE,
+        LOAD
     };
 
     EditorState();
@@ -36,6 +38,8 @@ private:
     std::map<std::shared_ptr<Entity>, std::string> m_entityNumbers;
 
     EditorMode m_mode;
+    bool m_typing;
+    std::string m_typingString;
     glm::vec2 m_modeStartPosition;
     glm::vec2 m_modeStartValue;
 

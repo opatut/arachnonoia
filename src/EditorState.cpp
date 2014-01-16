@@ -1,6 +1,7 @@
 #include "EditorState.hpp"
 
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <cereal/archives/json.hpp>
 #include <cereal/types/vector.hpp>
@@ -28,18 +29,18 @@ void EditorState::onInit() {
 }
 
 void EditorState::onHandleEvent(sf::Event& event) {
-    if(event.type == sf::Event::KeyPressed) {
-        if(m_mode == FOLLOW) {
+    if(event.type == sf::Event::TextEntered && m_typing) {
+        if(event.text.unicode <= 126 && event.text.unicode >= 32) {
+            m_typingString += static_cast<char>(event.text.unicode);
+        }
+    } if(event.type == sf::Event::KeyPressed) {
+        if(m_typing && event.key.code == sf::Keyboard::BackSpace) {
+            m_typingString = m_typingString.substr(0, m_typingString.length() - 1);
+        } else if(m_mode == FOLLOW) {
             if(event.key.code >= sf::Keyboard::A && event.key.code <= sf::Keyboard::Z) {
                 // char!
                 char c = 'A' + (event.key.code - sf::Keyboard::A);
-                std::cout << "Pressed " << c << std::endl;
                 m_followModeInput += c;
-
-                // m_entityNumbers.erase(
-                //     std::find_if(m_entityNumbers.begin(), m_entityNumbers.end(), [c,this](std::pair<std::shared_ptr<Entity>, std::string> pair) -> bool {
-                //         return c != pair.second[m_followModeInput.length()-1];
-                //     }), m_entityNumbers.end());
 
                 for(auto it = m_entityNumbers.begin(); (it = std::find_if(it, m_entityNumbers.end(), [c,this](std::pair<std::shared_ptr<Entity>, std::string> pair) -> bool {
                     return c != pair.second[m_followModeInput.length()-1];
@@ -52,7 +53,6 @@ void EditorState::onHandleEvent(sf::Event& event) {
                 } else if(m_entityNumbers.size() == 0) {
                     cancelMode();
                 }
-
             }
         } else {
             if(event.key.code == sf::Keyboard::G) {
@@ -71,10 +71,9 @@ void EditorState::onHandleEvent(sf::Event& event) {
         } else if(event.key.code == sf::Keyboard::Return) {
             commitMode();
         } else if(event.key.code == sf::Keyboard::F5) {
-            std::cout << "saving... " << std::endl;
-
-            cereal::JSONOutputArchive ar(std::cout);
-            ar(cereal::make_nvp("entities", m_entities));
+            if(m_mode == NONE) startMode(SAVE);
+        } else if(event.key.code == sf::Keyboard::F6) {
+            if(m_mode == NONE) startMode(LOAD);
         }
     }
 
@@ -90,7 +89,7 @@ void EditorState::onHandleEvent(sf::Event& event) {
 }
 
 void EditorState::onUpdate(double dt) {
-    m_statusTime -= dt;
+    m_statusTime += dt;
 
     m_zoom = 6;
 
@@ -181,13 +180,20 @@ void EditorState::onDraw(sf::RenderTarget& target) {
     target.setView(target.getDefaultView());
 
     // TODO: Replace by experimental threadlet
-    if(m_statusTime > 0) {
+    if(m_statusTime < 2) {
         sf::Text text;
         text.setFont(* Root().resources.getFont("mono"));
-        text.setPosition(20, 20);
+        text.setPosition(5, Root().window->getSize().y - text.getFont()->getLineSpacing(14) - 5);
         text.setString(m_statusText);
-        text.setColor(sf::Color(255, 255, 255, (int)(m_statusTime * 255 / 1.5)));
+        text.setColor(sf::Color(255, 255, 255, m_statusTime == 0 ? 255 : 100));
         text.setCharacterSize(14);
+
+        sf::RectangleShape cmdbox;
+        cmdbox.setSize(sf::Vector2f(Root().window->getSize().x, 20));
+        cmdbox.setPosition(0, Root().window->getSize().y - cmdbox.getSize().y);
+        cmdbox.setFillColor(sf::Color::Black);
+
+        target.draw(cmdbox);
         target.draw(text);
     }
 
@@ -257,6 +263,9 @@ void EditorState::startMode(EditorMode mode) {
             }
             m_entityNumbers[entity] = number.substr(0, matching_chars+1);
         }
+    } else if(m_mode == SAVE || m_mode == LOAD) {
+        m_typing = true;
+        m_typingString = "";
     }
 }
 
@@ -296,10 +305,43 @@ void EditorState::updateMode() {
         setStatus("Scale: " + std::to_string(scale));
     } else if(m_mode == FOLLOW) {
         setStatus("Follow: " + m_followModeInput);
+    } else if(m_mode == SAVE) {
+        setStatus("Type filename to save: " + m_typingString);
+    } else if(m_mode == LOAD) {
+        setStatus("Type filename to load: " + m_typingString);
     }
 }
 
 void EditorState::commitMode() {
+    if(m_mode == SAVE) {
+        const std::string& filename = "levels/" + m_typingString;
+
+        std::cout << "saving to file: " << filename << std::endl;
+        std::ofstream stream;
+        stream.open(filename);
+
+        cereal::JSONOutputArchive ar(stream);
+        ar(cereal::make_nvp("entities", m_entities));
+        ar.finishNode();
+
+        stream.close();
+        setStatus("Saved to " + filename + ".");
+    } else if(m_mode == LOAD) {
+        std::string filename = "levels/" + m_typingString;
+
+        std::cout << "loading from file: " << filename << std::endl;
+        std::ifstream stream;
+        stream.open(filename);
+
+        cereal::JSONInputArchive ar(stream);
+        ar(cereal::make_nvp("entities", m_entities));
+
+        m_currentEntity = m_entities[0];
+
+        stream.close();
+        setStatus("Loaded from " + filename + ".");
+    }
+
     m_mode = NONE;
 }
 
@@ -313,9 +355,10 @@ void EditorState::cancelMode() {
     }
 
     m_mode = NONE;
+    setStatus("Canceled.");
 }
 
 void EditorState::setStatus(const std::string& text) {
     m_statusText = text;
-    m_statusTime = 1.5f;
+    m_statusTime = 0.f;
 }
