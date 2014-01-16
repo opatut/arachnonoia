@@ -11,7 +11,7 @@ Player::Player()
     m_sprite.setTexture(* Root().resources.getTexture("player").get());
 
     m_mass = 1.f;
-    m_physicsShape = new btSphereShape(0.1);
+    m_physicsShape = new btSphereShape(0.3);
 }
 
 void Player::onUpdate(double dt) {
@@ -24,8 +24,6 @@ void Player::onUpdate(double dt) {
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         m_physicsBody->applyCentralForce(btVector3(0, 5, 0));
     }
-
-    std::cout << m_rotation << std::endl;
 }
 
 void Player::onDraw(sf::RenderTarget& target) {
@@ -49,9 +47,16 @@ void Player::onAdd(State* state) {
     m_physicsBody->setDamping(0.5, 5);
 
     // Set up spider feet
-    for(auto i = 0; i < 5; ++i) {
+    for(auto i = 0; i < 4; ++i) {
         auto foot = std::make_shared<Foot>();
-        foot->setPosition(glm::vec2(0.4*(i-2), 0.2));
+
+        // Left feet
+        if(i < 2)
+            foot->setPosition(glm::vec2(0.5*(i-2), 0.3));
+        else
+            foot->setPosition(glm::vec2(0.5*(i-1), 0.3));
+
+        // Right feet
         state->add(foot);
 
         auto frameInA = btTransform::getIdentity();
@@ -60,14 +65,18 @@ void Player::onAdd(State* state) {
         frameInB.setOrigin(foot->physicsBody()->getWorldTransform().getOrigin());
 
         auto constraint = new btGeneric6DofSpringConstraint(*m_physicsBody, *foot->physicsBody(), frameInA, frameInB, true);
-        constraint->setLinearLowerLimit(btVector3(0.0, 0.1, 0));
-        constraint->setLinearUpperLimit(btVector3(0.0, 0.3, 0));
+        constraint->setLinearLowerLimit(btVector3(0.0, 0.4, 0));
+        constraint->setLinearUpperLimit(btVector3(0.0, 0.5, 0));
         constraint->setAngularLowerLimit(btVector3(0.0, 0.0, -M_PI));
         constraint->setAngularUpperLimit(btVector3(0.0, 0.0, -M_PI));
 
-        constraint->enableSpring(0, true);
-        constraint->setStiffness(0, 50.f);
-        constraint->setDamping(0, 5.f);
+//        constraint->enableSpring(0, true);
+//        constraint->setStiffness(0, 10000000.f);
+//        constraint->setDamping(0, 0.5f);
+
+        constraint->enableSpring(1, true);
+        constraint->setStiffness(1, 500.f);
+        constraint->setDamping(1, 0.5f);
 
         state->dynamicsWorld()->addConstraint(constraint, true);
     }

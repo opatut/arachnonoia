@@ -8,7 +8,7 @@ public:
     Foot();
 
     void onDraw(sf::RenderTarget &target);
-    void onAdd(State *state);
+    void onAdd(State* state);
 };
 
 #endif // FOOT_HPP
