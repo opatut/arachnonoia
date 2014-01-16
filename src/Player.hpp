@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Entity.hpp"
+#include "Foot.hpp"
 
 class Player : public Entity {
 public:
@@ -11,11 +12,13 @@ public:
 
     void onUpdate(double dt) override;
     void onDraw(sf::RenderTarget& target) override;
-    void onAdd();
+    void onAdd(State *state);
 
 private:
     sf::Sprite m_sprite;
 
+    // The feet go from left to right
+    std::shared_ptr<Foot> m_feet[4];
 };
 
 #endif

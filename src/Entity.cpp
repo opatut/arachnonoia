@@ -17,7 +17,7 @@ Entity::~Entity() {
 void Entity::onUpdate(double dt) {}
 void Entity::onDraw(sf::RenderTarget& target) {}
 void Entity::onHandleEvent(sf::Event& event) {}
-void Entity::onAdd() {}
+void Entity::onAdd(State* state) {}
 
 glm::vec2 Entity::getSize() {
     return glm::vec2(1, 1);
@@ -28,9 +28,9 @@ glm::vec2 Entity::position() const
     return m_position;
 }
 
-void Entity::setPosition(const glm::vec2& position)
+void Entity::setPosition(const glm::vec2& pos)
 {
-    m_position = position;
+    m_position = pos;
 }
 
 float Entity::rotation() const
@@ -38,9 +38,9 @@ float Entity::rotation() const
     return m_rotation;
 }
 
-void Entity::setRotation(float rotation)
+void Entity::setRotation(float rot)
 {
-    m_rotation = rotation;
+    m_rotation = rot;
 }
 
 void Entity::setPhysicsPosition(const glm::vec2& new_position) {

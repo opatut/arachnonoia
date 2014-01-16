@@ -11,7 +11,7 @@ void State::init() {
     m_dynamicsWorld = new btDiscreteDynamicsWorld(m_collisionDispatcher, m_broadphase, m_solver, m_collisionConfiguration);
     m_debugDrawer = new DebugDraw();
 
-    m_debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+    m_debugDrawer->setDebugMode(DebugDraw::DBG_DrawWireframe | DebugDraw::DBG_DrawContactPoints | DebugDraw::DBG_DrawConstraints | DebugDraw::DBG_DrawNormals);
     m_dynamicsWorld->setDebugDrawer(m_debugDrawer);
 
     m_dynamicsWorld->setGravity(btVector3(0, 0.5, 0));
@@ -72,10 +72,18 @@ void State::add(std::shared_ptr<Entity> entity) {
         entity->physicsShape()->calculateLocalInertia(entity->mass(), inertia);
         btRigidBody::btRigidBodyConstructionInfo construction_info(entity->mass(), motionstate, entity->physicsShape(), inertia);
         entity->setPhysicsBody(new btRigidBody(construction_info));
+
+        // We're in 2D land so don't allow Z movement
+        entity->physicsBody()->setLinearFactor(btVector3(1, 1, 0));
+        entity->physicsBody()->setAngularFactor(btVector3(0, 0, 1));
+
+        // Store a pointer to the entity in there, maybe we'll need it
+        entity->physicsBody()->setUserPointer((void*)entity.get());
+
         m_dynamicsWorld->addRigidBody(entity->physicsBody());
     }
 
-    entity->onAdd();
+    entity->onAdd(this);
 }
 
 glm::vec2 State::getMousePosition() {
@@ -96,4 +104,8 @@ void State::setView(sf::RenderTarget& target) {
     m_pixelSize = w / target.getSize().x;
     m_view.reset(sf::FloatRect(m_center.x-w/2, m_center.y-h/2, w, h));
     target.setView(m_view);
+}
+
+btDiscreteDynamicsWorld* State::dynamicsWorld() const {
+    return m_dynamicsWorld;
 }

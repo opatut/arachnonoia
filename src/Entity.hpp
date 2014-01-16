@@ -9,6 +9,7 @@
 #include "CerealGLM.hpp"
 
 class EntityMotionState;
+class State;
 
 class Entity {
 public:
@@ -18,15 +19,15 @@ public:
     virtual void onUpdate(double dt);
     virtual void onDraw(sf::RenderTarget& target);
     virtual void onHandleEvent(sf::Event& event);
-    virtual void onAdd();
+    virtual void onAdd(State *state);
 
     virtual glm::vec2 getSize();
 
     glm::vec2 position() const;
-    void setPosition(const glm::vec2& position);
+    void setPosition(const glm::vec2& pos);
 
     float rotation() const;
-    void setRotation(float rotation);
+    void setRotation(float rot);
 
     void setPhysicsPosition(const glm::vec2& new_position);
 

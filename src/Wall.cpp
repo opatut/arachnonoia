@@ -20,9 +20,7 @@ Wall::Wall() {
     m_physicsShape = new btBoxShape(btVector3(0.5f, 0.5f, 0));
 }
 
-void Wall::onUpdate(double dt) {
-    std::cout << "wall: " << m_physicsBody->getWorldTransform().getOrigin().x() << "/" << m_physicsBody->getWorldTransform().getOrigin().y() << std::endl;
-}
+void Wall::onUpdate(double dt) {}
 
 void Wall::onDraw(sf::RenderTarget& target) {
     m_sprite.setOrigin(m_sprite.getTexture()->getSize().x / 2, m_sprite.getTexture()->getSize().y / 2);

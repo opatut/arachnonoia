@@ -10,9 +10,11 @@ void GameState::onInit() {
     m_player = std::make_shared<Player>();
     add(m_player);
 
-    auto wall = std::make_shared<Wall>();
-    wall->setPosition(glm::vec2(0, 1));
-    add(wall);
+    for(int i = -5; i < 5; ++i) {
+        auto wall = std::make_shared<Wall>();
+        wall->setPosition(glm::vec2(i, 5));
+        add(wall);
+    }
 }
 
 void GameState::onUpdate(double dt) {

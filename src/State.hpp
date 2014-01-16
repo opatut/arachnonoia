@@ -28,6 +28,8 @@ public:
 
     glm::vec2 getMousePosition();
 
+    btDiscreteDynamicsWorld* dynamicsWorld() const;
+
 protected:
     void drawEntities(sf::RenderTarget& target);
     void setView(sf::RenderTarget& target);
