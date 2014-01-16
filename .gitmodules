@@ -1,3 +1,6 @@
 [submodule "external/cereal"]
 	path = external/cereal
 	url = git@github.com:USCiLab/cereal.git
+[submodule "external/Thor"]
+	path = external/Thor
+	url = git://github.com/Bromeon/Thor.git
