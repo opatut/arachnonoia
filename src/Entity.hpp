@@ -67,6 +67,9 @@ protected:
     btCollisionShape* m_physicsShape = nullptr;
     EntityMotionState* m_motionState = nullptr;
     btRigidBody* m_physicsBody = nullptr;
+
+public:
+    State* m_state;
 };
 
 #endif

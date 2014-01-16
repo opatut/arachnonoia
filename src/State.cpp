@@ -78,6 +78,7 @@ void State::onHandleEvent(sf::Event& event) {}
 void State::add(std::shared_ptr<Entity> entity) {
     m_entities.push_back(entity);
     initializeEntity(entity);
+    entity->m_state = this;
     entity->onAdd(this);
 }
 

@@ -10,6 +10,7 @@
 #include "Root.hpp"
 #include "GameState.hpp"
 #include "Level.hpp"
+#include "Pair.hpp"
 
 int main() {
     sf::ContextSettings settings;
@@ -20,7 +21,14 @@ int main() {
 
     Root().window = &window;
 
+    for(int i = 1; i < 3; ++i) {
+        const std::string& name = Pair::getGlyphName(i);
+        Root().resources.addTexture(name, "data/glyphs/" + name + ".png");
+    }
+
     Root().resources.addTexture("player", "data/player.png");
+    Root().resources.addTexture("pair", "data/pair.png");
+    Root().resources.addTexture("wall-box", "data/box.png");
     Root().resources.addTexture("wall-box", "data/box.png");
     Root().resources.addFont("default", "data/OpenSans-Regular.ttf");
     Root().resources.addFont("mono", "data/UbuntuMono-R.ttf");
