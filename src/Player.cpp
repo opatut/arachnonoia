@@ -17,8 +17,14 @@ Player::Player()
 void Player::onUpdate(double dt) {
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         m_physicsBody->applyCentralForce(btVector3(-5, 0, 0));
+        for(auto i = 0; i < 2; ++i) {
+            m_feet[i]->physicsBody()->applyTorque(btVector3(0, 0, -0.5f));
+        }
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
         m_physicsBody->applyCentralForce(btVector3(5, 0, 0));
+        for(auto i = 0; i < 2; ++i) {
+            m_feet[i]->physicsBody()->applyTorque(btVector3(0, 0, 0.5f));
+        }
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         m_physicsBody->applyCentralForce(btVector3(0, -5, 0));
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
@@ -47,32 +53,31 @@ void Player::onAdd(State* state) {
     m_physicsBody->setDamping(0.5, 5);
 
     // Set up spider feet
-    for(auto i = 0; i < 4; ++i) {
+    for(auto i = 0; i < 2; ++i) {
         auto foot = std::make_shared<Foot>();
 
-        // Left feet
-        if(i < 2)
-            foot->setPosition(glm::vec2(0.5*(i-2), 0.3));
-        else
-            foot->setPosition(glm::vec2(0.5*(i-1), 0.3));
+        if(i == 0) // left feet
+            foot->setPosition(glm::vec2(-1, 0.3));
+        if(i == 1) // right feet
+            foot->setPosition(glm::vec2(1, 0.3));
 
-        // Right feet
         state->add(foot);
+        m_feet[i] = foot;
 
         auto frameInA = btTransform::getIdentity();
-        frameInA.setOrigin(m_physicsBody->getWorldTransform().getOrigin());
+        frameInA.setOrigin(foot->physicsBody()->getWorldTransform().getOrigin());
+
         auto frameInB = btTransform::getIdentity();
-        frameInB.setOrigin(foot->physicsBody()->getWorldTransform().getOrigin());
+        if(i == 0) // left feet
+            frameInB.setOrigin(foot->physicsBody()->getWorldTransform().getOrigin() + btVector3(1, -0.3, 0));
+        if(i == 1) // right feet
+            frameInB.setOrigin(foot->physicsBody()->getWorldTransform().getOrigin() + btVector3(-1, -0.3, 0));
 
         auto constraint = new btGeneric6DofSpringConstraint(*m_physicsBody, *foot->physicsBody(), frameInA, frameInB, true);
         constraint->setLinearLowerLimit(btVector3(0.0, 0.4, 0));
         constraint->setLinearUpperLimit(btVector3(0.0, 0.5, 0));
         constraint->setAngularLowerLimit(btVector3(0.0, 0.0, -M_PI));
-        constraint->setAngularUpperLimit(btVector3(0.0, 0.0, -M_PI));
-
-//        constraint->enableSpring(0, true);
-//        constraint->setStiffness(0, 10000000.f);
-//        constraint->setDamping(0, 0.5f);
+        constraint->setAngularUpperLimit(btVector3(0.0, 0.0, M_PI));
 
         constraint->enableSpring(1, true);
         constraint->setStiffness(1, 500.f);
