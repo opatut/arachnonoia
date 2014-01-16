@@ -6,6 +6,8 @@
 #include <cereal/types/vector.hpp>
 #include <cereal/types/memory.hpp>
 
+#include <Thor/Math.hpp>
+
 #include "Wall.hpp"
 #include "Root.hpp"
 
@@ -126,7 +128,7 @@ void EditorState::onDraw(sf::RenderTarget& target) {
     glm::vec2 s = m_currentEntity->getSize();
     sf::RectangleShape rect(sf::Vector2f(s.x * m_currentEntity->scale().x, s.y * m_currentEntity->scale().y));
     rect.setPosition(m_currentEntity->position().x, m_currentEntity->position().y);
-    rect.setRotation(m_currentEntity->rotation());
+    rect.setRotation(thor::toDegree(m_currentEntity->rotation()));
     rect.setOrigin(rect.getSize().x / 2, rect.getSize().y / 2);
     rect.setOutlineColor(sf::Color(255, 128, 255, 200));
     rect.setOutlineThickness(m_pixelSize);
