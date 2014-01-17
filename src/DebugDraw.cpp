@@ -61,7 +61,7 @@ void DebugDraw::drawTriangle(const btVector3 &v0, const btVector3 &v1, const btV
 }
 
 void DebugDraw::drawContactPoint(const btVector3& point_on_b, const btVector3& normal_on_b, btScalar distance, int life_time, const btVector3& color) {
-    drawLine(point_on_b, point_on_b + normal_on_b * distance * 5.f, color);
+    drawLine(point_on_b, point_on_b + normal_on_b * distance, color);
 }
 
 void DebugDraw::reportErrorWarning(const char* warning_string) {

@@ -3,7 +3,7 @@ default: compile run
 
 compile:
 	mkdir -p build
-	cd build && cmake .. && make -j2
+	cd build && cmake .. && make -j$(shell nproc)
 
 run:
 	bin/arachnonoia

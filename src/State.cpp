@@ -28,7 +28,7 @@ void State::initializeWorld() {
     m_debugDrawer->setDebugMode(DebugDraw::DBG_DrawWireframe | DebugDraw::DBG_DrawContactPoints | DebugDraw::DBG_DrawConstraints | DebugDraw::DBG_DrawNormals);
     m_dynamicsWorld->setDebugDrawer(m_debugDrawer);
 
-    m_dynamicsWorld->setGravity(btVector3(0, 0.5, 0));
+    m_dynamicsWorld->setGravity(btVector3(0, 3, 0));
 }
 
 void State::deinitializeWorld() {

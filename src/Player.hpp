@@ -17,8 +17,7 @@ public:
 private:
     sf::Sprite m_sprite;
 
-    // The feet go from left to right
-    std::shared_ptr<Foot> m_feet[5];
+    std::shared_ptr<Foot> m_feet[4];
 };
 
 #endif
