@@ -48,6 +48,8 @@ private:
     std::string m_statusText;
     float m_statusTime = 1000.f;
 
+    float m_targetZoom;
+
 };
 
 #endif

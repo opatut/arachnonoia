@@ -7,13 +7,16 @@
 #include <Thor/Math.hpp>
 
 #include "Wall.hpp"
+#include "Pair.hpp"
 #include "Root.hpp"
 
 #define GLM_FORCE_RADIANS
 #include <glm/gtx/vector_angle.hpp>
 
-EditorState::EditorState()
-{}
+EditorState::EditorState() {
+    m_zoom = 6;
+    m_targetZoom = m_zoom;
+}
 
 void EditorState::onInit() {
     for(int i = 0; i < 5; ++i) {
@@ -76,6 +79,14 @@ void EditorState::onHandleEvent(sf::Event& event) {
                     m_currentEntity->setZLevel(m_currentEntity->zLevel() - 1);
                     setStatus("Z-Level -- " + std::to_string(m_currentEntity->zLevel()));
                 }
+            } else if(event.key.code == sf::Keyboard::Space) {
+                std::shared_ptr<Wall> entity = std::make_shared<Wall>();
+                entity->setPosition(getMousePosition());
+                add(entity);
+            } else if(event.key.code == sf::Keyboard::P) {
+                std::shared_ptr<Pair> entity = std::make_shared<Pair>();
+                entity->setPosition(getMousePosition());
+                add(entity);
             }
         }
 
@@ -99,14 +110,23 @@ void EditorState::onHandleEvent(sf::Event& event) {
             }
         }
     }
+
+    if(event.type == sf::Event::MouseWheelMoved) {
+        float new_zoom = m_zoom * (1.f - 0.2 * event.mouseWheel.delta);
+
+        glm::vec2 mp = getMousePosition();
+        m_center += (mp - m_center) / m_zoom * (new_zoom / m_zoom);
+        // glm::vec2 diff = (mp - m_center) / m_zoom;
+        // m_center += diff;
+
+        m_zoom = new_zoom;
+    }
 }
 
 void EditorState::onUpdate(double dt) {
     m_statusTime += dt;
 
-    m_zoom = 6;
-
-    float speed = 1;
+    float speed = 1 * m_zoom;
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
         m_center.x -= dt * speed;
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
@@ -314,7 +334,7 @@ void EditorState::updateMode() {
         setStatus("Move: " + std::to_string(diff.x) + "|" + std::to_string(diff.y));
     } else if(m_mode == ROTATE) {
         float angle = glm::orientedAngle(glm::normalize(entity_start), glm::normalize(entity_mouse));
-        std::cout << angle << std::endl;
+        // std::cout << angle << std::endl;
         if(entity_start == entity_mouse) angle = 0; // -nan failsafe
 
         float step = thor::toRadian(15.f);

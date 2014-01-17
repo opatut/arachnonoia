@@ -142,6 +142,7 @@ void State::loadFromFile(const std::string& filename) {
     initializeWorld();
     for(auto entity: m_entities) {
         initializeEntity(entity);
+        entity->onAdd(this);
     }
 }
 

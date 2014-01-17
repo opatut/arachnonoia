@@ -17,9 +17,6 @@ void GameState::onInit() {
 
     m_player = std::make_shared<Player>();
     add(m_player);
-
-    std::shared_ptr<Pair> pair = std::make_shared<Pair>();
-    add(pair);
 }
 
 void GameState::onUpdate(double dt) {

@@ -1,5 +1,6 @@
 #include "Entity.hpp"
 #include "Wall.hpp"
+#include "Pair.hpp"
 
 #include <cereal/archives/binary.hpp>
 #include <cereal/archives/xml.hpp>
@@ -9,4 +10,5 @@
 
 CEREAL_REGISTER_TYPE(Entity)
 CEREAL_REGISTER_TYPE(Wall)
+CEREAL_REGISTER_TYPE(Pair)
 

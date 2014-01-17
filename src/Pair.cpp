@@ -18,6 +18,7 @@ Pair::Pair()
 
 void Pair::onAdd(State* state) {
     m_physicsBody->setCollisionFlags(m_physicsBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    setGlyphNumber(m_glyphNumber); // update sprite
 }
 
 void Pair::onUpdate(double dt) {
