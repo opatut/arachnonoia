@@ -1,9 +1,14 @@
 #include "Foot.hpp"
 
-#include <Thor/Math.hpp>
+#include <iostream>
 
-Foot::Foot() {
+#include <Thor/Math.hpp>
+#include <Thor/Vectors.hpp>
+#include <Thor/Graphics.hpp>
+
+Foot::Foot(Entity* player) {
     m_mass = 0.01f;
+    m_player = player;
     m_physicsShape = new btCompoundShape();
 
     auto trans_left = btTransform::getIdentity();
@@ -20,15 +25,50 @@ Foot::Foot() {
 
 void Foot::onDraw(sf::RenderTarget &target) {
     for(auto i = 0; i < 2; ++i) {
-        sf::CircleShape shape;
+        // Feet
         auto child = static_cast<btCompoundShape*>(m_physicsShape)->getChildTransform(i);
         auto trans = m_physicsBody->getWorldTransform() * child;
-        shape.setPosition(trans.getOrigin().x(), trans.getOrigin().y());
-        shape.setRadius(1);
-        shape.setOrigin(1, 1);
-        shape.setScale(0.2, 0.2);
-        shape.setFillColor(sf::Color::Black);
-        target.draw(shape);
+        sf::Vector2f feet_pos(trans.getOrigin().x(), trans.getOrigin().y());
+        sf::Vector2f player_pos(m_player->position().x, m_player->position().y);
+
+        sf::CircleShape foot;
+        foot.setPosition(feet_pos);
+        foot.setRadius(1);
+        foot.setOrigin(1, 1);
+        foot.setScale(0.2, 0.2);
+        foot.setFillColor(sf::Color::Black);
+        target.draw(foot);
+
+        // Kneecaps
+        sf::CircleShape kneecap;
+        sf::Vector2f kneecap_pos(feet_pos.x + (0.5-i)*0.5, feet_pos.y - 2);
+        kneecap.setPosition(kneecap_pos);
+        kneecap.setRadius(1);
+        kneecap.setOrigin(1, 1);
+        kneecap.setScale(0.1, 0.1);
+        kneecap.setFillColor(sf::Color::Black);
+        target.draw(kneecap);
+
+        // Lower legs
+        sf::RectangleShape lowerleg;
+        sf::Vector2f lower_to_kneecap(thor::unitVector(feet_pos - kneecap_pos));
+        lowerleg.setPosition(feet_pos);
+        lowerleg.setSize(sf::Vector2f(2, 0.1));
+        lowerleg.setOrigin(2, 0.05);
+        lowerleg.setRotation(thor::polarAngle(lower_to_kneecap));
+        lowerleg.setFillColor(sf::Color::Black);
+        target.draw(lowerleg);
+
+        // Upper legs
+        sf::RectangleShape upperleg;
+        sf::Vector2f upper_to_kneecap(thor::unitVector(kneecap_pos - player_pos));
+        auto upperleg_length = thor::length(kneecap_pos - player_pos);
+        upperleg.setPosition(kneecap_pos);
+        upperleg.setSize(sf::Vector2f(upperleg_length, 0.1));
+        upperleg.setOrigin(upperleg_length, 0.05);
+        upperleg.setRotation(thor::polarAngle(upper_to_kneecap));
+        upperleg.setFillColor(sf::Color::Black);
+        target.draw(upperleg);
     }
 }
 

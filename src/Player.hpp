@@ -17,7 +17,7 @@ public:
 private:
     sf::Sprite m_sprite;
 
-    std::shared_ptr<Foot> m_feet[2];
+    std::shared_ptr<Foot> m_feet[4];
 };
 
 #endif
