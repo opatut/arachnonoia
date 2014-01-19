@@ -93,13 +93,15 @@ void EditorState::onHandleEvent(sf::Event& event) {
                 }
             } else if(event.key.code == sf::Keyboard::Add) {
                 if(m_currentEntity) {
-                    m_currentEntity->setZLevel(m_currentEntity->zLevel() + 1);
-                    setStatus("Z-Level ++ " + std::to_string(m_currentEntity->zLevel()));
+                    m_currentZLevel = m_currentEntity->zLevel() + 1;
+                    m_currentEntity->setZLevel(m_currentZLevel);
+                    setStatus("Z-Level ++ " + std::to_string(m_currentZLevel));
                 }
             } else if(event.key.code == sf::Keyboard::Subtract) {
                 if(m_currentEntity) {
-                    m_currentEntity->setZLevel(m_currentEntity->zLevel() - 1);
-                    setStatus("Z-Level -- " + std::to_string(m_currentEntity->zLevel()));
+                    m_currentZLevel = m_currentEntity->zLevel() - 1;
+                    m_currentEntity->setZLevel(m_currentZLevel);
+                    setStatus("Z-Level -- " + std::to_string(m_currentZLevel));
                 }
             }
         }
@@ -368,6 +370,7 @@ void EditorState::updateMode() {
         setStatus("Scale: " + std::to_string(scale));
     } else if(m_mode == INSERT) {
         m_currentEntity->setPosition(mp);
+        m_currentEntity->setZLevel(m_currentZLevel);
         setStatus("Select type: (1) Wall (2) Pair");
     } else if(m_mode == FOLLOW) {
         setStatus("Follow: " + m_followModeInput);

@@ -50,6 +50,7 @@ private:
     std::string m_typingString;
     glm::vec2 m_modeStartPosition;
     glm::vec2 m_modeStartValue;
+    int m_currentZLevel;
 
     EntityType m_insertModeCurrentType;
     std::string m_followModeInput;
