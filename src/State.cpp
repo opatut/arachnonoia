@@ -82,6 +82,11 @@ void State::add(std::shared_ptr<Entity> entity) {
     entity->onAdd(this);
 }
 
+void State::remove(std::shared_ptr<Entity> entity) {
+    entity->onRemove(this);
+    m_entities.erase(std::remove(m_entities.begin(), m_entities.end(), entity), m_entities.end());
+}
+
 void State::initializeEntity(std::shared_ptr<Entity> entity) {
     // If there is no physics shape set, the entity probably doesn't like physics so leave it alone
     if(entity->physicsShape() != nullptr) {

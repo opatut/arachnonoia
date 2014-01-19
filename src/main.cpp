@@ -21,7 +21,7 @@ int main() {
 
     Root().window = &window;
 
-    for(int i = 1; i < 3; ++i) {
+    for(int i = 1; i <= 3; ++i) {
         const std::string& name = Pair::getGlyphName(i);
         Root().resources.addTexture(name, "data/glyphs/" + name + ".png");
     }

@@ -15,7 +15,7 @@
 
 EditorState::EditorState() {
     m_zoom = 6;
-    m_targetZoom = m_zoom;
+    m_insertModeCurrentType = WALL;
 }
 
 void EditorState::onInit() {
@@ -32,7 +32,27 @@ void EditorState::onHandleEvent(sf::Event& event) {
         if(event.text.unicode <= 126 && event.text.unicode >= 32) {
             m_typingString += static_cast<char>(event.text.unicode);
         }
-    } if(event.type == sf::Event::KeyPressed) {
+    }
+
+    if(event.type == sf::Event::TextEntered) {
+        if(event.text.unicode >= 48 && event.text.unicode <= 57) {
+            int num = event.text.unicode - 48;
+
+            if(m_mode == INSERT && num >= WALL && num <= PAIR) {
+                m_insertModeCurrentType = (EntityType)num;
+                remove(m_currentEntity);
+                m_currentEntity = createNewEntity(m_insertModeCurrentType);
+                add(m_currentEntity);
+            }
+
+            if(m_mode == NONE && m_currentEntity) {
+                setStatus("Setting metadata: " + std::to_string(num));
+                m_currentEntity->setMetadata(num);
+            }
+        }
+    }
+
+    if(event.type == sf::Event::KeyPressed) {
         if(m_typing && event.key.code == sf::Keyboard::BackSpace) {
             m_typingString = m_typingString.substr(0, m_typingString.length() - 1);
         } else if(m_mode == FOLLOW) {
@@ -63,9 +83,11 @@ void EditorState::onHandleEvent(sf::Event& event) {
                 if(m_mode == NONE) startMode(SCALE);
             } else if(event.key.code == sf::Keyboard::F) {
                 if(m_mode == NONE) startMode(FOLLOW);
+            } else if(event.key.code == sf::Keyboard::Space) {
+                if(m_mode == NONE) startMode(INSERT);
             } else if(event.key.code == sf::Keyboard::X || event.key.code == sf::Keyboard::Delete) {
                 if(m_mode == NONE && m_currentEntity) {
-                    m_entities.erase(std::remove(m_entities.begin(), m_entities.end(), m_currentEntity), m_entities.end());
+                    remove(m_currentEntity);
                     m_currentEntity.reset();
                     setStatus("Deleted.");
                 }
@@ -79,14 +101,6 @@ void EditorState::onHandleEvent(sf::Event& event) {
                     m_currentEntity->setZLevel(m_currentEntity->zLevel() - 1);
                     setStatus("Z-Level -- " + std::to_string(m_currentEntity->zLevel()));
                 }
-            } else if(event.key.code == sf::Keyboard::Space) {
-                std::shared_ptr<Wall> entity = std::make_shared<Wall>();
-                entity->setPosition(getMousePosition());
-                add(entity);
-            } else if(event.key.code == sf::Keyboard::P) {
-                std::shared_ptr<Pair> entity = std::make_shared<Pair>();
-                entity->setPosition(getMousePosition());
-                add(entity);
             }
         }
 
@@ -197,7 +211,6 @@ void EditorState::onDraw(sf::RenderTarget& target) {
 
             int b = 2;
             auto bounds = text.getLocalBounds();
-            // std::cout << bounds.left << " " << bounds.top << " " << bounds.width << " " << bounds.height << std::endl;
             sf::RectangleShape shape;
             shape.setSize(sf::Vector2f(bounds.width + 2 * b, bounds.height + 2 * b));
             shape.setPosition(sf::Vector2f((bounds.left-b) * m_pixelSize + p.x, (bounds.top-b) * m_pixelSize + p.y));
@@ -253,6 +266,9 @@ void EditorState::startMode(EditorMode mode) {
         m_modeStartValue.x = m_currentEntity->rotation();
     } else if(m_mode == SCALE) {
         m_modeStartValue = m_currentEntity->scale();
+    } else if(m_mode == INSERT) {
+        m_currentEntity = createNewEntity(m_insertModeCurrentType);
+        add(m_currentEntity);
     } else if(m_mode == FOLLOW) {
         m_followModeInput = "";
 
@@ -334,7 +350,6 @@ void EditorState::updateMode() {
         setStatus("Move: " + std::to_string(diff.x) + "|" + std::to_string(diff.y));
     } else if(m_mode == ROTATE) {
         float angle = glm::orientedAngle(glm::normalize(entity_start), glm::normalize(entity_mouse));
-        // std::cout << angle << std::endl;
         if(entity_start == entity_mouse) angle = 0; // -nan failsafe
 
         float step = thor::toRadian(15.f);
@@ -351,6 +366,9 @@ void EditorState::updateMode() {
         }
         m_currentEntity->setScale(m_modeStartValue * scale);
         setStatus("Scale: " + std::to_string(scale));
+    } else if(m_mode == INSERT) {
+        m_currentEntity->setPosition(mp);
+        setStatus("Select type: (1) Wall (2) Pair");
     } else if(m_mode == FOLLOW) {
         setStatus("Follow: " + m_followModeInput);
     } else if(m_mode == SAVE) {
@@ -383,6 +401,9 @@ void EditorState::cancelMode() {
             m_currentEntity->setRotation(m_modeStartValue.x);
         } else if(m_mode == SCALE) {
             m_currentEntity->setScale(m_modeStartValue);
+        } else if(m_mode == INSERT) {
+            remove(m_currentEntity);
+            m_currentEntity.reset();
         }
     }
 
@@ -393,4 +414,14 @@ void EditorState::cancelMode() {
 void EditorState::setStatus(const std::string& text) {
     m_statusText = text;
     m_statusTime = 0.f;
+}
+
+std::shared_ptr<Entity> EditorState::createNewEntity(EditorState::EntityType type) const {
+    if(type == WALL) {
+        return std::make_shared<Wall>();
+    } else if(type == PAIR) {
+        return std::make_shared<Pair>();
+    }
+
+    return nullptr;
 }

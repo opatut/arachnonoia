@@ -13,6 +13,8 @@ public:
     void onDraw(sf::RenderTarget& target) override;
     void onAdd(State* state);
 
+    void setMetadata(int data);
+
     void setGlyphNumber(int number);
 
     static std::string getGlyphName(int number);

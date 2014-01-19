@@ -20,6 +20,9 @@ public:
     virtual void onDraw(sf::RenderTarget& target);
     virtual void onHandleEvent(sf::Event& event);
     virtual void onAdd(State *state);
+    virtual void onRemove(State *state);
+
+    virtual void setMetadata(int data);
 
     virtual glm::vec2 getSize();
 

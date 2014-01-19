@@ -21,6 +21,10 @@ void Pair::onAdd(State* state) {
     setGlyphNumber(m_glyphNumber); // update sprite
 }
 
+void Pair::setMetadata(int data) {
+    setGlyphNumber(data);
+}
+
 void Pair::onUpdate(double dt) {
     if(m_active) {
         m_activationTime += dt;
@@ -48,8 +52,11 @@ void Pair::onDraw(sf::RenderTarget& target) {
 }
 
 void Pair::setGlyphNumber(int number) {
-    m_glyphNumber = number;
-    m_glyphSprite.setTexture(* Root().resources.getTexture(getGlyphName(number)).get());
+    auto texture = Root().resources.getTexture(getGlyphName(number)).get();
+    if(texture) {
+        m_glyphNumber = number;
+        m_glyphSprite.setTexture(*texture);
+    }
 }
 
 std::string Pair::getGlyphName(int number) {

@@ -18,6 +18,9 @@ void Entity::onUpdate(double dt) {}
 void Entity::onDraw(sf::RenderTarget& target) {}
 void Entity::onHandleEvent(sf::Event& event) {}
 void Entity::onAdd(State* state) {}
+void Entity::onRemove(State* state) {}
+
+void Entity::setMetadata(int data) {}
 
 glm::vec2 Entity::getSize() {
     return glm::vec2(1, 1);

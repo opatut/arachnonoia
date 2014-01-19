@@ -28,6 +28,7 @@ public:
     virtual void onHandleEvent(sf::Event& event);
 
     void add(std::shared_ptr<Entity> entity);
+    void remove(std::shared_ptr<Entity> entity);
     void initializeEntity(std::shared_ptr<Entity> entity);
 
     glm::vec2 getMousePosition();

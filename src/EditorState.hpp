@@ -14,8 +14,14 @@ public:
         ROTATE,
         SCALE,
         FOLLOW,
+        INSERT,
         SAVE,
         LOAD
+    };
+
+    enum EntityType {
+        WALL = 1,
+        PAIR = 2
     };
 
     EditorState();
@@ -33,6 +39,8 @@ public:
 protected:
     void setStatus(const std::string& text);
 
+    std::shared_ptr<Entity> createNewEntity(EntityType type) const;
+
 private:
     std::shared_ptr<Entity> m_currentEntity;
     std::map<std::shared_ptr<Entity>, std::string> m_entityNumbers;
@@ -43,13 +51,11 @@ private:
     glm::vec2 m_modeStartPosition;
     glm::vec2 m_modeStartValue;
 
+    EntityType m_insertModeCurrentType;
     std::string m_followModeInput;
 
     std::string m_statusText;
     float m_statusTime = 1000.f;
-
-    float m_targetZoom;
-
 };
 
 #endif
