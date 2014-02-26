@@ -17,6 +17,7 @@ public:
 
 public:
     std::shared_ptr<Player> m_player;
+    sf::RenderTexture m_renderTexture;
 
 };
 

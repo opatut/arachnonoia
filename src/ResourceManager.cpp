@@ -22,3 +22,13 @@ void ResourceManager::addFont(const std::string& name, const std::string& filena
 std::shared_ptr<sf::Font> ResourceManager::getFont(const std::string& name) {
     return m_fonts[name];
 }
+
+void ResourceManager::addShader(const std::string& name, const std::string& filename, sf::Shader::Type type) {
+    auto shader = std::make_shared<sf::Shader>();
+    shader->loadFromFile(filename, type);
+    m_shaders[name] = shader;
+}
+
+std::shared_ptr<sf::Shader> ResourceManager::getShader(const std::string& name) {
+    return m_shaders[name];
+}

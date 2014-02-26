@@ -53,6 +53,7 @@ void State::update(double dt) {
 void State::draw(sf::RenderTarget& target) {
     onDraw(target);
 
+    setView(target);
     if(m_debugDrawEnabled) {
         m_dynamicsWorld->debugDrawWorld();
     }

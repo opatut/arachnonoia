@@ -6,6 +6,7 @@
 
 #include "Wall.hpp"
 #include "Pair.hpp"
+#include "Root.hpp"
 
 GameState::GameState() {
     m_zoom = 12;
@@ -13,6 +14,7 @@ GameState::GameState() {
 }
 
 void GameState::onInit() {
+    m_renderTexture.create(Root().window->getSize().x, Root().window->getSize().y);
     loadFromFile("levels/debug.json");
 
     m_player = std::make_shared<Player>();
@@ -28,7 +30,8 @@ void GameState::onUpdate(double dt) {
 }
 
 void GameState::onDraw(sf::RenderTarget& target) {
-    setView(target);
+    m_renderTexture.clear(sf::Color(80, 80, 80));
+    setView(m_renderTexture);
 
     // draw some background stuff
     for(int x = -10; x < 10; ++x) {
@@ -37,11 +40,19 @@ void GameState::onDraw(sf::RenderTarget& target) {
             rect.setSize(sf::Vector2f(1, 1));
             rect.setFillColor(sf::Color(100, 100, 100));
             rect.setPosition(x, y);
-            target.draw(rect);
+            m_renderTexture.draw(rect);
         }
     }
 
-    drawEntities(target);
+    drawEntities(m_renderTexture);
+
+    float w = target.getSize().x;
+    float h = target.getSize().y;
+    target.setView(sf::View(sf::FloatRect(0, h, w, -h)));
+
+    sf::Sprite sprite;
+    sprite.setTexture(m_renderTexture.getTexture());
+    target.draw(sprite, Root().resources.getShader("pixel").get());
 }
 
 void GameState::onHandleEvent(sf::Event& event) {
@@ -49,5 +60,7 @@ void GameState::onHandleEvent(sf::Event& event) {
         if(event.key.code == sf::Keyboard::Period) {
             m_debugDrawEnabled = !m_debugDrawEnabled;
         }
-    }
+    } else if(event.type == sf::Event::Resized) {
+        m_renderTexture.create(event.size.width, event.size.height);
+    }    
 }

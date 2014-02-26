@@ -27,6 +27,11 @@ void createWindow() {
 }
 
 int main() {
+    if(!sf::Shader::isAvailable()) {
+        std::cerr << "Sorry, your system does not support shaders. Please upgrade your video driver, enable your graphics card, or use a different device." << std::endl;
+        exit(1);
+    }
+
     Root().window = new sf::RenderWindow();
     createWindow();
 
@@ -45,6 +50,7 @@ int main() {
     Root().resources.addTexture("wall-box", "data/box.png");
     Root().resources.addFont("default", "data/OpenSans-Regular.ttf");
     Root().resources.addFont("mono", "data/UbuntuMono-R.ttf");
+    Root().resources.addShader("pixel", "data/pixel.fragment.glsl", sf::Shader::Fragment);
 
     // Initialize all the states
     Root().editor_state.init();
@@ -83,7 +89,7 @@ int main() {
         states.top()->update(dt);
 
         // render
-        window.clear(sf::Color(171, 171, 161));
+        window.clear();
         states.top()->draw(window);
         window.display();
     }
