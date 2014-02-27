@@ -39,6 +39,19 @@ public:
     void loadFromFile(const std::string& filename);
     void saveToFile(const std::string& filename);
 
+    const std::vector<std::shared_ptr<Entity>>& getEntities() const;
+    
+    template<typename T>
+    std::vector<std::shared_ptr<T>> getEntitiesByType(const std::string& typeName) const {
+        std::vector<std::shared_ptr<T>> r;
+        for(auto e : m_entities) {
+            if(e->getTypeName() == typeName) {
+                r.push_back(std::static_pointer_cast<T>(e));
+            }
+        }
+        return r;
+    }
+
 protected:
     void drawEntities(sf::RenderTarget& target);
     void setView(sf::RenderTarget& target);

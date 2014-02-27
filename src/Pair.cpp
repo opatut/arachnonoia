@@ -36,6 +36,8 @@ void Pair::onUpdate(double dt) {
 }
 
 void Pair::onDraw(sf::RenderTarget& target) {
+    if(m_solved) return;
+
     m_sprite.setPosition(m_position.x, m_position.y);
     m_sprite.setScale(1/512.f, 1/512.f);
     m_sprite.setOrigin(m_sprite.getTexture()->getSize().x / 2, m_sprite.getTexture()->getSize().y / 2);
@@ -60,11 +62,49 @@ void Pair::setGlyphNumber(int number) {
     }
 }
 
+std::vector<std::shared_ptr<Pair>> Pair::findMatchingPairs() {
+    std::vector<std::shared_ptr<Pair>> r;
+    for(auto entity : m_state->getEntities()) {
+        if(entity->getTypeName() == "Pair") {
+            auto p = std::static_pointer_cast<Pair>(entity);
+            if(p->m_glyphNumber == m_glyphNumber) {
+                r.push_back(p);
+            }
+        }
+    }
+    return r;
+}
+
 void Pair::activate() {
     if(!m_active) {
         m_active = true;
         m_activationTime = 0;
+
+        unsigned int activeCount = 0;
+        auto pairs = findMatchingPairs();
+        for(auto p : pairs) {
+            if(p->m_active) activeCount++;
+        }
+        if(activeCount == pairs.size()) {
+            for(auto p : pairs) {
+                p->solve();
+            }
+        }
     }
+}
+
+void Pair::solve() {
+    if(!m_solved) {
+        m_solved = true;
+    }
+}
+
+bool Pair::isActive() const {
+    return m_active;
+}
+
+bool Pair::isSolved() const {
+    return m_solved;
 }
 
 std::string Pair::getGlyphName(int number) {

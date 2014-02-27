@@ -68,10 +68,6 @@ void State::worldTickCallback(btScalar timestep) {
         for (int j=0;j<numContacts;j++) {
             btManifoldPoint& pt = contactManifold->getContactPoint(j);
             if(pt.getLifeTime() == 1) {
-                const btVector3& ptA = pt.getPositionWorldOnA();
-                const btVector3& ptB = pt.getPositionWorldOnB();
-                const btVector3& normalOnB = pt.m_normalWorldOnB;
-
                 if (obA->getUserPointer() && obB->getUserPointer()) {
                     Entity* a = static_cast<Entity*>(obA->getUserPointer());
                     Entity* b = static_cast<Entity*>(obB->getUserPointer());
@@ -114,8 +110,7 @@ void State::onHandleEvent(sf::Event& event) {}
 void State::add(std::shared_ptr<Entity> entity) {
     m_entities.push_back(entity);
     initializeEntity(entity);
-    entity->m_state = this;
-    entity->onAdd(this);
+    entity->handleAddedToState(this);
 }
 
 void State::remove(std::shared_ptr<Entity> entity) {
@@ -183,7 +178,7 @@ void State::loadFromFile(const std::string& filename) {
     initializeWorld();
     for(auto entity: m_entities) {
         initializeEntity(entity);
-        entity->onAdd(this);
+        entity->handleAddedToState(this);
     }
 }
 
@@ -196,4 +191,8 @@ void State::saveToFile(const std::string& filename) {
     ar.finishNode();
 
     stream.close();
+}
+
+const std::vector<std::shared_ptr<Entity>>& State::getEntities() const {
+    return m_entities;
 }
