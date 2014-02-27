@@ -14,15 +14,15 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="New document 1">
+   sodipodi:docname="box.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
      id="base"
-     pagecolor="#ffffff"
+     pagecolor="#000000"
      bordercolor="#666666"
      borderopacity="1.0"
-     inkscape:pageopacity="0.0"
+     inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
      inkscape:cx="158.26999"
@@ -34,10 +34,10 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1362"
-     inkscape:window-height="711"
-     inkscape:window-x="0"
-     inkscape:window-y="36"
+     inkscape:window-width="956"
+     inkscape:window-height="1015"
+     inkscape:window-x="960"
+     inkscape:window-y="42"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
@@ -61,6 +61,9 @@
        d="m 257.84346,405.26561 37.72631,0 8.62316,0 7.54526,0 16.16843,2.10813 9.70104,0.70273 11.85685,0 11.31789,0 31.7979,0 72.75789,0 9.1621,0 7.00632,0 2.69473,0 1.61684,-0.70273 0,0.70273 0,-0.70273 0,-1.40542 0,-4.91903 0,-23.8924 0,-11.24347 -1.07788,-14.05435 -1.07791,-16.86523 2.42528,-20.37879 -1.0779,-18.97339 -1.07788,-18.97337 2.42525,-40.0549 -1.0779,-17.56793 0,-18.27067 0,-39.2819 0,-3.09195 0,-4.91903 0,-1.40544 -2.15579,0 -16.70737,0 -15.09053,0.35138 -42.57683,0.28107 -24.79158,-0.42162 -31.25895,0 -78.14736,0 -36.10947,0 -5.92843,0 -2.15579,0 0,0.70271 0,1.40545 0,7.72989 1.0779,17.56793 0,14.05436 0,34.43315 0,20.3788 1.61685,48.48751 -0.86232,39.35219 -1.40126,13.35162 2.15579,9.83805 0.53894,3.51357 0.53894,2.81089 0,3.51358 0,2.81087 0,15.45977 0.0491,17.37734 23.77244,0.19067 z"
        id="path2993"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" />
+       sodipodi:nodetypes="ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+       inkscape:export-filename="/home/paul/src/arachnonoia/data/box.png"
+       inkscape:export-xdpi="360"
+       inkscape:export-ydpi="360" />
   </g>
 </svg>

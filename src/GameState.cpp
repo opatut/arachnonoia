@@ -15,7 +15,7 @@ GameState::GameState() {
 
 void GameState::onInit() {
     resize();
-    loadFromFile("levels/debug.json");
+    loadFromFile("levels/level1.json");
 
     m_player = std::make_shared<Player>();
     add(m_player);

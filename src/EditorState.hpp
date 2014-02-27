@@ -57,6 +57,8 @@ private:
 
     std::string m_statusText;
     float m_statusTime = 1000.f;
+
+    std::string m_currentFilename;
 };
 
 #endif

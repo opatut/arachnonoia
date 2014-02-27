@@ -176,8 +176,7 @@ void EditorState::onDraw(sf::RenderTarget& target) {
         highlight.setOutlineColor(sf::Color(255, 128, 0));
         target.draw(highlight);
 
-        glm::vec2 s = m_currentEntity->getSize();
-        sf::RectangleShape rect(sf::Vector2f(s.x * m_currentEntity->scale().x, s.y * m_currentEntity->scale().y));
+        sf::RectangleShape rect(sf::Vector2f(m_currentEntity->scale().x, m_currentEntity->scale().y));
         rect.setPosition(m_currentEntity->position().x, m_currentEntity->position().y);
         rect.setRotation(thor::toDegree(m_currentEntity->rotation()));
         rect.setOrigin(rect.getSize().x / 2, rect.getSize().y / 2);
@@ -324,6 +323,9 @@ void EditorState::startMode(EditorMode mode) {
     } else if(m_mode == SAVE || m_mode == LOAD) {
         m_typing = true;
         m_typingString = "";
+        if(m_mode == SAVE && m_currentFilename != "") {
+            m_typingString = m_currentFilename;
+        }
     }
 }
 
@@ -391,6 +393,7 @@ void EditorState::commitMode() {
         loadFromFile(filename);
         m_currentEntity.reset();
         setStatus("Loaded from " + filename + ".");
+        m_currentFilename = m_typingString;
     }
 
     m_mode = NONE;

@@ -47,7 +47,8 @@ int main() {
     Root().resources.addTexture("player", "data/player.png");
     Root().resources.addTexture("pair", "data/pair.png");
     Root().resources.addTexture("wall-box", "data/box.png");
-    Root().resources.addTexture("wall-box", "data/box.png");
+    Root().resources.addTexture("wall-platform-1", "data/platform-1.png");
+    Root().resources.addTexture("wall-platform-2", "data/platform-2.png");
     Root().resources.addFont("default", "data/OpenSans-Regular.ttf");
     Root().resources.addFont("mono", "data/UbuntuMono-R.ttf");
     Root().resources.addShader("pixel", "data/pixel.fragment.glsl", sf::Shader::Fragment);

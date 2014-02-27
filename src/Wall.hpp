@@ -10,13 +10,17 @@
 
 class Wall : public Entity {
 public:
-    static const std::string types[2];
+    static const std::string types[3];
     Wall();
     
     std::string getTypeName();
 
     void onUpdate(double dt) override;
     void onDraw(sf::RenderTarget& target) override;
+    void onAdd(State* state);
+
+    void setMetadata(int data);
+    void setType(const std::string& type);
 
     glm::vec2 getSize();
 
