@@ -21,7 +21,7 @@ void GameState::onInit() {
     add(m_player);
 }
 
-void GameState::onUpdate(double dt) {
+void GameState::onUpdate(float dt) {
     if(m_renderTexture.getSize() != Root().window->getSize()) {
         resize();
     }

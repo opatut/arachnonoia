@@ -18,6 +18,7 @@ public:
 
 private:
     sf::Sprite m_sprite;
+    float m_scale_y;
 };
 
 #endif

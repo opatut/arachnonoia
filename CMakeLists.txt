@@ -15,9 +15,13 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 aux_source_directory(external/Thor/src thor_sources)
 set_source_files_properties(${thor_sources} PROPERTIES COMPILE_FLAGS -w)
 
+aux_source_directory(external/cpptween/src cpptween_sources)
+set_source_files_properties(${cpptween_sources} PROPERTIES COMPILE_FLAGS -w)
+
 include_directories(
     "${CMAKE_SOURCE_DIR}/src/"
     SYSTEM "${CMAKE_SOURCE_DIR}/external/cereal/include/"
+    SYSTEM "${CMAKE_SOURCE_DIR}/external/cpptween/src/"
     SYSTEM ${SFML_INCLUDE_DIRS}
     SYSTEM ${BULLET_INCLUDE_DIRS}
     SYSTEM ${GLM_INCLUDE_DIRS}
@@ -31,6 +35,7 @@ include_directories(src/)
 
 add_executable(${CMAKE_PROJECT_NAME}
     ${thor_sources}
+    ${cpptween_sources}
     ${sources}
 )
 

@@ -139,7 +139,7 @@ void EditorState::onHandleEvent(sf::Event& event) {
     }
 }
 
-void EditorState::onUpdate(double dt) {
+void EditorState::onUpdate(float dt) {
     m_statusTime += dt;
 
     float speed = 1 * m_zoom;

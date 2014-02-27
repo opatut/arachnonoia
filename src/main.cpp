@@ -61,7 +61,7 @@ int main() {
     states.push(&Root().game_state);
 
     while(window.isOpen()) {
-        double dt = clock.restart().asSeconds();
+        float dt = clock.restart().asSeconds();
 
         sf::Event event;
         while(window.pollEvent(event)) {
