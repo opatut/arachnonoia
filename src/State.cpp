@@ -72,8 +72,19 @@ void State::worldTickCallback(btScalar timestep) {
                     Entity* a = static_cast<Entity*>(obA->getUserPointer());
                     Entity* b = static_cast<Entity*>(obB->getUserPointer());
 
-                    if(!a->onCollide(b)) {
-                        b->onCollide(a);
+                    EntityCollision c;
+                    c.distance = pt.getDistance();
+                    c.other = b;
+                    c.position = pt.getPositionWorldOnA();
+                    c.otherPosition = pt.getPositionWorldOnB();
+                    c.collisionObject = obA;
+                    c.otherCollisionObject = obB;
+
+                    if(!a->onCollide(b, c)) {
+                        std::swap(c.position, c.otherPosition);
+                        std::swap(c.collisionObject, c.otherCollisionObject);
+                        c.other = a;
+                        b->onCollide(a, c);
                     }
                 }
             }
@@ -195,4 +206,42 @@ void State::saveToFile(const std::string& filename) {
 
 const std::vector<std::shared_ptr<Entity>>& State::getEntities() const {
     return m_entities;
+}
+
+std::map<Entity*, std::vector<EntityCollision>> State::getBodyContacts(btCollisionObject* from) {
+    std::map<Entity*, std::vector<EntityCollision>> map;
+
+    int numManifolds = dynamicsWorld()->getDispatcher()->getNumManifolds();
+    for(int i = 0; i < numManifolds; i++) {
+        btPersistentManifold* contactManifold = dynamicsWorld()->getDispatcher()->getManifoldByIndexInternal(i);
+        const btCollisionObject* obA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
+        const btCollisionObject* obB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
+
+        if(obA != from && obB != from) continue;
+
+        Entity* a = static_cast<Entity*>(obA->getUserPointer());
+        Entity* b = static_cast<Entity*>(obB->getUserPointer());
+
+        std::vector<EntityCollision> collisions;
+        for (int j = 0; j < contactManifold->getNumContacts(); j++) {
+            btManifoldPoint& pt = contactManifold->getContactPoint(j);
+
+            EntityCollision c;
+            c.other = (obA == from) ? b : a;
+            c.position = pt.getPositionWorldOnA();
+            c.otherPosition = pt.getPositionWorldOnB();
+            c.distance = pt.getDistance();
+            c.collisionObject = obA;
+            c.otherCollisionObject = obB;
+
+            if(obA == from) {
+                std::swap(c.position, c.otherPosition);
+                std::swap(c.collisionObject, c.otherCollisionObject); 
+            }
+
+            collisions.push_back(c);
+        }
+        map[obA == from ? b : a] = collisions;
+    }
+    return map;
 }

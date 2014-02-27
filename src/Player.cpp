@@ -12,7 +12,7 @@ Player::Player()
     m_sprite.setTexture(* Root().resources.getTexture("player").get());
 
     m_mass = 1.f;
-    m_physicsShape = new btSphereShape(0.3);
+    m_physicsShape = new btSphereShape(0.2);
 }
 
 std::string Player::getTypeName() {
@@ -20,14 +20,35 @@ std::string Player::getTypeName() {
 }
 
 void Player::onUpdate(double dt) {
+    auto lin = m_physicsBody->getLinearVelocity();
+    float speed = 1.5;
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        m_physicsBody->applyCentralForce(btVector3(-5, 0, 0));
+        m_physicsBody->setLinearVelocity(btVector3(-speed, lin.y(), lin.z()));
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        m_physicsBody->applyCentralForce(btVector3(5, 0, 0));
-    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        m_physicsBody->setLinearVelocity(btVector3(speed, lin.y(), lin.z()));
+    } else {
+        m_physicsBody->setLinearVelocity(btVector3(0, lin.y(), lin.z()));
+    }
+
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         m_physicsBody->applyCentralForce(btVector3(0, -12, 0));
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         m_physicsBody->applyCentralForce(btVector3(0, 5, 0));
+    }
+
+    m_ghostObject->setWorldTransform(m_physicsBody->getWorldTransform());
+
+    // check ghost collisions
+    auto m = m_state->getBodyContacts(m_ghostObject);
+    btVector3 total(0, 0, 0);
+    for(auto pair : m) {
+        if(pair.first == this) continue;
+        for(auto c : pair.second) {
+            total += c.position - m_ghostObject->getWorldTransform().getOrigin();
+        }
+    }
+    if(total.length2() > 0) {
+        setPhysicsRotation(thor::Pi / 2 + atan2(total.y(), total.x()));
     }
 }
 
@@ -40,6 +61,13 @@ void Player::onDraw(sf::RenderTarget& target) {
     body.setScale(0.2, 0.2);
     body.setFillColor(sf::Color::Black);
     target.draw(body);
+
+    sf::RectangleShape body2(sf::Vector2f(1, 0.2));
+    body2.setPosition(m_position.x, m_position.y);
+    body2.setOrigin(sf::Vector2f(0.5, 0.1));
+    body2.setRotation(thor::toDegree(m_rotation));
+    body2.setFillColor(sf::Color::Green);
+    target.draw(body2);
 
     // Draw eyes
     for(auto i = 0; i < 2; ++i) {
@@ -56,11 +84,18 @@ void Player::onDraw(sf::RenderTarget& target) {
 void Player::onAdd(State* state) {
     m_physicsBody->setDamping(0.5, 5);
     m_physicsBody->setAngularFactor(0.2);
-    m_physicsBody->setCollisionFlags(btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+    m_physicsBody->setCollisionFlags(btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK|btCollisionObject::CF_CHARACTER_OBJECT);
     m_physicsBody->forceActivationState(DISABLE_DEACTIVATION);
+
+    // set up ghost object
+    m_ghostObject = new btGhostObject();
+    m_ghostObject->setCollisionShape(new btSphereShape(0.3));
+    m_ghostObject->setCollisionFlags(m_ghostObject->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    // m_ghostObject->setUserPointer((void*)this);
+    m_state->dynamicsWorld()->addCollisionObject(m_ghostObject, btBroadphaseProxy::SensorTrigger, btBroadphaseProxy::AllFilter & ~btBroadphaseProxy::SensorTrigger);
 }
 
-bool Player::onCollide(Entity* other) {
+bool Player::onCollide(Entity* other, const EntityCollision& c) {
     if(other->getTypeName() == "Pair") {
         ((Pair*)other)->activate();
         return true;

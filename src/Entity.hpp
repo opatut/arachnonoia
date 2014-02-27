@@ -10,6 +10,16 @@
 
 class EntityMotionState;
 class State;
+class Entity;
+
+struct EntityCollision {
+    Entity* other;
+    btVector3 position;
+    btVector3 otherPosition;
+    btScalar distance;
+    const btCollisionObject* collisionObject;
+    const btCollisionObject* otherCollisionObject;
+};
 
 class Entity {
 public:
@@ -25,7 +35,7 @@ public:
     virtual void onHandleEvent(sf::Event& event);
     virtual void onAdd(State *state);
     virtual void onRemove(State *state);
-    virtual bool onCollide(Entity* other);
+    virtual bool onCollide(Entity* other, const EntityCollision& c);
 
     virtual void setMetadata(int data);
 

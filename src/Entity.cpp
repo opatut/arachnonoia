@@ -24,7 +24,7 @@ void Entity::onDraw(sf::RenderTarget& target) {}
 void Entity::onHandleEvent(sf::Event& event) {}
 void Entity::onAdd(State* state) {}
 void Entity::onRemove(State* state) {}
-bool Entity::onCollide(Entity* other) {
+bool Entity::onCollide(Entity* other, const EntityCollision& c) {
     return false;
 }
 
@@ -78,7 +78,7 @@ void Entity::setPhysicsPosition(const glm::vec2& new_position) {
 
 void Entity::setPhysicsRotation(float new_rotation) {
     if(m_physicsBody) {
-        auto transform = m_physicsBody->getWorldTransform();
+        auto& transform = m_physicsBody->getWorldTransform();
         auto rot = transform.getRotation();
         rot.setEuler(0, 0, new_rotation);
         transform.setRotation(rot);
