@@ -15,7 +15,7 @@ Player::Player()
     m_sprite.setTexture(* Root().resources.getTexture("player").get());
 
     m_mass = 1.f;
-    m_physicsShape = new btSphereShape(0.2);
+    m_physicsShape = new btSphereShape(0.3);
 }
 
 std::string Player::getTypeName() {
@@ -73,12 +73,12 @@ void Player::onDraw(sf::RenderTarget& target) {
     body.setRotation(thor::toDegree(m_rotation));
     target.draw(body);
 
-    sf::RectangleShape body2(sf::Vector2f(1, 0.2));
-    body2.setPosition(m_position.x, m_position.y);
-    body2.setOrigin(sf::Vector2f(0.5, 0.1));
-    body2.setRotation(thor::toDegree(m_rotation));
-    body2.setFillColor(sf::Color::Green);
-    target.draw(body2);
+//    sf::RectangleShape body2(sf::Vector2f(1, 0.2));
+//    body2.setPosition(m_position.x, m_position.y);
+//    body2.setOrigin(sf::Vector2f(0.5, 0.1));
+//    body2.setRotation(thor::toDegree(m_rotation));
+//    body2.setFillColor(sf::Color::Green);
+//    target.draw(body2);
 
     // Draw eyes
     for(auto i = 0; i < 2; ++i) {
@@ -103,12 +103,12 @@ void Player::onAdd(State* state) {
 
     // set up ghost object
     m_ghostObject = new btGhostObject();
-    m_ghostObject->setCollisionShape(new btSphereShape(0.3));
+    m_ghostObject->setCollisionShape(new btSphereShape(0.35));
     m_ghostObject->setCollisionFlags(m_ghostObject->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
     // m_ghostObject->setUserPointer((void*)this);
     m_state->dynamicsWorld()->addCollisionObject(m_ghostObject, btBroadphaseProxy::SensorTrigger, btBroadphaseProxy::AllFilter & ~btBroadphaseProxy::SensorTrigger);
 
-    m_scale_y = 0.2;
+    m_scale_y = 0.18;
     tween::TweenerParam param(1000, tween::SINE, tween::EASE_IN_OUT);
     param.addProperty(&m_scale_y, .15f);
     param.setRepeatWithReverse(10000, true);
