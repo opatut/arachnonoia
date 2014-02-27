@@ -13,7 +13,7 @@
 #include "Pair.hpp"
 
 bool isFullscreen = false;
-sf::VideoMode defaultMode(800, 600);
+sf::VideoMode defaultMode(1200, 900);
 sf::VideoMode fullscreenMode = sf::VideoMode::getDesktopMode();
 
 void createWindow() {
@@ -31,7 +31,7 @@ int main() {
         std::cerr << "Sorry, your system does not support shaders. Please upgrade your video driver, enable your graphics card, or use a different device." << std::endl;
         exit(1);
     }
-
+    
     Root().window = new sf::RenderWindow();
     createWindow();
 

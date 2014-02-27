@@ -21,6 +21,7 @@ public:
     void update(double dt);
     void draw(sf::RenderTarget& target);
     void handleEvent(sf::Event& event);
+    void worldTickCallback(btScalar timestep);
 
     virtual void onInit();
     virtual void onUpdate(double dt);

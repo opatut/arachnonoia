@@ -5,6 +5,7 @@
 #include <Thor/Math.hpp>
 
 #include "Root.hpp"
+#include "Pair.hpp"
 
 Player::Player()
 {
@@ -12,6 +13,10 @@ Player::Player()
 
     m_mass = 1.f;
     m_physicsShape = new btSphereShape(0.3);
+}
+
+std::string Player::getTypeName() {
+    return "Player";
 }
 
 void Player::onUpdate(double dt) {
@@ -26,7 +31,7 @@ void Player::onUpdate(double dt) {
             m_feet[i]->physicsBody()->applyTorque(btVector3(0, 0, 0.5f));
         }
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        m_physicsBody->applyCentralForce(btVector3(0, -5, 0));
+        m_physicsBody->applyCentralForce(btVector3(0, -12, 0));
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         m_physicsBody->applyCentralForce(btVector3(0, 5, 0));
     }
@@ -64,6 +69,7 @@ void Player::onDraw(sf::RenderTarget& target) {
 void Player::onAdd(State* state) {
     m_physicsBody->setDamping(0.5, 5);
     m_physicsBody->setAngularFactor(0.2);
+    m_physicsBody->setCollisionFlags(btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
 
     // Set up spider feet
     for(auto i = 0; i < 4; ++i) {
@@ -104,4 +110,11 @@ void Player::onAdd(State* state) {
     }
 
     m_physicsBody->forceActivationState(DISABLE_DEACTIVATION);
+}
+
+bool Player::onCollide(Entity* other) {
+    if(other->getTypeName() == "Pair") {
+        ((Pair*)other)->activate();
+        return true;
+    }
 }

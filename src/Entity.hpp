@@ -16,11 +16,14 @@ public:
     Entity() = default;
     virtual ~Entity() = 0;
 
+    virtual std::string getTypeName() = 0;
+
     virtual void onUpdate(double dt);
     virtual void onDraw(sf::RenderTarget& target);
     virtual void onHandleEvent(sf::Event& event);
     virtual void onAdd(State *state);
     virtual void onRemove(State *state);
+    virtual bool onCollide(Entity* other);
 
     virtual void setMetadata(int data);
 

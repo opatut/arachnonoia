@@ -16,6 +16,10 @@ Pair::Pair()
     // m_physicsShape->
 }
 
+std::string Pair::getTypeName() {
+    return "Pair";
+}
+
 void Pair::onAdd(State* state) {
     m_physicsBody->setCollisionFlags(m_physicsBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
     setGlyphNumber(m_glyphNumber); // update sprite
@@ -29,10 +33,6 @@ void Pair::onUpdate(double dt) {
     if(m_active) {
         m_activationTime += dt;
     }
-
-    // TODO
-    m_active = true;
-    m_activationTime = 0;
 }
 
 void Pair::onDraw(sf::RenderTarget& target) {
@@ -43,6 +43,7 @@ void Pair::onDraw(sf::RenderTarget& target) {
     target.draw(m_sprite);
 
     if(m_active) {
+        m_glyphSprite.setColor(sf::Color(255, 255, 255, fmin(255, 255 * m_activationTime)));
         m_glyphSprite.setPosition(m_position.x, m_position.y);
         m_glyphSprite.setScale(0.5 * 1/128.f, 0.5 * 1/128.f);
         m_glyphSprite.setOrigin(m_glyphSprite.getTexture()->getSize().x / 2, m_glyphSprite.getTexture()->getSize().y / 2);
@@ -56,6 +57,13 @@ void Pair::setGlyphNumber(int number) {
     if(texture) {
         m_glyphNumber = number;
         m_glyphSprite.setTexture(*texture);
+    }
+}
+
+void Pair::activate() {
+    if(!m_active) {
+        m_active = true;
+        m_activationTime = 0;
     }
 }
 

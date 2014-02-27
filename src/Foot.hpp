@@ -7,6 +7,8 @@ class Foot : public Entity {
 public:
     Foot(Entity* player);
 
+    std::string getTypeName();
+
     void onDraw(sf::RenderTarget &target);
     void onAdd(State* state);
 

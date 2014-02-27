@@ -10,9 +10,12 @@ class Player : public Entity {
 public:
     Player();
 
+    std::string getTypeName();
+    
     void onUpdate(double dt) override;
     void onDraw(sf::RenderTarget& target) override;
     void onAdd(State *state);
+    bool onCollide(Entity* other);
 
 private:
     sf::Sprite m_sprite;

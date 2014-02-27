@@ -15,6 +15,8 @@ public:
     void onDraw(sf::RenderTarget& target) override;
     void onHandleEvent(sf::Event& event) override;
 
+    void resize();
+
 public:
     std::shared_ptr<Player> m_player;
     sf::RenderTexture m_renderTexture;

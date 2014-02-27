@@ -23,6 +23,10 @@ Foot::Foot(Entity* player) {
     static_cast<btCompoundShape*>(m_physicsShape)->addChildShape(trans_right, m_rightFootShape);
 }
 
+std::string Foot::getTypeName() {
+    return "Foot";
+}
+
 void Foot::onDraw(sf::RenderTarget &target) {
     for(auto i = 0; i < 2; ++i) {
         // Feet

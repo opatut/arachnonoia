@@ -14,7 +14,7 @@ GameState::GameState() {
 }
 
 void GameState::onInit() {
-    m_renderTexture.create(Root().window->getSize().x, Root().window->getSize().y);
+    resize();
     loadFromFile("levels/debug.json");
 
     m_player = std::make_shared<Player>();
@@ -22,6 +22,10 @@ void GameState::onInit() {
 }
 
 void GameState::onUpdate(double dt) {
+    if(m_renderTexture.getSize() != Root().window->getSize()) {
+        resize();
+    }
+
     // m_zoom = 6;
     float targetZoom = 6 + m_player->physicsBody()->getLinearVelocity().length();
     float zoomSpeed = 1;
@@ -61,6 +65,10 @@ void GameState::onHandleEvent(sf::Event& event) {
             m_debugDrawEnabled = !m_debugDrawEnabled;
         }
     } else if(event.type == sf::Event::Resized) {
-        m_renderTexture.create(event.size.width, event.size.height);
+        resize();
     }    
+}
+
+void GameState::resize() {
+    m_renderTexture.create(Root().window->getSize().x, Root().window->getSize().y);
 }

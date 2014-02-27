@@ -9,6 +9,8 @@ class Pair : public Entity {
 public:
     Pair();
 
+    std::string getTypeName();
+
     void onUpdate(double dt) override;
     void onDraw(sf::RenderTarget& target) override;
     void onAdd(State* state);
@@ -16,6 +18,8 @@ public:
     void setMetadata(int data);
 
     void setGlyphNumber(int number);
+
+    void activate();
 
     static std::string getGlyphName(int number);
 

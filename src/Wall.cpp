@@ -20,6 +20,10 @@ Wall::Wall() {
     m_physicsShape = new btBoxShape(btVector3(0.5f, 0.5f, 0));
 }
 
+std::string Wall::getTypeName() {
+    return "Wall";
+}
+
 void Wall::onUpdate(double dt) {}
 
 void Wall::onDraw(sf::RenderTarget& target) {

@@ -19,6 +19,9 @@ void Entity::onDraw(sf::RenderTarget& target) {}
 void Entity::onHandleEvent(sf::Event& event) {}
 void Entity::onAdd(State* state) {}
 void Entity::onRemove(State* state) {}
+bool Entity::onCollide(Entity* other) {
+    return false;
+}
 
 void Entity::setMetadata(int data) {}
 

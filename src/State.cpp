@@ -8,6 +8,12 @@
 #include <cereal/types/vector.hpp>
 #include <cereal/types/memory.hpp>
 
+void bulletTickCallback(btDynamicsWorld *world, btScalar timeStep) {
+    State* s = static_cast<State*>(world->getWorldUserInfo());
+    s->worldTickCallback(timeStep);
+}
+
+
 State::~State() {
     deinitializeWorld();
 }
@@ -28,6 +34,8 @@ void State::initializeWorld() {
     m_debugDrawer->setDebugMode(DebugDraw::DBG_DrawWireframe | DebugDraw::DBG_DrawContactPoints | DebugDraw::DBG_DrawConstraints | DebugDraw::DBG_DrawNormals);
     m_dynamicsWorld->setDebugDrawer(m_debugDrawer);
 
+    m_dynamicsWorld->setWorldUserInfo(this);
+    m_dynamicsWorld->setInternalTickCallback(bulletTickCallback, static_cast<void *>(this));
     m_dynamicsWorld->setGravity(btVector3(0, 3, 0));
 }
 
@@ -41,13 +49,40 @@ void State::deinitializeWorld() {
 }
 
 void State::update(double dt) {
-    onUpdate(dt);
+    m_dynamicsWorld->stepSimulation(dt, 10);
 
+    onUpdate(dt);
     for(auto entity : m_entities) {
         entity->onUpdate(dt);
     }
+}
 
-    m_dynamicsWorld->stepSimulation(dt, 10);
+void State::worldTickCallback(btScalar timestep) {
+    int numManifolds = m_dynamicsWorld->getDispatcher()->getNumManifolds();
+    for(int i=0;i<numManifolds;i++) {
+        btPersistentManifold* contactManifold =  m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+        const btCollisionObject* obA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
+        const btCollisionObject* obB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
+
+        int numContacts = contactManifold->getNumContacts();
+        for (int j=0;j<numContacts;j++) {
+            btManifoldPoint& pt = contactManifold->getContactPoint(j);
+            if(pt.getLifeTime() == 1) {
+                const btVector3& ptA = pt.getPositionWorldOnA();
+                const btVector3& ptB = pt.getPositionWorldOnB();
+                const btVector3& normalOnB = pt.m_normalWorldOnB;
+
+                if (obA->getUserPointer() && obB->getUserPointer()) {
+                    Entity* a = static_cast<Entity*>(obA->getUserPointer());
+                    Entity* b = static_cast<Entity*>(obB->getUserPointer());
+
+                    if(!a->onCollide(b)) {
+                        b->onCollide(a);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void State::draw(sf::RenderTarget& target) {

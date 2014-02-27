@@ -12,6 +12,8 @@ class Wall : public Entity {
 public:
     static const std::string types[2];
     Wall();
+    
+    std::string getTypeName();
 
     void onUpdate(double dt) override;
     void onDraw(sf::RenderTarget& target) override;
