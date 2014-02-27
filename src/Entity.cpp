@@ -14,6 +14,11 @@ Entity::~Entity() {
         delete m_physicsShape;
 }
 
+void Entity::handleAddedToState(State* state) {
+    m_state = state;
+    onAdd(state);
+}
+
 void Entity::onUpdate(double dt) {}
 void Entity::onDraw(sf::RenderTarget& target) {}
 void Entity::onHandleEvent(sf::Event& event) {}

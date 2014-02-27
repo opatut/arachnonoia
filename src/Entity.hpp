@@ -18,6 +18,8 @@ public:
 
     virtual std::string getTypeName() = 0;
 
+    void handleAddedToState(State* state);
+
     virtual void onUpdate(double dt);
     virtual void onDraw(sf::RenderTarget& target);
     virtual void onHandleEvent(sf::Event& event);

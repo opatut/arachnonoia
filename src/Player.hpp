@@ -16,6 +16,8 @@ public:
     void onAdd(State *state);
     bool onCollide(Entity* other);
 
+    int getPairsLeft() const;
+
 private:
     sf::Sprite m_sprite;
     float m_scale_y;

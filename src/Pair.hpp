@@ -19,7 +19,13 @@ public:
 
     void setGlyphNumber(int number);
 
+    std::vector<std::shared_ptr<Pair>> findMatchingPairs();
+
     void activate();
+    void solve();
+
+    bool isActive() const;
+    bool isSolved() const;
 
     static std::string getGlyphName(int number);
 
@@ -33,6 +39,7 @@ public:
 private:
     int m_glyphNumber;
     bool m_active;
+    bool m_solved;
     float m_activationTime;
 
     sf::Sprite m_sprite;

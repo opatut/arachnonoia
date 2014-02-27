@@ -74,4 +74,10 @@ bool Player::onCollide(Entity* other) {
         ((Pair*)other)->activate();
         return true;
     }
+    return false;
+}
+
+int Player::getPairsLeft() const {
+    auto e = m_state->getEntitiesByType<Pair>("Pair");
+    return e.size() - std::count_if(e.begin(), e.end(), [](std::shared_ptr<Pair> p) -> bool { return p->isSolved(); });
 }

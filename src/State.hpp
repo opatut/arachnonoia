@@ -44,6 +44,19 @@ public:
     tween::Tweener m_tweener;
     sf::Uint64 m_total_elapsed = 0;
 
+    const std::vector<std::shared_ptr<Entity>>& getEntities() const;
+    
+    template<typename T>
+    std::vector<std::shared_ptr<T>> getEntitiesByType(const std::string& typeName) const {
+        std::vector<std::shared_ptr<T>> r;
+        for(auto e : m_entities) {
+            if(e->getTypeName() == typeName) {
+                r.push_back(std::static_pointer_cast<T>(e));
+            }
+        }
+        return r;
+    }
+
 protected:
     void drawEntities(sf::RenderTarget& target);
     void setView(sf::RenderTarget& target);
