@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <Thor/Math.hpp>
+#include <Thor/Vectors.hpp>
 
 #include <CppTweener.h>
 
@@ -62,6 +63,7 @@ void Player::onDraw(sf::RenderTarget& target) {
     body.setOrigin(1, 1);
     body.setScale(0.2, m_scale_y);
     body.setFillColor(sf::Color::Black);
+    body.setRotation(thor::toDegree(m_rotation));
     target.draw(body);
 
     sf::RectangleShape body2(sf::Vector2f(1, 0.2));
@@ -74,7 +76,10 @@ void Player::onDraw(sf::RenderTarget& target) {
     // Draw eyes
     for(auto i = 0; i < 2; ++i) {
         sf::CircleShape eye;
-        eye.setPosition(m_position.x + (0.5-i)*0.1, m_position.y + 0.05);
+        sf::Vector2f pos(m_position.x + (0.5-i)*0.1, m_position.y + 0.05);
+        sf::Vector2f diff(m_position.x - pos.x, m_position.y - pos.y);
+        thor::rotate(diff, thor::toDegree(m_rotation));
+        eye.setPosition(m_position.x + diff.x, m_position.y + diff.y);
         eye.setRadius(1);
         eye.setOrigin(1, 1);
         eye.setScale(0.01, 0.01);
