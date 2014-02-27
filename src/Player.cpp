@@ -4,6 +4,8 @@
 
 #include <Thor/Math.hpp>
 
+#include <CppTweener.h>
+
 #include "Root.hpp"
 #include "Pair.hpp"
 
@@ -58,7 +60,7 @@ void Player::onDraw(sf::RenderTarget& target) {
     body.setPosition(m_position.x, m_position.y);
     body.setRadius(1);
     body.setOrigin(1, 1);
-    body.setScale(0.2, 0.2);
+    body.setScale(0.2, m_scale_y);
     body.setFillColor(sf::Color::Black);
     target.draw(body);
 
@@ -93,6 +95,12 @@ void Player::onAdd(State* state) {
     m_ghostObject->setCollisionFlags(m_ghostObject->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
     // m_ghostObject->setUserPointer((void*)this);
     m_state->dynamicsWorld()->addCollisionObject(m_ghostObject, btBroadphaseProxy::SensorTrigger, btBroadphaseProxy::AllFilter & ~btBroadphaseProxy::SensorTrigger);
+
+    m_scale_y = 0.2;
+    tween::TweenerParam param(1000, tween::SINE, tween::EASE_IN_OUT);
+    param.addProperty(&m_scale_y, .15f);
+    param.setRepeatWithReverse(10000, true);
+    state->m_tweener.addTween(param);
 }
 
 bool Player::onCollide(Entity* other, const EntityCollision& c) {

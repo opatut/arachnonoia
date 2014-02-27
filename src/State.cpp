@@ -48,8 +48,11 @@ void State::deinitializeWorld() {
     delete m_broadphase;
 }
 
-void State::update(double dt) {
+void State::update(float dt) {
     m_dynamicsWorld->stepSimulation(dt, 10);
+
+    m_total_elapsed += dt * 1000;
+    m_tweener.step(m_total_elapsed);
 
     onUpdate(dt);
     for(auto entity : m_entities) {
@@ -110,7 +113,7 @@ void State::handleEvent(sf::Event& event) {
 
 void State::onInit() {}
 
-void State::onUpdate(double dt) {}
+void State::onUpdate(float dt) {}
 
 void State::onDraw(sf::RenderTarget& target) {
     drawEntities(target);

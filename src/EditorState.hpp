@@ -28,7 +28,7 @@ public:
 
     void onInit() override;
     void onHandleEvent(sf::Event& event) override;
-    void onUpdate(double dt) override;
+    void onUpdate(float dt) override;
     void onDraw(sf::RenderTarget& target) override;
 
     void startMode(EditorMode mode);

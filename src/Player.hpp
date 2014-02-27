@@ -22,6 +22,7 @@ public:
 private:
     sf::Sprite m_sprite;
     btGhostObject* m_ghostObject;
+    float m_scale_y;
 };
 
 #endif

@@ -4,3 +4,9 @@
 [submodule "external/Thor"]
 	path = external/Thor
 	url = git://github.com/Bromeon/Thor.git
+[submodule "external/universal-tween-engine-cpp"]
+	path = external/universal-tween-engine-cpp
+	url = git@github.com:kleemedia/universal-tween-engine-cpp.git
+[submodule "external/Tween"]
+	path = external/Tween
+	url = git@github.com:runemadsen/Tween.git

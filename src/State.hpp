@@ -6,6 +6,8 @@
 #include <SFML/Graphics.hpp>
 #include <btBulletDynamicsCommon.h>
 
+#include <CppTweener.h>
+
 #include "Entity.hpp"
 #include "DebugDraw.hpp"
 
@@ -18,13 +20,13 @@ public:
     void initializeWorld();
     void deinitializeWorld();
 
-    void update(double dt);
+    void update(float dt);
     void draw(sf::RenderTarget& target);
     void handleEvent(sf::Event& event);
     void worldTickCallback(btScalar timestep);
 
     virtual void onInit();
-    virtual void onUpdate(double dt);
+    virtual void onUpdate(float dt);
     virtual void onDraw(sf::RenderTarget& target);
     virtual void onHandleEvent(sf::Event& event);
 
@@ -38,6 +40,9 @@ public:
 
     void loadFromFile(const std::string& filename);
     void saveToFile(const std::string& filename);
+
+    tween::Tweener m_tweener;
+    sf::Uint64 m_total_elapsed = 0;
 
     const std::vector<std::shared_ptr<Entity>>& getEntities() const;
     
