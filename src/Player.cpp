@@ -36,8 +36,13 @@ void Player::onUpdate(double dt) {
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         m_physicsBody->applyCentralForce(btVector3(0, -12, 0));
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        m_physicsBody->applyCentralForce(btVector3(0, 5, 0));
+        m_physicsBody->applyCentralForce(btVector3(0, 12, 0));
     }
+
+    m_physicsBody->applyCentralForce(btVector3(0, -9.81, 0));
+    btVector3 down(0, -9.81, 0);
+    down = down.rotate(btVector3(0, 0, 1), m_rotation);
+    m_physicsBody->applyCentralForce(down);
 
     m_ghostObject->setWorldTransform(m_physicsBody->getWorldTransform());
 
@@ -52,6 +57,8 @@ void Player::onUpdate(double dt) {
     }
     if(total.length2() > 0) {
         setPhysicsRotation(thor::Pi / 2 + atan2(total.y(), total.x()));
+    } else {
+        setPhysicsRotation(thor::Pi);
     }
 }
 

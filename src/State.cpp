@@ -36,7 +36,7 @@ void State::initializeWorld() {
 
     m_dynamicsWorld->setWorldUserInfo(this);
     m_dynamicsWorld->setInternalTickCallback(bulletTickCallback, static_cast<void *>(this));
-    m_dynamicsWorld->setGravity(btVector3(0, 3, 0));
+    m_dynamicsWorld->setGravity(btVector3(0, 9.81, 0));
 }
 
 void State::deinitializeWorld() {
