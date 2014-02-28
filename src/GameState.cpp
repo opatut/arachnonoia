@@ -65,6 +65,8 @@ void GameState::onHandleEvent(sf::Event& event) {
     if(event.type == sf::Event::KeyPressed) {
         if(event.key.code == sf::Keyboard::Period) {
             m_debugDrawEnabled = !m_debugDrawEnabled;
+        } else if(event.key.code == sf::Keyboard::Escape) {
+            Root().window->close();
         }
     } else if(event.type == sf::Event::Resized) {
         resize();
