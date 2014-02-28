@@ -45,9 +45,9 @@ void CollisionShape::onInitialize() {
         for(unsigned int i = 0; i < points.size(); ++i) {
             const glm::vec2& p = points[i] * m_scale;
             const glm::vec2& q = points[(i+1)%points.size()] * m_scale;
-            const glm::vec2  m = (p+q)/2.f;
 
-            mesh->addTriangle(btVector3(p.x, p.y, 0), btVector3(q.x, q.y, 0), btVector3(m.x, m.y, 1));
+            mesh->addTriangle(btVector3(p.x, p.y, 0), btVector3(q.x, q.y, 0), btVector3(q.x, q.y, 1));
+            mesh->addTriangle(btVector3(q.x, q.y, 1), btVector3(p.x, p.y, 1), btVector3(p.x, p.y, 0));
         }
 
         btBvhTriangleMeshShape* shape = new btBvhTriangleMeshShape(mesh, true);

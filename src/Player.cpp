@@ -58,7 +58,9 @@ void Player::onUpdate(double dt) {
     for(auto pair : m) {
         if(pair.first == this) continue;
         for(auto c : pair.second) {
-            total += c.position - m_ghostObject->getWorldTransform().getOrigin();
+            if(c.other->getTypeName() == "CollisionShape") {
+                total += c.position - m_ghostObject->getWorldTransform().getOrigin();
+            }
         }
     }
     if(total.length2() > 0) {
