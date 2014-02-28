@@ -31,7 +31,7 @@ public:
     void handleAddedToState(State* state);
 
     virtual void onUpdate(double dt);
-    virtual void onDraw(sf::RenderTarget& target);
+    virtual void onDraw(State *state, sf::RenderTarget& target);
     virtual void onHandleEvent(sf::Event& event);
     virtual void onAdd(State *state);
     virtual void onRemove(State *state);

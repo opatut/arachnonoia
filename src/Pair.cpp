@@ -35,7 +35,7 @@ void Pair::onUpdate(double dt) {
     }
 }
 
-void Pair::onDraw(sf::RenderTarget& target) {
+void Pair::onDraw(State *state, sf::RenderTarget& target) {
     if(m_solved) return;
 
     m_sprite.setPosition(m_position.x, m_position.y);

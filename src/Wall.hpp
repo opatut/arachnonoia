@@ -16,7 +16,7 @@ public:
     std::string getTypeName();
 
     void onUpdate(double dt) override;
-    void onDraw(sf::RenderTarget& target) override;
+    void onDraw(State *state, sf::RenderTarget& target) override;
     void onAdd(State* state);
 
     void setMetadata(int data);

@@ -62,7 +62,7 @@ void Player::onUpdate(double dt) {
     }
 }
 
-void Player::onDraw(sf::RenderTarget& target) {
+void Player::onDraw(State* state, sf::RenderTarget& target) {
     // Draw body
     sf::CircleShape body;
     body.setPosition(m_position.x, m_position.y);
@@ -73,15 +73,69 @@ void Player::onDraw(sf::RenderTarget& target) {
     body.setRotation(thor::toDegree(m_rotation));
     target.draw(body);
 
-    sf::RectangleShape body2(sf::Vector2f(1, 0.1));
-    sf::Vector2f pos_debug(m_position.x, m_position.y - 0.5);
-    sf::Vector2f diff_debug(m_position.x - pos_debug.x, m_position.y - pos_debug.y);
-    thor::rotate(diff_debug, thor::toDegree(m_rotation));
-    body2.setPosition(m_position.x + diff_debug.x, m_position.y + diff_debug.y);
-    body2.setOrigin(sf::Vector2f(0.5, 0.1));
-    body2.setRotation(thor::toDegree(m_rotation));
-    body2.setFillColor(sf::Color::Green);
-    target.draw(body2);
+    // Stuff for legs
+
+    // Offset pos for leg ankle mounts relative to body
+
+    sf::Vector2f offsetAnkles(0, 0.5);
+    sf::Vector2f relAnkleMount = thor::rotatedVector(offsetAnkles, thor::toDegree(m_rotation));
+    sf::Vector2f absAnkleMount(m_position.x + relAnkleMount.x, m_position.y + relAnkleMount.y);
+
+    // Draw Holy Ray Machine Hover Thing
+    sf::RectangleShape hoverThing(sf::Vector2f(1, 0.1));
+    hoverThing.setPosition(absAnkleMount);
+    hoverThing.setOrigin(0.5, 0.05);
+    hoverThing.setRotation(thor::toDegree(m_rotation));
+    hoverThing.setFillColor(sf::Color::Green);
+    target.draw(hoverThing);
+
+    // Draw legs
+
+    // Leg 1
+
+    // Leg 1 Ankle
+    sf::Vector2f offsetLeg1Ankle(offsetAnkles.x - 0.5, offsetAnkles.y);
+    sf::Vector2f relLeg1Ankle = thor::rotatedVector(offsetLeg1Ankle, thor::toDegree(m_rotation));
+    sf::Vector2f absLeg1Ankle(m_position.x + relLeg1Ankle.x, m_position.y + relLeg1Ankle.y);
+
+    sf::CircleShape debugLeg1Ankle;
+    debugLeg1Ankle.setPosition(absLeg1Ankle);
+    debugLeg1Ankle.setRadius(1);
+    debugLeg1Ankle.setOrigin(0.5, 0.5);
+    debugLeg1Ankle.setScale(0.05, 0.05);
+    debugLeg1Ankle.setFillColor(sf::Color::Red);
+    target.draw(debugLeg1Ankle);
+
+    // Leg 1 Foot
+    sf::Vector2f relLeg1FootRayEnd(offsetLeg1Ankle.x - 0.1, offsetLeg1Ankle.y - 1);
+    thor::rotate(relLeg1FootRayEnd, thor::toDegree(m_rotation));
+    sf::Vector2f absLeg1FootRayEnd(m_position.x + relLeg1FootRayEnd.x, m_position.y + relLeg1FootRayEnd.y);
+
+    sf::CircleShape debugLeg1FootRayEnd;
+    debugLeg1FootRayEnd.setPosition(absLeg1FootRayEnd);
+    debugLeg1FootRayEnd.setRadius(1);
+    debugLeg1FootRayEnd.setOrigin(0.5, 0.5);
+    debugLeg1FootRayEnd.setScale(0.05, 0.05);
+    debugLeg1FootRayEnd.setFillColor(sf::Color::Yellow);
+    target.draw(debugLeg1FootRayEnd);
+
+    btVector3 rayStart(absLeg1Ankle.x, absLeg1Ankle.y, 0);
+    btVector3 rayEnd(absLeg1FootRayEnd.x, absLeg1FootRayEnd.y, 0);
+    btDiscreteDynamicsWorld::ClosestRayResultCallback rayCallback(rayStart, rayEnd);
+
+    state->dynamicsWorld()->rayTest(rayStart, rayEnd, rayCallback);
+
+    if(rayCallback.hasHit()) {
+        btVector3 hitPoint = rayCallback.m_hitPointWorld;
+
+        sf::CircleShape debugLeg1FootRayHit;
+        debugLeg1FootRayHit.setPosition(hitPoint.x(), hitPoint.y());
+        debugLeg1FootRayHit.setRadius(1);
+        debugLeg1FootRayHit.setOrigin(0.5, 0.5);
+        debugLeg1FootRayHit.setScale(0.05, 0.05);
+        debugLeg1FootRayHit.setFillColor(sf::Color::Blue);
+        target.draw(debugLeg1FootRayHit);
+    }
 
     // Draw eyes
     for(auto i = 0; i < 2; ++i) {
