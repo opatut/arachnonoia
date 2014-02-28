@@ -76,7 +76,7 @@ void EditorState::onHandleEvent(sf::Event& event) {
                 }
             }
         } else if(m_mode == ADD_POINT) {
-            if(event.key.code == sf::Keyboard::X || event.key.code == sf::Keyboard::Delete || event.key.code == sf::Keyboard::BackSpace) {
+            if(event.key.code == sf::Keyboard::Delete || event.key.code == sf::Keyboard::BackSpace) {
                 auto c = std::static_pointer_cast<CollisionShape>(m_currentEntity);
                 if(c->shapes().size() > 0 && c->shapes()[0].size() > 0) {
                     c->shapes()[0].erase(c->shapes()[0].begin() + m_addPointInsertIndex);
@@ -94,7 +94,7 @@ void EditorState::onHandleEvent(sf::Event& event) {
                 if(m_mode == NONE) startMode(FOLLOW);
             } else if(event.key.code == sf::Keyboard::Space) {
                 if(m_mode == NONE) startMode(INSERT);
-            } else if(event.key.code == sf::Keyboard::X || event.key.code == sf::Keyboard::Delete) {
+            } else if(event.key.code == sf::Keyboard::BackSpace || event.key.code == sf::Keyboard::Delete) {
                 if(m_mode == NONE && m_currentEntity) {
                     remove(m_currentEntity);
                     m_currentEntity.reset();
@@ -135,6 +135,14 @@ void EditorState::onHandleEvent(sf::Event& event) {
                         setStatus("Please select a CollisionShape for adding points.");
                     }
                 }
+            } else if(event.key.code == sf::Keyboard::X) {
+                if(m_editAxis == LOCAL_X) m_editAxis = GLOBAL_X;
+                else if(m_editAxis == GLOBAL_X) m_editAxis = ALL;
+                else m_editAxis = LOCAL_X;
+            } else if(event.key.code == sf::Keyboard::Y) {
+                if(m_editAxis == LOCAL_Y) m_editAxis = GLOBAL_Y;
+                else if(m_editAxis == GLOBAL_Y) m_editAxis = ALL;
+                else m_editAxis = LOCAL_Y;
             }
         }
 
@@ -326,10 +334,12 @@ void EditorState::startMode(EditorMode mode) {
         return;
     } else if(m_mode == GRAB) {
         m_modeStartValue = m_currentEntity->position();
+        m_editAxis = ALL;
     } else if(m_mode == ROTATE) {
         m_modeStartValue.x = m_currentEntity->rotation();
     } else if(m_mode == SCALE) {
         m_modeStartValue = m_currentEntity->scale();
+        m_editAxis = ALL;
     } else if(m_mode == INSERT) {
         m_currentEntity = createNewEntity(m_insertModeCurrentType);
         add(m_currentEntity);
@@ -419,6 +429,19 @@ void EditorState::updateMode() {
             diff.y = round(diff.y * 10) / 10.0;
         }
 
+        if(m_editAxis == GLOBAL_X || m_editAxis == GLOBAL_Y) {
+            diff = glm::rotate(diff, -m_currentEntity->rotation());
+        }
+        if(m_editAxis == GLOBAL_X || m_editAxis == LOCAL_X) {
+            diff.y = 0;
+        }
+        if(m_editAxis == GLOBAL_Y || m_editAxis == LOCAL_Y) {
+            diff.x = 0;
+        }
+        if(m_editAxis == GLOBAL_X || m_editAxis == GLOBAL_Y) {
+            diff = glm::rotate(diff, m_currentEntity->rotation());
+        }
+
         m_currentEntity->setPosition(m_modeStartValue + diff);
         setStatus("Move: " + std::to_string(diff.x) + "|" + std::to_string(diff.y));
     } else if(m_mode == ROTATE) {
@@ -433,12 +456,21 @@ void EditorState::updateMode() {
         m_currentEntity->setRotation(m_modeStartValue.x + angle);
         setStatus("Rotate: " + std::to_string((int)thor::toDegree(angle)));
     } else if(m_mode == SCALE) {
-        float scale = ((entity_mouse_length != 0) ? (entity_mouse_length / entity_start_length) : 0.f);
+        float factor = ((entity_mouse_length != 0) ? (entity_mouse_length / entity_start_length) : 0.f);
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-            scale = round(scale*10)/10.0;
+            factor = round(factor*10)/10.0;
         }
+
+        glm::vec2 scale(factor, factor);
+        if(m_editAxis == GLOBAL_X || m_editAxis == LOCAL_X) {
+            scale.y = 1;
+        }
+        if(m_editAxis == GLOBAL_Y || m_editAxis == LOCAL_Y) {
+            scale.x = 1;
+        }
+
         m_currentEntity->setScale(m_modeStartValue * scale);
-        setStatus("Scale: " + std::to_string(scale));
+        setStatus("Scale: " + std::to_string(factor));
     } else if(m_mode == INSERT) {
         m_currentEntity->setPosition(mp);
         m_currentEntity->setZLevel(m_currentZLevel);

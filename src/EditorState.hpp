@@ -20,6 +20,14 @@ public:
         ADD_POINT
     };
 
+    enum Axis {
+        ALL,
+        GLOBAL_X,
+        GLOBAL_Y,
+        LOCAL_X,
+        LOCAL_Y
+    };
+
     enum EntityType {
         WALL = 1,
         PAIR = 2,
@@ -52,6 +60,7 @@ private:
     std::string m_typingString;
     glm::vec2 m_modeStartPosition;
     glm::vec2 m_modeStartValue;
+    Axis m_editAxis;
     int m_currentZLevel;
     int m_addPointInsertIndex;
 
