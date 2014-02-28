@@ -186,6 +186,21 @@ void EditorState::onUpdate(float dt) {
         m_center.y += dt * speed;
     }
 
+    auto mp = getMousePosition(false);
+    auto size = Root().window->getSize();
+    float border = 20;
+    // speed = ...;
+    if(mp.x < border) {
+        m_center.x -= dt * speed;
+    } else if(mp.x > size.x - border) {
+        m_center.x += dt * speed;
+    }
+    if(mp.y < border) {
+        m_center.y -= dt * speed;
+    } else if(mp.y > size.y - border) {
+        m_center.y += dt * speed;
+    }
+
     updateMode();
 }
 

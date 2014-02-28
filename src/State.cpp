@@ -155,10 +155,14 @@ void State::initializeEntity(std::shared_ptr<Entity> entity) {
     }
 }
 
-glm::vec2 State::getMousePosition() {
+glm::vec2 State::getMousePosition(bool local) {
     sf::Vector2i windowCoords = sf::Mouse::getPosition(*Root().window);
-    sf::Vector2f worldCoords = Root().window->mapPixelToCoords(windowCoords);
-    return glm::vec2(worldCoords.x, worldCoords.y);
+    if(local) {
+        sf::Vector2f worldCoords = Root().window->mapPixelToCoords(windowCoords);
+        return glm::vec2(worldCoords.x, worldCoords.y);
+    } else {
+        return glm::vec2(windowCoords.x, windowCoords.y);
+    }
 }
 
 void State::drawEntities(sf::RenderTarget& target) {

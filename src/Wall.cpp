@@ -13,6 +13,7 @@ const std::string Wall::types[] = {
 Wall::Wall() {
     setType(types[0]);
     m_mass = 0;
+    m_zLevel = 0;
 
     // maybe split this physics stuff out into its own function if the logic becomes complex
     // m_physicsShape = new btBoxShape(btVector3(0.5f, 0.5f, 1));

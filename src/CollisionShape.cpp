@@ -4,6 +4,7 @@
 #include "Root.hpp"
 
 CollisionShape::CollisionShape() {
+    m_zLevel = 500;
 }
 
 std::string CollisionShape::getTypeName() {

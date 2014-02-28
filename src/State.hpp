@@ -34,7 +34,7 @@ public:
     void remove(std::shared_ptr<Entity> entity);
     void initializeEntity(std::shared_ptr<Entity> entity);
 
-    glm::vec2 getMousePosition();
+    glm::vec2 getMousePosition(bool local = true);
 
     btDiscreteDynamicsWorld* dynamicsWorld() const;
 
