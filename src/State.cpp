@@ -50,6 +50,8 @@ void State::deinitializeWorld() {
 }
 
 void State::update(float dt) {
+    m_time += dt;
+    
     m_dynamicsWorld->stepSimulation(dt, 10);
 
     m_total_elapsed += dt * 1000;
@@ -267,4 +269,8 @@ std::map<Entity*, std::vector<EntityCollision>> State::getBodyContacts(btCollisi
 
 float State::getPixelSize() const {
     return m_pixelSize;
+}
+
+float State::getTime() const {
+    return m_time;
 }

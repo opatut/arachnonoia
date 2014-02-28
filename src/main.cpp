@@ -52,6 +52,7 @@ int main() {
     Root().resources.addFont("default", "data/OpenSans-Regular.ttf");
     Root().resources.addFont("mono", "data/UbuntuMono-R.ttf");
     Root().resources.addShader("pixel", "data/pixel.fragment.glsl", sf::Shader::Fragment);
+    Root().resources.addShader("backdrop", "data/backdrop.fragment.glsl", sf::Shader::Fragment);
 
     // Initialize all the states
     Root().editor_state.init();

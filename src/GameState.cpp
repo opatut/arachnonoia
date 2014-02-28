@@ -36,29 +36,33 @@ void GameState::onUpdate(float dt) {
 }
 
 void GameState::onDraw(sf::RenderTarget& target) {
-    m_renderTexture.clear(sf::Color(80, 80, 80));
-    setView(m_renderTexture);
+    auto& t = m_renderTexture;
 
-    // draw some background stuff
-    for(int x = -10; x < 10; ++x) {
-        for(int y = -10 + (x%2); y < 10; y+=2) {
-            sf::RectangleShape rect;
-            rect.setSize(sf::Vector2f(1, 1));
-            rect.setFillColor(sf::Color(100, 100, 100));
-            rect.setPosition(x, y);
-            m_renderTexture.draw(rect);
-        }
-    }
+    target.clear();
+    t.clear(sf::Color(80, 80, 80));
 
-    drawEntities(m_renderTexture);
+    // backdrop
+    t.setView(t.getDefaultView());
+    sf::RectangleShape backdrop(sf::Vector2f(t.getSize()));
+    backdrop.setFillColor(sf::Color(100, 150, 255));
+    auto shader = Root().resources.getShader("backdrop");
+    shader->setParameter("size", sf::Vector2f(t.getSize()));
+    shader->setParameter("time", getTime());
+    t.draw(backdrop, shader.get());
 
+    // draw
+    setView(t);
+    drawEntities(t);
+
+    // post-processing
     float w = target.getSize().x;
     float h = target.getSize().y;
     target.setView(sf::View(sf::FloatRect(0, h, w, -h)));
-
+ 
     sf::Sprite sprite;
     sprite.setTexture(m_renderTexture.getTexture());
     target.draw(sprite, Root().resources.getShader("pixel").get());
+
 }
 
 void GameState::onHandleEvent(sf::Event& event) {

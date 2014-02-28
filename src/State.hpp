@@ -60,6 +60,7 @@ public:
     std::map<Entity*, std::vector<EntityCollision>> getBodyContacts(btCollisionObject* from);
 
     float getPixelSize() const;
+    float getTime() const;
 
 protected:
     void drawEntities(sf::RenderTarget& target);
@@ -71,6 +72,7 @@ protected:
     glm::vec2 m_center;
     sf::View m_view;
     float m_pixelSize;
+    float m_time = 0;
 
     // physics stuff
     btBroadphaseInterface* m_broadphase = nullptr;
