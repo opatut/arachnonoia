@@ -17,10 +17,14 @@ public:
 
     void resize();
 
-public:
     std::shared_ptr<Player> m_player;
     sf::RenderTexture m_renderTexture;
 
+    enum m_CollisionTypes {
+        COL_NOTHING = 0,
+        COL_WALL = 1 << 1,
+        COL_PLAYER = 1 << 2
+    };
 };
 
 #endif
