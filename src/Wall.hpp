@@ -8,9 +8,11 @@
 
 #include "Entity.hpp"
 
+#define WALL_TYPE_COUNT 4
+
 class Wall : public Entity {
 public:
-    static const std::string types[3];
+    static const std::string types[WALL_TYPE_COUNT];
     Wall();
     
     std::string getTypeName();

@@ -7,7 +7,8 @@
 const std::string Wall::types[] = {
     "box",
     "platform-1",
-    "platform-2"
+    "platform-2",
+    "gradient"
 };
 
 Wall::Wall() {
@@ -38,7 +39,7 @@ void Wall::onDraw(sf::RenderTarget& target) {
 
 void Wall::setMetadata(int data) {
     data--;
-    if(data >= 0 && data < 3) {
+    if(data >= 0 && data < WALL_TYPE_COUNT) {
         setType(types[data]);
         auto s = getSize();
         m_scale = s / (float)fmax(s.x, s.y);
