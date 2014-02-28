@@ -33,6 +33,7 @@ public:
     virtual void onUpdate(double dt);
     virtual void onDraw(sf::RenderTarget& target);
     virtual void onHandleEvent(sf::Event& event);
+    virtual void onInitialize();
     virtual void onAdd(State *state);
     virtual void onRemove(State *state);
     virtual bool onCollide(Entity* other, const EntityCollision& c);
@@ -81,7 +82,7 @@ public:
 protected:
     glm::vec2 m_position = glm::vec2(0, 0);
     float m_rotation = 0.f;
-    glm::vec2 m_scale = glm::vec2(0.01, 0.01);
+    glm::vec2 m_scale = glm::vec2(1, 1);
     btScalar m_mass = 0.f;
     int m_zLevel = 0;
 

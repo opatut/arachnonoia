@@ -7,6 +7,7 @@
 #include "Wall.hpp"
 #include "Pair.hpp"
 #include "Root.hpp"
+#include "CollisionShape.hpp"
 
 GameState::GameState() {
     m_zoom = 12;
@@ -15,10 +16,11 @@ GameState::GameState() {
 
 void GameState::onInit() {
     resize();
-    loadFromFile("levels/level1.json");
+    loadFromFile("levels/level1.dat");
 
     m_player = std::make_shared<Player>();
     add(m_player);
+    m_player->setPhysicsPosition(glm::vec2(-4, 4));
 }
 
 void GameState::onUpdate(float dt) {

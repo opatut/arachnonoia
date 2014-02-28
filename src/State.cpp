@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <cereal/archives/json.hpp>
+#include <cereal/archives/binary.hpp>
 #include <cereal/types/vector.hpp>
 #include <cereal/types/memory.hpp>
 
@@ -133,6 +134,7 @@ void State::remove(std::shared_ptr<Entity> entity) {
 }
 
 void State::initializeEntity(std::shared_ptr<Entity> entity) {
+    entity->onInitialize();
     // If there is no physics shape set, the entity probably doesn't like physics so leave it alone
     if(entity->physicsShape() != nullptr) {
         EntityMotionState* motionstate = new EntityMotionState(btTransform(btQuaternion(0, 0, entity->rotation()), btVector3(entity->position().x, entity->position().y, 0)), entity);
@@ -160,7 +162,7 @@ glm::vec2 State::getMousePosition() {
 }
 
 void State::drawEntities(sf::RenderTarget& target) {
-    std::sort(m_entities.begin(), m_entities.end(), [](std::shared_ptr<Entity> a, std::shared_ptr<Entity> b) { return a->zLevel() - b->zLevel(); });
+    std::sort(m_entities.begin(), m_entities.end(), [](std::shared_ptr<Entity> a, std::shared_ptr<Entity> b) -> bool { return a->zLevel() < b->zLevel(); });
 
     for(auto entity : m_entities) {
         entity->onDraw(target);
@@ -183,8 +185,14 @@ void State::loadFromFile(const std::string& filename) {
     std::ifstream stream;
     stream.open(filename);
 
-    cereal::JSONInputArchive ar(stream);
-    ar(cereal::make_nvp("entities", m_entities));
+    // cereal::JSONInputArchive ar(stream);
+    if(filename.substr(filename.length() - 4) == "json") {
+        cereal::JSONInputArchive ar(stream);
+        ar(cereal::make_nvp("entities", m_entities));
+    } else {
+        cereal::BinaryInputArchive ar(stream);
+        ar(cereal::make_nvp("entities", m_entities));
+    }
     stream.close();
 
     // reset the physics world
@@ -200,9 +208,13 @@ void State::saveToFile(const std::string& filename) {
     std::ofstream stream;
     stream.open(filename);
 
-    cereal::JSONOutputArchive ar(stream);
-    ar(cereal::make_nvp("entities", m_entities));
-    ar.finishNode();
+    if(filename.substr(filename.length() - 4) == "json") {
+        cereal::JSONOutputArchive ar(stream);
+        ar(cereal::make_nvp("entities", m_entities));
+    } else {
+        cereal::BinaryOutputArchive ar(stream);
+        ar(cereal::make_nvp("entities", m_entities));
+    }
 
     stream.close();
 }
@@ -247,4 +259,8 @@ std::map<Entity*, std::vector<EntityCollision>> State::getBodyContacts(btCollisi
         map[obA == from ? b : a] = collisions;
     }
     return map;
+}
+
+float State::getPixelSize() const {
+    return m_pixelSize;
 }

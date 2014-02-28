@@ -9,6 +9,7 @@
 #include "Wall.hpp"
 #include "Pair.hpp"
 #include "Root.hpp"
+#include "CollisionShape.hpp"
 
 #define GLM_FORCE_RADIANS
 #include <glm/gtx/vector_angle.hpp>
@@ -38,7 +39,7 @@ void EditorState::onHandleEvent(sf::Event& event) {
         if(event.text.unicode >= 48 && event.text.unicode <= 57) {
             int num = event.text.unicode - 48;
 
-            if(m_mode == INSERT && num >= WALL && num <= PAIR) {
+            if(m_mode == INSERT && num >= WALL && num <= COLLISION) {
                 m_insertModeCurrentType = (EntityType)num;
                 remove(m_currentEntity);
                 m_currentEntity = createNewEntity(m_insertModeCurrentType);
@@ -74,6 +75,14 @@ void EditorState::onHandleEvent(sf::Event& event) {
                     cancelMode();
                 }
             }
+        } else if(m_mode == ADD_POINT) {
+            if(event.key.code == sf::Keyboard::X || event.key.code == sf::Keyboard::Delete || event.key.code == sf::Keyboard::BackSpace) {
+                auto c = std::static_pointer_cast<CollisionShape>(m_currentEntity);
+                if(c->shapes().size() > 0 && c->shapes()[0].size() > 0) {
+                    c->shapes()[0].erase(c->shapes()[0].begin() + m_addPointInsertIndex);
+                    m_addPointInsertIndex = (m_addPointInsertIndex - 1) % c->shapes()[0].size();
+                }
+            }
         } else {
             if(event.key.code == sf::Keyboard::G) {
                 if(m_mode == NONE) startMode(GRAB);
@@ -102,6 +111,29 @@ void EditorState::onHandleEvent(sf::Event& event) {
                     m_currentZLevel = m_currentEntity->zLevel() - 1;
                     m_currentEntity->setZLevel(m_currentZLevel);
                     setStatus("Z-Level -- " + std::to_string(m_currentZLevel));
+                }
+            } else if(event.key.code == sf::Keyboard::C) {
+                if(m_mode == NONE) {
+                    if(m_currentEntity && m_currentEntity->getTypeName() == "CollisionShape") {
+                        startMode(ADD_POINT);
+
+                        auto mp = getMousePosition();
+                        auto c = std::static_pointer_cast<CollisionShape>(m_currentEntity);
+                        m_addPointInsertIndex = -1;
+                        float minDist = 0;
+                        if(c->shapes().size() > 0) {
+                            const auto& v = c->shapes()[0];
+                            for(unsigned int i = 0; i < v.size(); ++i) {
+                                float dist = glm::length(m_currentEntity->position() + v[i] - mp);
+                                if(dist < minDist || m_addPointInsertIndex == -1) {
+                                    minDist = dist;
+                                    m_addPointInsertIndex = i;
+                                }
+                            }
+                        }
+                    } else {
+                        setStatus("Please select a CollisionShape for adding points.");
+                    }
                 }
             }
         }
@@ -223,6 +255,22 @@ void EditorState::onDraw(sf::RenderTarget& target) {
             target.draw(shape);
             target.draw(text);
         }
+    } else if(m_mode == ADD_POINT) {
+        auto c = std::static_pointer_cast<CollisionShape>(m_currentEntity);
+        if(c->shapes().size() > 0) {
+            auto v = c->shapes()[0];
+            if(v.size() > 0) {
+                auto mp = getMousePosition();
+                auto from = v[m_addPointInsertIndex] + m_currentEntity->position();
+                auto to   = v[(m_addPointInsertIndex + 1)%v.size()] + m_currentEntity->position();
+                sf::Vertex line[] = {
+                    sf::Vertex(sf::Vector2f(from.x, from.y), sf::Color::White),
+                    sf::Vertex(sf::Vector2f(mp.x, mp.y),     sf::Color::Green),
+                    sf::Vertex(sf::Vector2f(to.x, to.y),     sf::Color::White)
+                };
+                target.draw(line, 3, sf::LinesStrip);
+            }
+        }
     }
 
     // reset the view
@@ -326,6 +374,12 @@ void EditorState::startMode(EditorMode mode) {
         if(m_mode == SAVE && m_currentFilename != "") {
             m_typingString = m_currentFilename;
         }
+    } else if(m_mode == ADD_POINT) {
+        if(m_currentEntity->getTypeName() != "CollisionShape") {
+            std::cerr << "Cannot start ADD_POINT on !CollisionShape. Current entity is " << m_currentEntity->getTypeName() << std::endl;
+            cancelMode();
+        }
+        m_addPointInsertIndex = -1;
     }
 }
 
@@ -373,13 +427,15 @@ void EditorState::updateMode() {
     } else if(m_mode == INSERT) {
         m_currentEntity->setPosition(mp);
         m_currentEntity->setZLevel(m_currentZLevel);
-        setStatus("Select type: (1) Wall (2) Pair");
+        setStatus("Select type: (1) Wall (2) Pair (3) CollisionShape");
     } else if(m_mode == FOLLOW) {
         setStatus("Follow: " + m_followModeInput);
     } else if(m_mode == SAVE) {
         setStatus("Type filename to save: " + m_typingString);
     } else if(m_mode == LOAD) {
         setStatus("Type filename to load: " + m_typingString);
+    } else if(m_mode == ADD_POINT) {
+        setStatus("Click to add a point.");
     }
 }
 
@@ -394,6 +450,22 @@ void EditorState::commitMode() {
         m_currentEntity.reset();
         setStatus("Loaded from " + filename + ".");
         m_currentFilename = m_typingString;
+    } else if(m_mode == INSERT) {
+        startMode(ADD_POINT);
+        return; // don't reset the mode afterwards
+    } else if(m_mode == ADD_POINT) {
+        if(m_currentEntity->getTypeName() != "CollisionShape") {
+            std::cerr << "No CollisionShape selected for ADD_POINT" << std::endl;
+        } else {
+            auto c = std::static_pointer_cast<CollisionShape>(m_currentEntity);
+            if(c->shapes().size() <= 0) {
+                c->shapes().push_back(std::vector<glm::vec2>());
+            }
+            auto& v = c->shapes()[0];
+            v.insert(v.begin() + 1 + m_addPointInsertIndex, getMousePosition() - m_currentEntity->position());
+            m_addPointInsertIndex++;
+        }
+        return; // stay in this mode
     }
 
     m_mode = NONE;
@@ -427,6 +499,8 @@ std::shared_ptr<Entity> EditorState::createNewEntity(EditorState::EntityType typ
         return std::make_shared<Wall>();
     } else if(type == PAIR) {
         return std::make_shared<Pair>();
+    } else if(type == COLLISION) {
+        return std::make_shared<CollisionShape>();
     }
 
     return nullptr;

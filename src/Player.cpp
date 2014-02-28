@@ -16,6 +16,7 @@ Player::Player()
 
     m_mass = 1.f;
     m_physicsShape = new btSphereShape(0.2);
+    m_zLevel = 1000;
 }
 
 std::string Player::getTypeName() {

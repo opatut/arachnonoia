@@ -16,12 +16,14 @@ public:
         FOLLOW,
         INSERT,
         SAVE,
-        LOAD
+        LOAD,
+        ADD_POINT
     };
 
     enum EntityType {
         WALL = 1,
-        PAIR = 2
+        PAIR = 2,
+        COLLISION = 3
     };
 
     EditorState();
@@ -51,6 +53,7 @@ private:
     glm::vec2 m_modeStartPosition;
     glm::vec2 m_modeStartValue;
     int m_currentZLevel;
+    int m_addPointInsertIndex;
 
     EntityType m_insertModeCurrentType;
     std::string m_followModeInput;

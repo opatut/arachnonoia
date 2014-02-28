@@ -15,7 +15,7 @@ Wall::Wall() {
     m_mass = 0;
 
     // maybe split this physics stuff out into its own function if the logic becomes complex
-    m_physicsShape = new btBoxShape(btVector3(0.5f, 0.5f, 0));
+    // m_physicsShape = new btBoxShape(btVector3(0.5f, 0.5f, 0));
 }
 
 std::string Wall::getTypeName() {
@@ -23,7 +23,7 @@ std::string Wall::getTypeName() {
 }
 
 void Wall::onUpdate(double dt) {
-    m_physicsShape->setLocalScaling(btVector3(m_scale.x, m_scale.y, 1));
+    // m_physicsShape->setLocalScaling(btVector3(m_scale.x, m_scale.y, 1));
 }
 
 void Wall::onDraw(sf::RenderTarget& target) {

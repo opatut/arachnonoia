@@ -59,6 +59,8 @@ public:
 
     std::map<Entity*, std::vector<EntityCollision>> getBodyContacts(btCollisionObject* from);
 
+    float getPixelSize() const;
+
 protected:
     void drawEntities(sf::RenderTarget& target);
     void setView(sf::RenderTarget& target);
