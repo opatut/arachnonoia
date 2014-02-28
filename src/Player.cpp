@@ -24,15 +24,20 @@ std::string Player::getTypeName() {
 }
 
 void Player::onUpdate(double dt) {
-    auto lin = m_physicsBody->getLinearVelocity();
+    btVector3 ZAXIS(0, 0, 1);
+    btVector3 lin = m_physicsBody->getLinearVelocity();
+    lin = lin.rotate(ZAXIS, -m_rotation);
+
     float speed = 1.5;
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        m_physicsBody->setLinearVelocity(btVector3(-speed, lin.y(), lin.z()));
+        lin.setX(speed);
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        m_physicsBody->setLinearVelocity(btVector3(speed, lin.y(), lin.z()));
+        lin.setX(-speed);
     } else {
-        m_physicsBody->setLinearVelocity(btVector3(0, lin.y(), lin.z()));
+        lin.setX(0);
     }
+    lin =lin.rotate(ZAXIS, m_rotation);
+    m_physicsBody->setLinearVelocity(lin);
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         m_physicsBody->applyCentralForce(btVector3(0, -12, 0));
