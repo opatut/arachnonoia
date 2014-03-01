@@ -17,15 +17,44 @@
 EditorState::EditorState() {
     m_zoom = 6;
     m_insertModeCurrentType = WALL;
+    m_showHelp = false;
+
+    m_keys.push_back(std::make_pair("== General ==", ""));
+    m_keys.push_back(std::make_pair("", ""));
+    m_keys.push_back(std::make_pair("F1 / H", "Toggle help screen"));
+    m_keys.push_back(std::make_pair("Space",  "Add a new object"));
+    m_keys.push_back(std::make_pair("Delete", "Remove selected object"));
+    m_keys.push_back(std::make_pair("F",      "Select an object"));
+
+    m_keys.push_back(std::make_pair("", ""));
+    m_keys.push_back(std::make_pair("== Transformation ==", ""));
+    m_keys.push_back(std::make_pair("", ""));
+    m_keys.push_back(std::make_pair("G",      "Grab / move"));
+    m_keys.push_back(std::make_pair("R",      "Rotate"));
+    m_keys.push_back(std::make_pair("S",      "Scale"));
+    m_keys.push_back(std::make_pair("+/-",    "Z-Level up/down"));
+    m_keys.push_back(std::make_pair("C",      "Edit collision shape"));
+    m_keys.push_back(std::make_pair("I",      "Reverse collision shape"));
+
+    m_keys.push_back(std::make_pair("", ""));
+    m_keys.push_back(std::make_pair("== Edit actions ==", ""));
+    m_keys.push_back(std::make_pair("", ""));
+    m_keys.push_back(std::make_pair("X",      "Lock on global/local X axis"));
+    m_keys.push_back(std::make_pair("Y",      "Lock on global/local Y axis"));
+    m_keys.push_back(std::make_pair("Escape/RMB", "Cancel action"));
+    m_keys.push_back(std::make_pair("Return/LMB", "Commit action"));
+
+    m_keys.push_back(std::make_pair("", ""));
+    m_keys.push_back(std::make_pair("== Others ==", ""));
+    m_keys.push_back(std::make_pair("", ""));
+    m_keys.push_back(std::make_pair("F5", "Save"));
+    m_keys.push_back(std::make_pair("F6", "Load"));
+    m_keys.push_back(std::make_pair("Arrow keys", "Move camera"));
+    m_keys.push_back(std::make_pair("Mouse Wheel", "Zoom"));
 }
 
 void EditorState::onInit() {
-    for(int i = 0; i < 5; ++i) {
-        auto wall = std::make_shared<Wall>();
-        wall->setPosition(glm::vec2(i * 1.5 - 3, 1));
-        add(wall);
-    }
-    // m_currentEntity = m_entities[2];
+    setStatus("Press F1 for Help.");
 }
 
 void EditorState::onHandleEvent(sf::Event& event) {
@@ -135,6 +164,16 @@ void EditorState::onHandleEvent(sf::Event& event) {
                         setStatus("Please select a CollisionShape for adding points.");
                     }
                 }
+            } else if(event.key.code == sf::Keyboard::I) {
+                if(m_mode == NONE) {
+                    if(m_currentEntity && m_currentEntity->getTypeName() == "CollisionShape") {
+                        auto c = std::static_pointer_cast<CollisionShape>(m_currentEntity);
+                        std::reverse(c->shapes()[0].begin(), c->shapes()[0].end());
+                        setStatus("Point order reversed.");
+                    } else {
+                        setStatus("Please select a CollisionShape to reverse the point order.");
+                    }
+                }
             } else if(event.key.code == sf::Keyboard::X) {
                 if(m_editAxis == LOCAL_X) m_editAxis = GLOBAL_X;
                 else if(m_editAxis == GLOBAL_X) m_editAxis = ALL;
@@ -143,6 +182,8 @@ void EditorState::onHandleEvent(sf::Event& event) {
                 if(m_editAxis == LOCAL_Y) m_editAxis = GLOBAL_Y;
                 else if(m_editAxis == GLOBAL_Y) m_editAxis = ALL;
                 else m_editAxis = LOCAL_Y;
+            } else if(event.key.code == sf::Keyboard::H || event.key.code == sf::Keyboard::F1) {
+                m_showHelp = !m_showHelp;
             }
         }
 
@@ -315,6 +356,37 @@ void EditorState::onDraw(sf::RenderTarget& target) {
 
         target.draw(cmdbox);
         target.draw(text);
+    }
+
+    if(m_showHelp) {
+        glm::vec2 pos(Root().window->getSize().x / 2, Root().window->getSize().y / 2);
+        glm::vec2 size(320, m_keys.size() * 16 + 30);
+        pos -= size * 0.5f;
+
+        sf::RectangleShape helpBox;
+        helpBox.setSize(sf::Vector2f(size.x, size.y));
+        helpBox.setPosition(sf::Vector2f(pos.x, pos.y));
+        helpBox.setFillColor(sf::Color(0, 0, 0, 100));
+        target.draw(helpBox);
+
+        int i = 0;
+        sf::Text text;
+        text.setFont(* Root().resources.getFont("mono"));
+        text.setCharacterSize(12);
+
+        for(auto pair : m_keys) {
+            text.setPosition(pos.x + 10, pos.y + 10 + 16 * i);
+            text.setString(pair.first);
+            text.setColor(sf::Color::White);
+            target.draw(text);
+
+            text.setPosition(pos.x + 10 + 80, pos.y + 10 + 16 * i);
+            text.setString(pair.second);
+            text.setColor(sf::Color(255, 255, 255, 100));
+            target.draw(text);
+
+            i++;
+        }
     }
 
     setView(target);
@@ -498,8 +570,10 @@ void EditorState::commitMode() {
         setStatus("Loaded from " + filename + ".");
         m_currentFilename = m_typingString;
     } else if(m_mode == INSERT) {
-        startMode(ADD_POINT);
-        return; // don't reset the mode afterwards
+        if(m_currentEntity->getTypeName() == "CollisionShape") {
+            startMode(ADD_POINT);
+            return; // don't reset the mode afterwards
+        }
     } else if(m_mode == ADD_POINT) {
         if(m_currentEntity->getTypeName() != "CollisionShape") {
             std::cerr << "No CollisionShape selected for ADD_POINT" << std::endl;

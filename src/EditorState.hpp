@@ -70,6 +70,9 @@ private:
     std::string m_statusText;
     float m_statusTime = 1000.f;
 
+    bool m_showHelp;
+    std::vector<std::pair<std::string, std::string>> m_keys;
+
     std::string m_currentFilename;
 };
 
