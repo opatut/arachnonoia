@@ -18,6 +18,7 @@ Player::Player()
     m_mass = 1.f;
     m_physicsShape = new btSphereShape(0.3);
     m_zLevel = 1000;
+    m_rotation = thor::Pi;
 }
 
 std::string Player::getTypeName() {
@@ -199,7 +200,12 @@ bool Player::onCollide(Entity* other, const EntityCollision& c) {
     } else if(other->getTypeName() == "Marker") {
         Marker* m = (Marker*)other;
         if(m->getType() == Marker::GOAL) {
-            Root().game_state.message("Goal reached");
+            auto p = getPairsLeft();
+            if(p == 0) {
+                Root().game_state.nextLevel();
+            } else {
+                Root().game_state.message(std::to_string(p / 2) + " pair" + (p == 2 ? "" : "s") + " missing");
+            }
         }
     }
     return false;

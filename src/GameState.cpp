@@ -1,6 +1,7 @@
 #include "GameState.hpp"
 
 #include <iostream>
+#include <functional>
 
 #include <Thor/Math.hpp>
 
@@ -18,6 +19,7 @@ GameState::GameState() {
 
 void GameState::onInit() {
     resize();
+
     loadLevel(1);
 }
 
@@ -115,6 +117,12 @@ void GameState::onDraw(sf::RenderTarget& target) {
         target.draw(rect);
         target.draw(text);
     }
+
+    if(m_levelFade) {
+        sf::RectangleShape rect(sf::Vector2f(target.getSize()));
+        rect.setFillColor(sf::Color(0, 0, 0, 255 * m_levelFade));
+        target.draw(rect);
+    }
 }
 
 void GameState::onHandleEvent(sf::Event& event) {
@@ -135,6 +143,11 @@ void GameState::resize() {
 
 
 void GameState::loadLevel(int num) {
+    if(num < 1 || num > LEVEL_COUNT) {
+        std::cout << "Warning: level number " << num << " does not exist." << std::endl;
+        return;
+    }
+
     std::string filename = "level" + std::to_string(num) + ".dat";
     loadFromFile("levels/" + filename);
 
@@ -153,24 +166,43 @@ void GameState::loadLevel(int num) {
         std::cout << "Warning: level " << filename << " does not contain any spawn marker. Spawning at (0, 0)." << std::endl;
         spawnPlayer(glm::vec2(0, 0));
     }
+
+    m_currentLevel = num;
+
+    m_levelFade = 1.f;
+    tween::TweenerParam p2(500, tween::SINE, tween::EASE_IN_OUT);
+    p2.addProperty(&m_levelFade, 0.f);
+    m_tweener.addTween(p2);
+
+    message("Level " + std::to_string(num));
 }
 
 void GameState::spawnPlayer(const glm::vec2& pos) {
     m_player = std::make_shared<Player>();
     add(m_player);
     m_player->setPhysicsPosition(pos);
+    m_center = m_player->position();
+}
 
-    for(int i = 0; i < 5; ++i) {
-        auto toy = std::make_shared<Toy>();
-        add(toy);
-        toy->setPhysicsPosition(pos + glm::vec2(i + 1, 0));
-        toy->setScale(glm::vec2(0.2 + i * 0.1, 0.2 + i * 0.1));
-    }
+void GameState::switchLevel(int num) {
+    if(m_nextLevel == num) return;
+    tween::TweenerParam p(1500, tween::SINE, tween::EASE_IN_OUT);
+    m_levelFade = 0;
+    m_nextLevel = num;
+    p.addProperty(&m_levelFade, 1.f);
+    p.onCompleteCallBack = []() {
+        Root().game_state.loadLevel(Root().game_state.m_nextLevel);
+    };
+    m_tweener.addTween(p);
+}
+
+void GameState::nextLevel() {
+    switchLevel(m_currentLevel + 1);
 }
 
 void GameState::message(const std::string& msg) {
     if(m_message == msg) return;
-    
+
     m_message = msg;
     m_messageTime = 0.f;
 }
