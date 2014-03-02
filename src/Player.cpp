@@ -63,11 +63,21 @@ void Player::onUpdate(double dt) {
             }
         }
     }
+
+    float targetRotation = thor::Pi;
     if(total.length2() > 0) {
-        setPhysicsRotation(thor::Pi / 2 + atan2(total.y(), total.x()));
-    } else {
-        setPhysicsRotation(thor::Pi);
+        targetRotation = thor::Pi / 2 + atan2(total.y(), total.x());
     }
+    if(m_rotation - targetRotation > thor::Pi) {
+        targetRotation += thor::Pi * 2;
+    }
+    if(m_rotation - targetRotation < -thor::Pi) {
+        targetRotation -= thor::Pi * 2;
+    }
+
+    float rotSpeed = 10;
+    float rot = m_rotation * (1 - rotSpeed * dt) + targetRotation * (rotSpeed * dt);
+    setPhysicsRotation(rot);
 }
 
 void Player::onDraw(sf::RenderTarget& target) {
