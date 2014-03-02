@@ -182,7 +182,8 @@ void Player::onAdd(State* state) {
 
 bool Player::onCollide(Entity* other, const EntityCollision& c) {
     if(other->getTypeName() == "Pair") {
-        ((Pair*)other)->activate();
+        Pair* p = (Pair*)other;
+        p->activate();
         return true;
     }
     return false;

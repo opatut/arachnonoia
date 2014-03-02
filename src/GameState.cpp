@@ -45,6 +45,7 @@ void GameState::onDraw(sf::RenderTarget& target) {
     t.setView(t.getDefaultView());
     sf::RectangleShape backdrop(sf::Vector2f(t.getSize()));
     backdrop.setFillColor(sf::Color(100, 150, 255));
+    backdrop.setFillColor(sf::Color(100, 80, 20));
     auto shader = Root().resources.getShader("backdrop");
     shader->setParameter("size", sf::Vector2f(t.getSize()));
     shader->setParameter("time", getTime());
