@@ -58,7 +58,7 @@ void Player::onUpdate(double dt) {
     for(auto pair : m) {
         if(pair.first == this) continue;
         for(auto c : pair.second) {
-            if(c.other->getTypeName() == "CollisionShape") {
+            if(c.other->getTypeName() == "CollisionShape" || c.other->getTypeName() == "Toy") {
                 total += c.position - m_ghostObject->getWorldTransform().getOrigin();
             }
         }

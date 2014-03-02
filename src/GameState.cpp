@@ -8,6 +8,7 @@
 #include "Pair.hpp"
 #include "Root.hpp"
 #include "Marker.hpp"
+#include "Toy.hpp"
 #include "CollisionShape.hpp"
 
 GameState::GameState() {
@@ -107,4 +108,11 @@ void GameState::spawnPlayer(const glm::vec2& pos) {
     m_player = std::make_shared<Player>();
     add(m_player);
     m_player->setPhysicsPosition(pos);
+
+    for(int i = 0; i < 5; ++i) {
+        auto toy = std::make_shared<Toy>();
+        add(toy);
+        toy->setPhysicsPosition(pos + glm::vec2(i + 1, 0));
+        toy->setScale(glm::vec2(0.2 + i * 0.1, 0.2 + i * 0.1));
+    }
 }
