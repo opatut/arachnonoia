@@ -8,6 +8,7 @@
 #include <CppTweener.h>
 
 #include "Root.hpp"
+#include "Marker.hpp"
 #include "Pair.hpp"
 
 Player::Player()
@@ -195,6 +196,11 @@ bool Player::onCollide(Entity* other, const EntityCollision& c) {
         Pair* p = (Pair*)other;
         p->activate();
         return true;
+    } else if(other->getTypeName() == "Marker") {
+        Marker* m = (Marker*)other;
+        if(m->getType() == Marker::GOAL) {
+            Root().game_state.message("Goal reached");
+        }
     }
     return false;
 }

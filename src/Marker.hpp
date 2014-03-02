@@ -25,6 +25,8 @@ public:
     Marker();
     std::string getTypeName();
 
+    void onInitialize() override;
+    void onAdd(State* state) override;
     void onDraw(sf::RenderTarget& target) override;
 
     void setMetadata(int data) override;

@@ -28,6 +28,12 @@ public:
         COL_WALL = 1 << 1,
         COL_PLAYER = 1 << 2
     };
+
+    void message(const std::string& msg);
+
+private:
+    std::string m_message;
+    float m_messageTime = 0.f;
 };
 
 #endif

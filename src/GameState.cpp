@@ -41,7 +41,13 @@ void GameState::onUpdate(float dt) {
         auto new_center = target - diff;
         zoomSpeed = 8;
         m_center = m_center * (1 - dt * zoomSpeed) + new_center * (dt * zoomSpeed);
+    }
 
+    if(m_message != "") {
+        m_messageTime += dt;
+        if(m_messageTime > 5) {
+            m_message = "";
+        }
     }
 }
 
@@ -88,6 +94,27 @@ void GameState::onDraw(sf::RenderTarget& target) {
     sprite.setTexture(m_renderTexture.getTexture());
     target.draw(sprite, Root().resources.getShader("pixel").get());
 
+    // message
+    target.setView(target.getDefaultView());
+    if(m_message != "") {
+        float alpha = fmin(1, fmax(0, m_messageTime)) * fmin(1, fmax(0, 4 - m_messageTime));
+        alpha = tween::Cubic().easeOut(alpha, 0, 1, 1);
+
+        sf::Text text;
+        text.setFont(* Root().resources.getFont("default"));
+        text.setCharacterSize(28);
+        text.setString(m_message);
+        text.setPosition(sf::Vector2f(target.getSize().x / 2 - text.getLocalBounds().width / 2, target.getSize().y * 0.8));
+        text.setColor(sf::Color(255, 255, 255, 255 * alpha));
+
+        sf::Vector2f b(10, 5);
+        sf::RectangleShape rect(sf::Vector2f(text.getLocalBounds().width + 2 * b.x, text.getLocalBounds().height * 1.5 + 2 * b.y));
+        rect.setPosition(text.getPosition() - b);
+        rect.setFillColor(sf::Color(0, 0, 0, 100 * alpha));
+
+        target.draw(rect);
+        target.draw(text);
+    }
 }
 
 void GameState::onHandleEvent(sf::Event& event) {
@@ -139,4 +166,11 @@ void GameState::spawnPlayer(const glm::vec2& pos) {
         toy->setPhysicsPosition(pos + glm::vec2(i + 1, 0));
         toy->setScale(glm::vec2(0.2 + i * 0.1, 0.2 + i * 0.1));
     }
+}
+
+void GameState::message(const std::string& msg) {
+    if(m_message == msg) return;
+    
+    m_message = msg;
+    m_messageTime = 0.f;
 }

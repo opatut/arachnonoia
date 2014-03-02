@@ -12,6 +12,18 @@ std::string Marker::getTypeName() {
     return "Marker";
 }
 
+void Marker::onInitialize() {
+    if(m_type == GOAL) {
+        m_physicsShape = new btSphereShape(0.01);
+    }
+}
+
+void Marker::onAdd(State* state) {
+    if(m_physicsBody) {
+        m_physicsBody->setCollisionFlags(m_physicsBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    }
+}
+
 void Marker::onDraw(sf::RenderTarget& target) {
     if(m_state != &Root().editor_state) return;
 
