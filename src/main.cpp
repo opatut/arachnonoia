@@ -47,6 +47,7 @@ int main() {
     Root().resources.addTexture("wall-gradient", "data/gradient.png");
     Root().resources.addTexture("spiderweb", "data/spiderweb.png");
     Root().resources.addTexture("blob", "data/blob.png");
+    Root().resources.addTexture("cave-1", "data/cave-1.jpg");
     Root().resources.addFont("default", "data/OpenSans-Regular.ttf");
     Root().resources.addFont("mono", "data/UbuntuMono-R.ttf");
     Root().resources.addShader("pixel", "data/pixel.fragment.glsl", sf::Shader::Fragment);

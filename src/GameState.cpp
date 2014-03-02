@@ -28,10 +28,20 @@ void GameState::onUpdate(float dt) {
 
     // m_zoom = 6;
     if(m_player) {
-        float targetZoom = 6 + m_player->physicsBody()->getLinearVelocity().length();
-        float zoomSpeed = 1;
+        float targetZoom = 6;// + m_player->physicsBody()->getLinearVelocity().length();
+        float zoomSpeed = 2;
         m_zoom = m_zoom * (1 - dt * zoomSpeed) + targetZoom * (dt * zoomSpeed);
-        m_center = m_player->position();
+
+        glm::vec2 target = m_player->position();
+
+        glm::vec2 d(0.5, 1);
+        glm::vec2 diff = target - m_center;
+        diff.x = diff.x < -d.x ? -d.x : (diff.x > d.x ? d.x : diff.x);
+        diff.y = diff.y < -d.y ? -d.y : (diff.y > d.y ? d.y : diff.y);
+        auto new_center = target - diff;
+        zoomSpeed = 8;
+        m_center = m_center * (1 - dt * zoomSpeed) + new_center * (dt * zoomSpeed);
+
     }
 }
 
@@ -50,6 +60,20 @@ void GameState::onDraw(sf::RenderTarget& target) {
     shader->setParameter("size", sf::Vector2f(t.getSize()));
     shader->setParameter("time", getTime());
     t.draw(backdrop, shader.get());
+
+    int backTiles = 50;
+    setView(t);
+    auto tex = Root().resources.getTexture("cave-1");
+    tex->setRepeated(true);
+    sf::Sprite back(*tex.get());
+    back.setTextureRect(sf::IntRect(0, 0, tex->getSize().x * backTiles, tex->getSize().y * backTiles));
+    float s = 4.0;
+    back.setScale(s / tex->getSize().x, s / tex->getSize().y);
+    // back.setPosition(m_center.x * 0.2, m_center.y * 0.2);
+    back.setOrigin(tex->getSize().x / 2 * backTiles, tex->getSize().y / 2 * backTiles);
+    back.setColor(sf::Color(100, 20, 0, 255));
+    back.setColor(sf::Color(100, 120, 200, 255));
+    t.draw(back);
 
     // draw
     setView(t);
