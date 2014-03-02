@@ -51,7 +51,7 @@ void State::deinitializeWorld() {
 
 void State::update(float dt) {
     m_time += dt;
-    
+
     m_dynamicsWorld->stepSimulation(dt, 10);
 
     m_total_elapsed += dt * 1000;
@@ -168,7 +168,13 @@ glm::vec2 State::getMousePosition(bool local) {
 }
 
 void State::drawEntities(sf::RenderTarget& target) {
-    std::sort(m_entities.begin(), m_entities.end(), [](std::shared_ptr<Entity> a, std::shared_ptr<Entity> b) -> bool { return a->zLevel() < b->zLevel(); });
+    std::sort(m_entities.begin(), m_entities.end(), [](std::shared_ptr<Entity> a, std::shared_ptr<Entity> b) -> bool { 
+        if(a->zLevel() != b->zLevel()) {
+            return a->zLevel() < b->zLevel(); 
+        } else {
+            return a->position().y < b->position().y;
+        }
+    });
 
     for(auto entity : m_entities) {
         entity->onDraw(target);
