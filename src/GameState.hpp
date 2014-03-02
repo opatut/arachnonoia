@@ -17,6 +17,9 @@ public:
 
     void resize();
 
+    void loadLevel(int num);
+    void spawnPlayer(const glm::vec2& pos);
+
     std::shared_ptr<Player> m_player;
     sf::RenderTexture m_renderTexture;
 

@@ -29,7 +29,7 @@ void Wall::onUpdate(double dt) {
 }
 
 void Wall::onDraw(sf::RenderTarget& target) {
-    auto s = getSize();
+    glm::vec2 s(m_sprite.getTexture()->getSize().x, m_sprite.getTexture()->getSize().y);
     m_sprite.setOrigin(s.x / 2, s.y / 2);
     m_sprite.setPosition(m_position.x, m_position.y);
     m_sprite.setScale(m_scale.x / s.x, m_scale.y / s.y);
@@ -56,5 +56,5 @@ void Wall::setType(const std::string& type) {
 }
 
 glm::vec2 Wall::getSize() {
-    return glm::vec2(m_sprite.getTexture()->getSize().x, m_sprite.getTexture()->getSize().y);
+    return glm::vec2(1, 1);
 }

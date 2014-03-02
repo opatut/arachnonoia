@@ -10,6 +10,7 @@
 #include "Pair.hpp"
 #include "Root.hpp"
 #include "CollisionShape.hpp"
+#include "Marker.hpp"
 
 #define GLM_FORCE_RADIANS
 #include <glm/gtx/vector_angle.hpp>
@@ -68,7 +69,7 @@ void EditorState::onHandleEvent(sf::Event& event) {
         if(event.text.unicode >= 48 && event.text.unicode <= 57) {
             int num = event.text.unicode - 48;
 
-            if(m_mode == INSERT && num >= WALL && num <= COLLISION) {
+            if(m_mode == INSERT && num >= WALL && num <= MARKER) {
                 m_insertModeCurrentType = (EntityType)num;
                 remove(m_currentEntity);
                 m_currentEntity = createNewEntity(m_insertModeCurrentType);
@@ -272,7 +273,8 @@ void EditorState::onDraw(sf::RenderTarget& target) {
         highlight.setOutlineColor(sf::Color(255, 128, 0));
         target.draw(highlight);
 
-        sf::RectangleShape rect(sf::Vector2f(m_currentEntity->scale().x, m_currentEntity->scale().y));
+        auto size = m_currentEntity->scale() * m_currentEntity->getSize();
+        sf::RectangleShape rect(sf::Vector2f(size.x, size.y));
         rect.setPosition(m_currentEntity->position().x, m_currentEntity->position().y);
         rect.setRotation(thor::toDegree(m_currentEntity->rotation()));
         rect.setOrigin(rect.getSize().x / 2, rect.getSize().y / 2);
@@ -546,7 +548,7 @@ void EditorState::updateMode() {
     } else if(m_mode == INSERT) {
         m_currentEntity->setPosition(mp);
         m_currentEntity->setZLevel(m_currentZLevel);
-        setStatus("Select type: (1) Wall (2) Pair (3) CollisionShape");
+        setStatus("Select type: (1) Wall (2) Pair (3) CollisionShape (4) Marker");
     } else if(m_mode == FOLLOW) {
         setStatus("Follow: " + m_followModeInput);
     } else if(m_mode == SAVE) {
@@ -622,6 +624,8 @@ std::shared_ptr<Entity> EditorState::createNewEntity(EditorState::EntityType typ
         return std::make_shared<Pair>();
     } else if(type == COLLISION) {
         return std::make_shared<CollisionShape>();
+    } else if(type == MARKER) {
+        return std::make_shared<Marker>();
     }
 
     return nullptr;

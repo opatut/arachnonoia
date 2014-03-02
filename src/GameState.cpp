@@ -7,20 +7,17 @@
 #include "Wall.hpp"
 #include "Pair.hpp"
 #include "Root.hpp"
+#include "Marker.hpp"
 #include "CollisionShape.hpp"
 
 GameState::GameState() {
-    m_zoom = 12;
-    m_debugDrawEnabled = true;
+    m_zoom = 6;
+    m_debugDrawEnabled = false;
 }
 
 void GameState::onInit() {
     resize();
-    loadFromFile("levels/level1.dat");
-
-    m_player = std::make_shared<Player>();
-    add(m_player);
-    m_player->setPhysicsPosition(glm::vec2(-4, 4));
+    loadLevel(1);
 }
 
 void GameState::onUpdate(float dt) {
@@ -29,10 +26,12 @@ void GameState::onUpdate(float dt) {
     }
 
     // m_zoom = 6;
-    float targetZoom = 6 + m_player->physicsBody()->getLinearVelocity().length();
-    float zoomSpeed = 1;
-    m_zoom = m_zoom * (1 - dt * zoomSpeed) + targetZoom * (dt * zoomSpeed);
-    m_center = m_player->position();
+    if(m_player) {
+        float targetZoom = 6 + m_player->physicsBody()->getLinearVelocity().length();
+        float zoomSpeed = 1;
+        m_zoom = m_zoom * (1 - dt * zoomSpeed) + targetZoom * (dt * zoomSpeed);
+        m_center = m_player->position();
+    }
 }
 
 void GameState::onDraw(sf::RenderTarget& target) {
@@ -45,7 +44,7 @@ void GameState::onDraw(sf::RenderTarget& target) {
     t.setView(t.getDefaultView());
     sf::RectangleShape backdrop(sf::Vector2f(t.getSize()));
     backdrop.setFillColor(sf::Color(100, 150, 255));
-    backdrop.setFillColor(sf::Color(100, 80, 20));
+    backdrop.setFillColor(sf::Color(40, 40, 40));
     auto shader = Root().resources.getShader("backdrop");
     shader->setParameter("size", sf::Vector2f(t.getSize()));
     shader->setParameter("time", getTime());
@@ -80,4 +79,32 @@ void GameState::onHandleEvent(sf::Event& event) {
 
 void GameState::resize() {
     m_renderTexture.create(Root().window->getSize().x, Root().window->getSize().y);
+}
+
+
+void GameState::loadLevel(int num) {
+    std::string filename = "level" + std::to_string(num) + ".dat";
+    loadFromFile("levels/" + filename);
+
+    m_player = nullptr;
+    for(auto marker : getEntitiesByType<Marker>("Marker")) {
+        if(marker->getType() == Marker::SPAWN) {
+            if(!m_player) {
+                spawnPlayer(marker->position());
+            } else {
+                std::cout << "Warning: level " << filename << " contains multiple SPAWN markers. Using first one." << std::endl;
+            }
+        }
+    }
+
+    if(!m_player) {
+        std::cout << "Warning: level " << filename << " does not contain any spawn marker. Spawning at (0, 0)." << std::endl;
+        spawnPlayer(glm::vec2(0, 0));
+    }
+}
+
+void GameState::spawnPlayer(const glm::vec2& pos) {
+    m_player = std::make_shared<Player>();
+    add(m_player);
+    m_player->setPhysicsPosition(pos);
 }

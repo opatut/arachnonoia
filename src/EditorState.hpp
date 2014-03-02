@@ -31,7 +31,8 @@ public:
     enum EntityType {
         WALL = 1,
         PAIR = 2,
-        COLLISION = 3
+        COLLISION = 3,
+        MARKER = 4
     };
 
     EditorState();
