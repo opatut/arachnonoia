@@ -77,7 +77,7 @@ void GameState::onDraw(sf::RenderTarget& target) {
     back.setTextureRect(sf::IntRect(0, 0, tex->getSize().x * backTiles, tex->getSize().y * backTiles));
     float s = 4.0;
     back.setScale(s / tex->getSize().x, s / tex->getSize().y);
-    // back.setPosition(m_center.x * 0.2, m_center.y * 0.2);
+    back.setPosition(m_center.x * 0.2, m_center.y * 0.2);
     back.setOrigin(tex->getSize().x / 2 * backTiles, tex->getSize().y / 2 * backTiles);
 
     auto levelColor = {
