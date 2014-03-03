@@ -17,14 +17,14 @@ Player::Player() {
 
     m_mass = 1.f;
     m_ability = WALK;
-    m_physicsShape = new btSphereShape(0.3);
+    m_physicsShape = new btSphereShape(0.2);
 
     // Create foreground feet
     for(size_t i = 0; i < 4; ++i) {
         m_foregroundFeet.push_back(std::make_shared<Foot>(this, i));
     }
 
-    m_zLevel = 1000;
+    m_zLevel = 1;
     m_rotation = thor::Pi;
 }
 
@@ -40,7 +40,7 @@ void Player::onUpdate(double dt) {
     for(auto pair : m) {
         if(pair.first == this) continue;
         for(auto c : pair.second) {
-            if(c.other->getTypeName() == "CollisionShape" || c.other->getTypeName() == "Toy") {
+            if(c.other->getTypeName() == "CollisionShape" || c.other->getTypeName() == "Toy" || c.other->getTypeName() == "Egg") {
                 auto d = c.position - m_ghostObject->getWorldTransform().getOrigin();
                 if(d.y() > 0 || m_ability >= WALLS) {
                     total += d;
@@ -107,8 +107,8 @@ void Player::onUpdate(double dt) {
         }
     }
 
-    // update feed
-    for(auto foot : m_foregroundFeet) foot->onUpdate(dt);
+    // update feet
+    for(auto foot : m_foregroundFeet) foot->handleUpdate(dt);
 
     // Apply manual gravity in the direction of current rotation to simulate stickyness to walls
     if(m_ability >= WALLS) {
@@ -131,7 +131,7 @@ void Player::onDraw(sf::RenderTarget& target) {
 
     // Draw foreground legs
     for(auto foot : m_foregroundFeet)
-        foot->onDraw(target);
+        foot->handleDraw(target);
 
     // Draw eyes
     for(auto i = 0; i < 2; ++i) {

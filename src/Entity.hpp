@@ -23,12 +23,14 @@ struct EntityCollision {
 
 class Entity {
 public:
-    Entity() = default;
+    Entity();
     virtual ~Entity() = 0;
 
     virtual std::string getTypeName() const = 0;
 
     void handleAddedToState(State* state);
+    void handleDraw(sf::RenderTarget& target);
+    void handleUpdate(double dt);
 
     virtual void onUpdate(double dt);
     virtual void onDraw(sf::RenderTarget& target);
@@ -79,12 +81,18 @@ public:
         ar(cereal::make_nvp("zlevel",   m_zLevel));
     }
 
+    void kill();
+    bool isDeleted() const;
+
 protected:
     glm::vec2 m_position = glm::vec2(0, 0);
     float m_rotation = 0.f;
     glm::vec2 m_scale = glm::vec2(1, 1);
     btScalar m_mass = 0.f;
     int m_zLevel = 0;
+    double m_lifeTime = 0;
+    bool m_freshman = true;
+    bool m_deleted = false;
 
     // We check whether we need to initialize physics by checking these members against
     // nullptr, so let's set them to that so that we may check again later.

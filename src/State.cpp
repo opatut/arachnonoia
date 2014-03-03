@@ -67,9 +67,17 @@ void State::update(float dt) {
     m_total_elapsed += dt * 1000;
     m_tweener.step(m_total_elapsed);
 
+    // remove deleted entities
+    for(auto i = m_entities.begin(); i != m_entities.end(); ++i) {
+        if((*i)->isDeleted()) {
+            remove(*i);
+            i++;
+        }
+    }
+
     onUpdate(dt);
     for(auto entity : m_entities) {
-        entity->onUpdate(dt);
+        entity->handleUpdate(dt);
     }
 }
 
@@ -142,7 +150,10 @@ void State::add(std::shared_ptr<Entity> entity) {
 
 void State::remove(std::shared_ptr<Entity> entity) {
     entity->onRemove(this);
-    m_entities.erase(std::remove(m_entities.begin(), m_entities.end(), entity), m_entities.end());
+    if(entity->physicsBody() != nullptr) {
+        m_dynamicsWorld->removeRigidBody(entity->physicsBody());
+    }
+    m_entities.erase(std::find(m_entities.begin(), m_entities.end(), entity));
 }
 
 void State::initializeEntity(std::shared_ptr<Entity> entity) {
@@ -187,7 +198,7 @@ void State::drawEntities(sf::RenderTarget& target) {
     });
 
     for(auto entity : m_entities) {
-        entity->onDraw(target);
+        entity->handleDraw(target);
     }
 }
 

@@ -227,34 +227,26 @@ void GameState::loadLevel(int num) {
         return;
     }
 
+    m_currentLevel = num;
+
     std::string filename = "level" + std::to_string(num) + ".dat";
     loadFromFile("levels/" + filename);
 
     m_player = nullptr;
     for(auto marker : getEntitiesByType<Marker>("Marker")) {
         if(marker->getType() == Marker::SPAWN) {
-            if(!m_player) {
-                spawnPlayer(marker->position());
+            if(num == 1) {
+                spawnEgg(marker->position());
             } else {
-                std::cout << "Warning: level " << filename << " contains multiple SPAWN markers. Using first one." << std::endl;
+                spawnPlayer(marker->position());
             }
+            break;
         }
     }
 
-    if(!m_player) {
+    if(!m_player && !m_egg) {
         std::cout << "Warning: level " << filename << " does not contain any spawn marker. Spawning at (0, 0)." << std::endl;
         spawnPlayer(glm::vec2(0, 0));
-    }
-
-    m_currentLevel = num;
-
-    // set player abilities
-    switch(m_currentLevel) {
-        case 1:
-        case 2:
-            m_player->setAbility(Player::WALK); break;
-        default:
-            m_player->setAbility(Player::RAPPEL); break;
     }
 
     m_levelFade = 1.f;
@@ -270,7 +262,24 @@ void GameState::spawnPlayer(const glm::vec2& pos) {
     add(m_player);
     m_player->setPhysicsPosition(pos);
     m_center = m_player->position();
+
+    // set player abilities
+    switch(m_currentLevel) {
+        case 1:
+        case 2:
+            m_player->setAbility(Player::WALK); break;
+        default:
+            m_player->setAbility(Player::RAPPEL); break;
+    }
 }
+
+void GameState::spawnEgg(const glm::vec2& pos) {
+    m_egg = std::make_shared<Egg>();
+    add(m_egg);
+    m_egg->setPhysicsPosition(pos);
+    m_center = m_egg->position();
+}
+
 
 void GameState::switchLevel(int num) {
     if(m_nextLevel == num) return;

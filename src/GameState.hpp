@@ -5,6 +5,7 @@
 
 #include "State.hpp"
 #include "Player.hpp"
+#include "Egg.hpp"
 
 #define LEVEL_COUNT 2
 
@@ -21,6 +22,7 @@ public:
 
     void loadLevel(int num);
     void spawnPlayer(const glm::vec2& pos);
+    void spawnEgg(const glm::vec2& pos);
     void switchLevel(int num);
     void nextLevel();
 
@@ -33,6 +35,7 @@ private:
     float m_messageTime = 0.f;
 
     std::shared_ptr<Player> m_player;
+    std::shared_ptr<Egg> m_egg;
     sf::RenderTexture m_renderTextures[2];
 
     float m_levelFade;

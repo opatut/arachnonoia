@@ -14,7 +14,7 @@ std::string Foot::getTypeName() const {
     return "Foot";
 }
 
-void Foot::onUpdate(float dt) {
+void Foot::onUpdate(double dt) {
     int speed = (m_offset % 2 ? -1 : 1) * m_direction;
     float speed_factor = 10; // speed of leg movement
     m_phase += speed * speed_factor * dt;
@@ -25,7 +25,7 @@ void Foot::onUpdate(float dt) {
     float p = sin(m_phase);
 
     // Offset from main body
-    sf::Vector2f offsetAnkle(p * ankle_phase_factor + (m_offset - 1.5) * ankle_offset_factor, -0.5f);
+    sf::Vector2f offsetAnkle(p * ankle_phase_factor + (m_offset - 1.5) * ankle_offset_factor, -0.6f);
     sf::Vector2f relAnklePos = thor::rotatedVector(offsetAnkle, thor::toDegree(m_player->rotation()));
     m_anklePosition = glm::vec2(m_player->position().x - relAnklePos.x, m_player->position().y - relAnklePos.y);
 
@@ -72,6 +72,7 @@ void Foot::onUpdate(float dt) {
 void Foot::onDraw(sf::RenderTarget &target) {
     // Draw lower leg
     sf::Vector2f lowerLegVec(m_anklePosition.x - m_position.x, m_anklePosition.y - m_position.y);
+    if(lowerLegVec == sf::Vector2f()) lowerLegVec.y = 1;
     float lowerLegLength = thor::length(lowerLegVec);
     sf::RectangleShape lowerLeg(sf::Vector2f(lowerLegLength, 0.1f));
     lowerLeg.setPosition(m_position.x, m_position.y);
@@ -82,6 +83,7 @@ void Foot::onDraw(sf::RenderTarget &target) {
 
     // Draw upper leg
     sf::Vector2f upperLegVec(m_player->position().x - m_anklePosition.x, m_player->position().y - m_anklePosition.y);
+    if(upperLegVec == sf::Vector2f()) upperLegVec.y = 1;
     float upperLegLength = thor::length(upperLegVec);
     sf::RectangleShape upperLeg(sf::Vector2f(upperLegLength, 0.1f));
     upperLeg.setPosition(m_anklePosition.x, m_anklePosition.y);

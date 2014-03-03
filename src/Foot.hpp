@@ -10,8 +10,8 @@ public:
 
     std::string getTypeName() const override;
 
-    void onUpdate(float dt);
-    void onDraw(sf::RenderTarget &target);
+    void onUpdate(double dt) override;
+    void onDraw(sf::RenderTarget &target) override;
 
     // Directions:
     // -1 backward

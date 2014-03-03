@@ -2,6 +2,9 @@
 
 #include "EntityMotionState.hpp"
 
+Entity::Entity() 
+    : m_freshman(true) {}
+
 Entity::~Entity() {
     // TODO: Do this using shared_ptrs
     if(m_physicsBody)
@@ -16,7 +19,21 @@ Entity::~Entity() {
 
 void Entity::handleAddedToState(State* state) {
     m_state = state;
+    m_lifeTime = 0;
+    m_freshman = true;
     onAdd(state);
+}
+
+void Entity::handleUpdate(double dt) {
+    m_lifeTime += dt;
+    m_freshman = false;
+    onUpdate(dt);
+}
+
+void Entity::handleDraw(sf::RenderTarget& target) {
+    if(!m_freshman) {
+        onDraw(target);
+    }
 }
 
 void Entity::onUpdate(double dt) {}
@@ -134,4 +151,12 @@ EntityMotionState* Entity::motionState() const {
 
 void Entity::setMotionState(EntityMotionState* new_motionState) {
     m_motionState = new_motionState;
+}
+
+void Entity::kill() {
+    m_deleted = true;
+}
+
+bool Entity::isDeleted() const {
+    return m_deleted;
 }
