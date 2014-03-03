@@ -19,8 +19,6 @@ public:
     //  0 idle
     void setDirection(int direction);
 
-    glm::vec2 m_anklePosition;
-
 private:
     Entity* m_player;
 
@@ -29,6 +27,8 @@ private:
     int m_direction = 0;
     float m_phase = 0;
     bool m_reverse = false;
+
+    glm::vec2 m_anklePosition;
 };
 
 #endif // FOOT_HPP
