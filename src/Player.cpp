@@ -20,9 +20,10 @@ Player::Player() {
     m_physicsShape = new btSphereShape(0.3);
 
     // Create foreground feet
-    for(size_t i = 0; i < 4; ++i) {
-        m_foregroundFeet.push_back(std::make_shared<Foot>(this, i));
-    }
+    for(size_t i = 0; i < 4; ++i) m_foregroundFeet.push_back(std::make_shared<Foot>(this, i, false));
+
+    // Create background feet
+    for(size_t i = 0; i < 4; ++i) m_backgroundFeet.push_back(std::make_shared<Foot>(this, i, true));
 
     m_zLevel = 1000;
     m_rotation = thor::Pi;
@@ -43,12 +44,15 @@ void Player::onUpdate(double dt) {
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
             lin.setX(walkSpeed);
             for(auto foot : m_foregroundFeet) foot->setDirection(-1);
+            for(auto foot : m_backgroundFeet) foot->setDirection(1);
         } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             lin.setX(-walkSpeed);
             for(auto foot : m_foregroundFeet) foot->setDirection(1);
+            for(auto foot : m_backgroundFeet) foot->setDirection(-1);
         } else {
             lin.setX(0);
             for(auto foot : m_foregroundFeet) foot->setDirection(0);
+            for(auto foot : m_backgroundFeet) foot->setDirection(0);
         }
         lin = lin.rotate(ZAXIS, m_rotation);
         m_physicsBody->setLinearVelocity(lin);
@@ -56,6 +60,7 @@ void Player::onUpdate(double dt) {
 
     // update feed
     for(auto foot : m_foregroundFeet) foot->onUpdate(dt);
+    for(auto foot : m_backgroundFeet) foot->onUpdate(dt);
 
     // Apply manual gravity in the direction of current rotation to simulate stickyness to walls
     if(m_ability >= WALLS) {
@@ -97,6 +102,9 @@ void Player::onUpdate(double dt) {
 }
 
 void Player::onDraw(sf::RenderTarget& target) {
+    // Draw background legs
+    for(auto foot : m_backgroundFeet) foot->onDraw(target);
+
     // Draw body
     sf::CircleShape body;
     body.setPosition(m_position.x, m_position.y);
@@ -106,10 +114,6 @@ void Player::onDraw(sf::RenderTarget& target) {
     body.setFillColor(sf::Color::Black);
     body.setRotation(thor::toDegree(m_rotation));
     target.draw(body);
-
-    // Draw foreground legs
-    for(auto foot : m_foregroundFeet)
-        foot->onDraw(target);
 
     // Draw eyes
     for(auto i = 0; i < 2; ++i) {
@@ -124,6 +128,9 @@ void Player::onDraw(sf::RenderTarget& target) {
         eye.setFillColor(sf::Color::White);
         target.draw(eye);
     }
+
+    // Draw foreground legs
+    for(auto foot : m_foregroundFeet) foot->onDraw(target);
 }
 
 void Player::onAdd(State* state) {

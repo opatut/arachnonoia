@@ -30,11 +30,13 @@ public:
     void setAbility(Ability ability);
     Ability getAbility() const;
 
+    float m_scale_y = 0;
+
 private:
     sf::Sprite m_sprite;
     btGhostObject* m_ghostObject;
-    float m_scale_y = 0;
     std::vector<std::shared_ptr<Foot>> m_foregroundFeet;
+    std::vector<std::shared_ptr<Foot>> m_backgroundFeet;
 
     Ability m_ability;
 };
