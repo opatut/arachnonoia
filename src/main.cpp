@@ -48,7 +48,9 @@ int main() {
     Root().resources.addTexture("spiderweb", "data/spiderweb.png");
     Root().resources.addTexture("blob", "data/blob.png");
     Root().resources.addTexture("cave-1", "data/cave-1.jpg");
-    Root().resources.addFont("default", "data/OpenSans-Regular.ttf");
+    // Root().resources.addFont("default", "data/OpenSans-Regular.ttf");
+    Root().resources.addFont("title", "data/Supernova.ttf");
+    Root().resources.addFont("default", "data/what-fish-died.ttf");
     Root().resources.addFont("mono", "data/UbuntuMono-R.ttf");
     Root().resources.addShader("pixel", "data/pixel.fragment.glsl", sf::Shader::Fragment);
     Root().resources.addShader("backdrop", "data/backdrop.fragment.glsl", sf::Shader::Fragment);
@@ -56,9 +58,11 @@ int main() {
     // Initialize all the states
     Root().editor_state.init();
     Root().game_state.init();
+    Root().menu_state.init();
 
     // Setup game stack
     std::stack<State*> states;
+    states.push(&Root().menu_state);
     states.push(&Root().game_state);
 
     while(window.isOpen()) {

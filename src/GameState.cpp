@@ -34,9 +34,9 @@ void GameState::onUpdate(float dt) {
         float zoomSpeed = 2;
         m_zoom = m_zoom * (1 - dt * zoomSpeed) + targetZoom * (dt * zoomSpeed);
 
-        glm::vec2 target = m_player->position();
+        glm::vec2 target = m_player->position() - glm::vec2(0, 0.3);
 
-        glm::vec2 d(0.5, 1);
+        glm::vec2 d(0.5, 0.5);
         glm::vec2 diff = target - m_center;
         diff.x = diff.x < -d.x ? -d.x : (diff.x > d.x ? d.x : diff.x);
         diff.y = diff.y < -d.y ? -d.y : (diff.y > d.y ? d.y : diff.y);
@@ -79,8 +79,10 @@ void GameState::onDraw(sf::RenderTarget& target) {
     back.setScale(s / tex->getSize().x, s / tex->getSize().y);
     // back.setPosition(m_center.x * 0.2, m_center.y * 0.2);
     back.setOrigin(tex->getSize().x / 2 * backTiles, tex->getSize().y / 2 * backTiles);
-    back.setColor(sf::Color(100, 20, 0, 255));
+    back.setColor(sf::Color(100, 20, 0));
     back.setColor(sf::Color(100, 120, 200, 255));
+    back.setColor(sf::Color(250, 200, 0));
+    back.setColor(sf::Color(255, 0, 128));
     t.draw(back);
 
     // draw
@@ -104,9 +106,10 @@ void GameState::onDraw(sf::RenderTarget& target) {
 
         sf::Text text;
         text.setFont(* Root().resources.getFont("default"));
-        text.setCharacterSize(28);
+        text.setCharacterSize(36);
         text.setString(m_message);
-        text.setPosition(sf::Vector2f(target.getSize().x / 2 - text.getLocalBounds().width / 2, target.getSize().y * 0.8));
+        text.setStyle(sf::Text::Bold);
+        text.setPosition(sf::Vector2f(target.getSize().x / 2 - text.getLocalBounds().width / 2, target.getSize().y * 0.8 - fabs(sin(m_time)) * 20));
         text.setColor(sf::Color(255, 255, 255, 255 * alpha));
 
         sf::Vector2f b(10, 5);
@@ -129,6 +132,7 @@ void GameState::onHandleEvent(sf::Event& event) {
     if(event.type == sf::Event::KeyPressed) {
         if(event.key.code == sf::Keyboard::Period) {
             m_debugDrawEnabled = !m_debugDrawEnabled;
+            message("Debug draws toggled");
         } else if(event.key.code == sf::Keyboard::Escape) {
             Root().window->close();
         }
