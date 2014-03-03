@@ -24,7 +24,7 @@ void GameState::onInit() {
 }
 
 void GameState::onUpdate(float dt) {
-    if(m_renderTexture.getSize() != Root().window->getSize()) {
+    if(m_renderTextures[0].getSize() != Root().window->getSize()) {
         resize();
     }
 
@@ -54,7 +54,12 @@ void GameState::onUpdate(float dt) {
 }
 
 void GameState::onDraw(sf::RenderTarget& target) {
-    auto& t = m_renderTexture;
+    float w = target.getSize().x;
+    float h = target.getSize().y;
+    m_renderTextures[0].clear();
+    m_renderTextures[1].clear();
+
+    sf::RenderTarget& t = m_renderTextures[0];
 
     target.clear();
     t.clear(sf::Color(80, 80, 80));
@@ -69,13 +74,14 @@ void GameState::onDraw(sf::RenderTarget& target) {
     // shader->setParameter("time", getTime());
     // t.draw(backdrop, shader.get());
 
-    int backTiles = 50;
     setView(t);
+    int backTiles = 50;
+    float s = 4.0;
+
     auto tex = Root().resources.getTexture("cave-1");
     tex->setRepeated(true);
     sf::Sprite back(*tex.get());
     back.setTextureRect(sf::IntRect(0, 0, tex->getSize().x * backTiles, tex->getSize().y * backTiles));
-    float s = 4.0;
     back.setScale(s / tex->getSize().x, s / tex->getSize().y);
     back.setPosition(m_center.x * 0.2, m_center.y * 0.2);
     back.setOrigin(tex->getSize().x / 2 * backTiles, tex->getSize().y / 2 * backTiles);
@@ -86,23 +92,74 @@ void GameState::onDraw(sf::RenderTarget& target) {
         sf::Color(250, 200, 0),
         sf::Color(255, 0, 128)
     };
-    std::initializer_list<sf::Color> x;
-    back.setColor(*(levelColor.begin() + (m_currentLevel - 1) % levelColor.size()));
-
+    back.setColor(*(levelColor.begin() + (m_currentLevel - 0) % levelColor.size()));
     t.draw(back);
+
+    s = 8.0;
+    tex = Root().resources.getTexture("perlin");
+    tex->setRepeated(true);
+    back.setTexture(*tex.get(), false);
+    back.setTextureRect(sf::IntRect(0, 0, tex->getSize().x * backTiles, tex->getSize().y * backTiles));
+    back.setScale(s / tex->getSize().x, s / tex->getSize().y);
+    back.setOrigin(tex->getSize().x / 2 * backTiles, tex->getSize().y / 2 * backTiles);
+    back.setColor(sf::Color(128, 128, 128));
+    back.setPosition(m_center.x * 0.1, m_center.y * 0.1);
+    t.draw(back, sf::BlendMultiply);
+
+    s = 8.0;
+    back.setScale(s / tex->getSize().x, s / tex->getSize().y);
+    back.setPosition(0, 0);
+    back.setColor(sf::Color(255, 255, 255, 80));
+    back.setPosition(-m_center.x * 0.2, -m_center.y * 0.2);
+    t.draw(back, sf::BlendAdd);
+
+    s = 8.0;
+    back.setScale(s / tex->getSize().x, s / tex->getSize().y);
+    back.setPosition(-m_center.x * 0.3, -m_center.y * 0.3);
+    back.setColor(sf::Color(255, 255, 255, 255));
+    t.draw(back, sf::BlendMultiply);
 
     // draw
     setView(t);
     drawEntities(t);
 
+    setView(m_renderTextures[1]);
+    float f = - 0.2;
+    back.setColor(sf::Color(255, 255, 255, 150));
+    back.setPosition(m_center.x * f + m_time * f * 1.5, m_center.y * f);
+    m_renderTextures[1].draw(back, sf::BlendAdd);
+
+    sf::Sprite sprite;
+    sprite = sf::Sprite(m_renderTextures[1].getTexture());
+    Root().resources.getShader("fog")->setParameter("size", sf::Vector2f(m_renderTextures[1].getSize()));
+    t.setView(sf::View(sf::FloatRect(0, h, w, -h)));
+    t.draw(sprite, sf::RenderStates(sf::BlendAdd, sf::RenderStates::Default.transform, sf::RenderStates::Default.texture, Root().resources.getShader("fog").get()));
+
     // post-processing
-    float w = target.getSize().x;
-    float h = target.getSize().y;
     target.setView(sf::View(sf::FloatRect(0, h, w, -h)));
  
-    sf::Sprite sprite;
-    sprite.setTexture(m_renderTexture.getTexture());
-    target.draw(sprite, Root().resources.getShader("pixel").get());
+    auto pixel          = Root().resources.getShader("pixel");
+    auto verticalBlur   = Root().resources.getShader("blur-vertical");
+    auto horizontalBlur = Root().resources.getShader("blur-horizontal");
+
+    horizontalBlur->setParameter("blurSize", 5 / w);
+    verticalBlur->setParameter("blurSize", 5 / h);
+
+    m_renderTextures[0].setView(m_renderTextures[0].getDefaultView());
+    m_renderTextures[1].setView(m_renderTextures[1].getDefaultView());
+    m_renderTextures[0].setSmooth(true);
+    m_renderTextures[1].setSmooth(true);
+
+    sprite = sf::Sprite(m_renderTextures[0].getTexture());
+    if(!m_debugDrawEnabled) {
+        m_renderTextures[1].draw(sprite);//, pixel.get());
+
+        sprite = sf::Sprite(m_renderTextures[1].getTexture());
+        m_renderTextures[0].draw(sprite, horizontalBlur.get());
+
+        sprite = sf::Sprite(m_renderTextures[0].getTexture());
+    }
+    target.draw(sprite);//, verticalBlur.get());
 
     // message
     target.setView(target.getDefaultView());
@@ -127,6 +184,14 @@ void GameState::onDraw(sf::RenderTarget& target) {
         target.draw(text);
     }
 
+    sf::Text text;
+    text.setFont(* Root().resources.getFont("mono"));
+    text.setCharacterSize(20);
+    text.setString(std::to_string(getFPS()) + " FPS");
+    text.setPosition(sf::Vector2f(10, 10));
+    text.setColor(sf::Color(255, 255, 255, 100));
+    target.draw(text);
+
     if(m_levelFade) {
         sf::RectangleShape rect(sf::Vector2f(target.getSize()));
         rect.setFillColor(sf::Color(0, 0, 0, 255 * m_levelFade));
@@ -148,7 +213,8 @@ void GameState::onHandleEvent(sf::Event& event) {
 }
 
 void GameState::resize() {
-    m_renderTexture.create(Root().window->getSize().x, Root().window->getSize().y);
+    m_renderTextures[0].create(Root().window->getSize().x, Root().window->getSize().y);
+    m_renderTextures[1].create(Root().window->getSize().x, Root().window->getSize().y);
 }
 
 

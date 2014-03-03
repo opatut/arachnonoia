@@ -52,6 +52,16 @@ void State::deinitializeWorld() {
 void State::update(float dt) {
     m_time += dt;
 
+    m_fpsTimer += dt;
+    m_fpsCurrentCounter++;
+    if(m_fpsTimer > 1.f) {
+        m_fpsTimer -= 1.f;
+        m_fps = m_fpsCurrentCounter;
+        m_fpsCurrentCounter = 0;
+    } else if(m_fps == -1) {
+        m_fps = (int)(1 / dt);
+    }
+
     m_dynamicsWorld->stepSimulation(dt, 10);
 
     m_total_elapsed += dt * 1000;
@@ -279,4 +289,8 @@ float State::getPixelSize() const {
 
 float State::getTime() const {
     return m_time;
+}    
+
+int State::getFPS() const {
+    return m_fps;
 }

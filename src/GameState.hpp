@@ -24,15 +24,6 @@ public:
     void switchLevel(int num);
     void nextLevel();
 
-    std::shared_ptr<Player> m_player;
-    sf::RenderTexture m_renderTexture;
-
-    enum m_CollisionTypes {
-        COL_NOTHING = 0,
-        COL_WALL = 1 << 1,
-        COL_PLAYER = 1 << 2
-    };
-
     void message(const std::string& msg);
 
 private:
@@ -40,6 +31,9 @@ private:
     int m_nextLevel;
     std::string m_message;
     float m_messageTime = 0.f;
+
+    std::shared_ptr<Player> m_player;
+    sf::RenderTexture m_renderTextures[2];
 
     float m_levelFade;
 };

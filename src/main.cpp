@@ -24,6 +24,8 @@ void createWindow() {
     } else {
         Root().window->create(defaultMode, "Arachnonoia", sf::Style::Default, settings);
     }
+    Root().window->setVerticalSyncEnabled(false);
+    Root().window->setFramerateLimit(0);
 }
 
 int main() {
@@ -48,12 +50,16 @@ int main() {
     Root().resources.addTexture("spiderweb", "data/spiderweb.png");
     Root().resources.addTexture("blob", "data/blob.png");
     Root().resources.addTexture("cave-1", "data/cave-1.jpg");
+    Root().resources.addTexture("perlin", "data/perlin.png");
     // Root().resources.addFont("default", "data/OpenSans-Regular.ttf");
     Root().resources.addFont("title", "data/Supernova.ttf");
     Root().resources.addFont("default", "data/what-fish-died.ttf");
     Root().resources.addFont("mono", "data/UbuntuMono-R.ttf");
     Root().resources.addShader("pixel", "data/pixel.fragment.glsl", sf::Shader::Fragment);
     Root().resources.addShader("backdrop", "data/backdrop.fragment.glsl", sf::Shader::Fragment);
+    Root().resources.addShader("fog", "data/fog.fragment.glsl", sf::Shader::Fragment);
+    Root().resources.addShader("blur-horizontal", "data/blur-horizontal.fragment.glsl", sf::Shader::Fragment);
+    Root().resources.addShader("blur-vertical", "data/blur-vertical.fragment.glsl", sf::Shader::Fragment);
 
     // Initialize all the states
     Root().editor_state.init();

@@ -9,7 +9,7 @@ void main() {
     // vignette
     vec2 center = vec2(0.5, 0.5);
     f = length(coord - center) / (0.5 * sqrt(2));
-    col *= 1.0 - smoothstep(0.3, 1.1, f);
+    col *= 1.0 - smoothstep(0.5, 1.6, f);
 
     // multiply it by the color
     gl_FragColor = gl_Color * col;
