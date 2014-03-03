@@ -73,22 +73,38 @@ void Foot::onDraw(sf::RenderTarget &target) {
     // Draw lower leg
     sf::Vector2f lowerLegVec(m_anklePosition.x - m_position.x, m_anklePosition.y - m_position.y);
     float lowerLegLength = thor::length(lowerLegVec);
-    sf::RectangleShape lowerLeg(sf::Vector2f(lowerLegLength, 0.1f));
+    sf::RectangleShape lowerLeg(sf::Vector2f(lowerLegLength, 0.07f));
     lowerLeg.setPosition(m_position.x, m_position.y);
     lowerLeg.setRotation(thor::polarAngle(lowerLegVec));
     lowerLeg.setFillColor(sf::Color::Black);
-    lowerLeg.setOrigin(0, 0.05f);
+    lowerLeg.setOrigin(0, 0.035f);
     target.draw(lowerLeg);
 
     // Draw upper leg
     sf::Vector2f upperLegVec(m_player->position().x - m_anklePosition.x, m_player->position().y - m_anklePosition.y);
     float upperLegLength = thor::length(upperLegVec);
-    sf::RectangleShape upperLeg(sf::Vector2f(upperLegLength, 0.1f));
+    sf::RectangleShape upperLeg(sf::Vector2f(upperLegLength, 0.07f));
     upperLeg.setPosition(m_anklePosition.x, m_anklePosition.y);
     upperLeg.setRotation(thor::polarAngle(upperLegVec));
     upperLeg.setFillColor(sf::Color::Black);
-    upperLeg.setOrigin(0, 0.05f);
+    upperLeg.setOrigin(0, 0.035f);
     target.draw(upperLeg);
+
+    sf::CircleShape ankle;
+    ankle.setPosition(m_anklePosition.x, m_anklePosition.y);
+    ankle.setRadius(1);
+    ankle.setOrigin(1, 1);
+    ankle.setScale(0.04, 0.04);
+    ankle.setFillColor(sf::Color::Black);
+    target.draw(ankle);
+
+    sf::CircleShape foot;
+    foot.setPosition(m_position.x, m_position.y);
+    foot.setRadius(1);
+    foot.setOrigin(1, 1);
+    foot.setScale(0.04, 0.04);
+    foot.setFillColor(sf::Color::Black);
+    target.draw(foot);
 
     if(m_player->m_state->m_debugDrawEnabled) {
         sf::CircleShape foot_debug;
