@@ -26,7 +26,7 @@ public:
     Entity() = default;
     virtual ~Entity() = 0;
 
-    virtual std::string getTypeName() = 0;
+    virtual std::string getTypeName() const = 0;
 
     void handleAddedToState(State* state);
 

@@ -59,6 +59,8 @@ public:
 
     std::map<Entity*, std::vector<EntityCollision>> getBodyContacts(btCollisionObject* from);
 
+    bool m_debugDrawEnabled = false;
+
 protected:
     void drawEntities(sf::RenderTarget& target);
     void setView(sf::RenderTarget& target);
@@ -77,7 +79,6 @@ protected:
     btSequentialImpulseConstraintSolver* m_solver = nullptr;
     btDiscreteDynamicsWorld* m_dynamicsWorld = nullptr;
     DebugDraw* m_debugDrawer = nullptr;
-    bool m_debugDrawEnabled = false;
 };
 
 #endif

@@ -16,7 +16,7 @@ Pair::Pair()
     // m_physicsShape->
 }
 
-std::string Pair::getTypeName() {
+std::string Pair::getTypeName() const {
     return "Pair";
 }
 

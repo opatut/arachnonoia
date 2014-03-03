@@ -5,12 +5,13 @@
 #include <BulletCollision/CollisionDispatch/btGhostObject.h>
 
 #include "Entity.hpp"
+#include "Foot.hpp"
 
 class Player : public Entity {
 public:
     Player();
 
-    std::string getTypeName();
+    std::string getTypeName() const;
 
     void onUpdate(double dt) override;
     void onDraw(State *state, sf::RenderTarget& target) override;
@@ -22,7 +23,8 @@ public:
 private:
     sf::Sprite m_sprite;
     btGhostObject* m_ghostObject;
-    float m_scale_y;
+    float m_scale_y = 0;
+    std::vector<std::shared_ptr<Foot>> m_foregroundFeet;
 };
 
 #endif

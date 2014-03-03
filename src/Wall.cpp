@@ -18,7 +18,7 @@ Wall::Wall() {
     m_physicsShape = new btBoxShape(btVector3(0.5f, 0.5f, 1));
 }
 
-std::string Wall::getTypeName() {
+std::string Wall::getTypeName() const {
     return "Wall";
 }
 

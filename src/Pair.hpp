@@ -9,7 +9,7 @@ class Pair : public Entity {
 public:
     Pair();
 
-    std::string getTypeName();
+    std::string getTypeName() const;
 
     void onUpdate(double dt) override;
     void onDraw(State* state, sf::RenderTarget& target) override;
