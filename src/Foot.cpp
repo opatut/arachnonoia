@@ -71,7 +71,6 @@ void Foot::onUpdate(float dt) {
             }
     };
     ClosestNonPlayerRayResultCallback rayCallback(rayStart, rayEnd);
-//    btCollisionWorld::ClosestRayResultCallback rayCallback(rayStart, rayEnd);
 
     m_player->m_state->dynamicsWorld()->rayTest(rayStart, rayEnd, rayCallback);
 
@@ -80,7 +79,6 @@ void Foot::onUpdate(float dt) {
         hitPoint = rayCallback.m_hitPointWorld;
 
     m_position = glm::vec2(hitPoint.x(), hitPoint.y());
-//    m_position = glm::vec2(absFootRayEnd.x, absFootRayEnd.y);
 }
 
 void Foot::onDraw(sf::RenderTarget &target) {
