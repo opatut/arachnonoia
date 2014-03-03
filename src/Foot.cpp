@@ -35,7 +35,7 @@ void Foot::onUpdate(float dt) {
     float legOffsetFactor = 0.5f; // distance between legs
     float legPhaseFactor = 0.2f; // distance of leg move per phase
 
-    sf::Vector2f offsetFootRayEnd(p * legPhaseFactor + (m_offset - 1.5) * legOffsetFactor, 0.5f - p * 0.4);
+    sf::Vector2f offsetFootRayEnd(p * legPhaseFactor + (m_offset - 1.5) * legOffsetFactor, 0.2f - p * 0.4);
     sf::Vector2f relFootRayEnd = thor::rotatedVector(offsetFootRayEnd, thor::toDegree(m_player->rotation()));
     sf::Vector2f absFootRayEnd(m_player->position().x - relFootRayEnd.x, m_player->position().y - relFootRayEnd.y);
 
@@ -66,7 +66,10 @@ void Foot::onUpdate(float dt) {
     btVector3 hitPoint(0, 0, 0);
     if(rayCallback.hasHit()) {
         hitPoint = rayCallback.m_hitPointWorld;
-        m_position = glm::vec2(hitPoint.x(), hitPoint.y());
+//        auto new_pos = glm::vec2(hitPoint.x(), hitPoint.y());
+//        if((new_pos - m_position).length() > 2.f) {
+//            m_position = new_pos;
+//        }
     } else {
         m_position = glm::vec2(rayEnd.x(), rayEnd.y());
     }
