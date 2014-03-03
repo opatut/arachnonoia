@@ -204,6 +204,9 @@ void GameState::onHandleEvent(sf::Event& event) {
         if(event.key.code == sf::Keyboard::Period) {
             m_debugDrawEnabled = !m_debugDrawEnabled;
             message("Debug draws toggled");
+        } else if(event.key.code == sf::Keyboard::Q) {
+            m_player->setAbility((Player::Ability)(((int)m_player->getAbility() + 1) % ((int)Player::RAPPEL + 1)));
+            message("Ability: " + std::to_string(m_player->getAbility()));
         } else if(event.key.code == sf::Keyboard::Escape) {
             Root().window->close();
         }

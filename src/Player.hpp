@@ -20,11 +20,23 @@ public:
 
     int getPairsLeft() const;
 
+    enum Ability {
+        WALK = 0,
+        JUMP = 1,
+        WALLS = 2,
+        RAPPEL = 3
+    };
+
+    void setAbility(Ability ability);
+    Ability getAbility() const;
+
 private:
     sf::Sprite m_sprite;
     btGhostObject* m_ghostObject;
     float m_scale_y = 0;
     std::vector<std::shared_ptr<Foot>> m_foregroundFeet;
+
+    Ability m_ability;
 };
 
 #endif

@@ -16,6 +16,7 @@ Player::Player() {
     m_sprite.setTexture(* Root().resources.getTexture("player").get());
 
     m_mass = 1.f;
+    m_ability = WALK;
     m_physicsShape = new btSphereShape(0.3);
 
     // Create foreground feet
@@ -36,42 +37,31 @@ void Player::onUpdate(double dt) {
     btVector3 lin = m_physicsBody->getLinearVelocity();
     lin = lin.rotate(ZAXIS, -m_rotation);
 
-    float speed = 1.5;
+    if(m_ability >= WALK) {
+        float walkSpeed = 1.5;
 
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        lin.setX(speed);
-        for(auto foot : m_foregroundFeet)
-            foot->setDirection(-1);
-    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        lin.setX(-speed);
-        for(auto foot : m_foregroundFeet)
-            foot->setDirection(1);
-    } else {
-        lin.setX(0);
-        for(auto foot : m_foregroundFeet)
-            foot->setDirection(0);
-    }
-    lin = lin.rotate(ZAXIS, m_rotation);
-    m_physicsBody->setLinearVelocity(lin);
-
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        // TODO
-        // This probably shouldn't exist
-        m_physicsBody->applyCentralForce(btVector3(0, -12, 0));
-    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        // TODO
-        // Preparing to jump
-        m_physicsBody->applyCentralForce(btVector3(0, 12, 0));
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+            lin.setX(walkSpeed);
+            for(auto foot : m_foregroundFeet) foot->setDirection(-1);
+        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            lin.setX(-walkSpeed);
+            for(auto foot : m_foregroundFeet) foot->setDirection(1);
+        } else {
+            lin.setX(0);
+            for(auto foot : m_foregroundFeet) foot->setDirection(0);
+        }
+        lin = lin.rotate(ZAXIS, m_rotation);
+        m_physicsBody->setLinearVelocity(lin);
     }
 
-    for(auto foot : m_foregroundFeet)
-        foot->onUpdate(dt);
+    // update feed
+    for(auto foot : m_foregroundFeet) foot->onUpdate(dt);
 
     // Apply manual gravity in the direction of current rotation to simulate stickyness to walls
-    m_physicsBody->applyCentralForce(btVector3(0, -9.81, 0));
-    btVector3 down(0, -9.81, 0);
-    down = down.rotate(btVector3(0, 0, 1), m_rotation);
-    m_physicsBody->applyCentralForce(down);
+    if(m_ability >= WALLS) {
+        m_physicsBody->clearForces();
+        m_physicsBody->applyCentralForce(btVector3(0, -5, 0).rotate(btVector3(0, 0, 1), m_rotation));
+    }
 
     m_ghostObject->setWorldTransform(m_physicsBody->getWorldTransform());
 
@@ -82,7 +72,10 @@ void Player::onUpdate(double dt) {
         if(pair.first == this) continue;
         for(auto c : pair.second) {
             if(c.other->getTypeName() == "CollisionShape" || c.other->getTypeName() == "Toy") {
-                total += c.position - m_ghostObject->getWorldTransform().getOrigin();
+                auto d = c.position - m_ghostObject->getWorldTransform().getOrigin();
+                if(d.y() > 0 || m_ability >= WALLS) {
+                    total += d;
+                }
             }
         }
     }
@@ -175,4 +168,12 @@ bool Player::onCollide(Entity* other, const EntityCollision& c) {
 int Player::getPairsLeft() const {
     auto e = m_state->getEntitiesByType<Pair>("Pair");
     return e.size() - std::count_if(e.begin(), e.end(), [](std::shared_ptr<Pair> p) -> bool { return p->isSolved(); });
+}
+
+void Player::setAbility(Player::Ability ability) {
+    m_ability = ability;
+}
+
+Player::Ability Player::getAbility() const {
+    return m_ability;
 }

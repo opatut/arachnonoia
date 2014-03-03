@@ -15,38 +15,24 @@ std::string Foot::getTypeName() const {
 }
 
 void Foot::onUpdate(float dt) {
-    if(m_phase > 1.0f || m_phase < -1.0f)
-        m_reverse = !m_reverse;
-
+    int speed = (m_offset % 2 ? -1 : 1) * m_direction;
     float speed_factor = 10; // speed of leg movement
-
-    if(m_offset % 2 == 1)
-        m_direction *= -1;
-
-    if(m_direction == -1) {
-        if(m_reverse)
-            m_phase -= dt * speed_factor;
-        else
-            m_phase += dt * speed_factor;
-    } else if(m_direction == 1) {
-        if(m_reverse)
-            m_phase += dt * speed_factor;
-        else
-            m_phase -= dt * speed_factor;
-    }
+    m_phase += speed * speed_factor * dt;
 
     float ankle_offset_factor = 0.2f; // distance between ankle
     float ankle_phase_factor = 0.1f; // distance of ankle move per phase
 
+    float p = sin(m_phase);
+
     // Offset from main body
-    sf::Vector2f offsetAnkle(m_phase * ankle_phase_factor + (m_offset - 1.5) * ankle_offset_factor, -0.5f);
+    sf::Vector2f offsetAnkle(p * ankle_phase_factor + (m_offset - 1.5) * ankle_offset_factor, -0.5f);
     sf::Vector2f relAnklePos = thor::rotatedVector(offsetAnkle, thor::toDegree(m_player->rotation()));
     m_anklePosition = glm::vec2(m_player->position().x - relAnklePos.x, m_player->position().y - relAnklePos.y);
 
     float leg_offset_factor = 0.7f; // distance between legs
     float leg_phase_factor = 0.2f; // distance of leg move per phase
 
-    sf::Vector2f offsetFootRayEnd(m_phase * leg_phase_factor + (m_offset - 1.5) * leg_offset_factor, 0.5f);
+    sf::Vector2f offsetFootRayEnd(p * leg_phase_factor + (m_offset - 1.5) * leg_offset_factor, 0.5f);
     sf::Vector2f relFootRayEnd = thor::rotatedVector(offsetFootRayEnd, thor::toDegree(m_player->rotation()));
     sf::Vector2f absFootRayEnd(m_player->position().x - relFootRayEnd.x, m_player->position().y - relFootRayEnd.y);
 
