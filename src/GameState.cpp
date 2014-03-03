@@ -79,10 +79,16 @@ void GameState::onDraw(sf::RenderTarget& target) {
     back.setScale(s / tex->getSize().x, s / tex->getSize().y);
     // back.setPosition(m_center.x * 0.2, m_center.y * 0.2);
     back.setOrigin(tex->getSize().x / 2 * backTiles, tex->getSize().y / 2 * backTiles);
-    back.setColor(sf::Color(100, 20, 0));
-    back.setColor(sf::Color(100, 120, 200, 255));
-    back.setColor(sf::Color(250, 200, 0));
-    back.setColor(sf::Color(255, 0, 128));
+
+    auto levelColor = {
+        sf::Color(100, 20, 0),
+        sf::Color(100, 120, 200),
+        sf::Color(250, 200, 0),
+        sf::Color(255, 0, 128)
+    };
+    std::initializer_list<sf::Color> x;
+    back.setColor(*(levelColor.begin() + (m_currentLevel - 1) % levelColor.size()));
+
     t.draw(back);
 
     // draw
