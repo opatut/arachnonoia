@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <cereal/archives/json.hpp>
+#include <cereal/archives/binary.hpp>
 #include <cereal/types/vector.hpp>
 #include <cereal/types/memory.hpp>
 
@@ -49,6 +50,18 @@ void State::deinitializeWorld() {
 }
 
 void State::update(float dt) {
+    m_time += dt;
+
+    m_fpsTimer += dt;
+    m_fpsCurrentCounter++;
+    if(m_fpsTimer > 1.f) {
+        m_fpsTimer -= 1.f;
+        m_fps = m_fpsCurrentCounter;
+        m_fpsCurrentCounter = 0;
+    } else if(m_fps == -1) {
+        m_fps = (int)(1 / dt);
+    }
+
     m_dynamicsWorld->stepSimulation(dt, 10);
 
     m_total_elapsed += dt * 1000;
@@ -133,6 +146,7 @@ void State::remove(std::shared_ptr<Entity> entity) {
 }
 
 void State::initializeEntity(std::shared_ptr<Entity> entity) {
+    entity->onInitialize();
     // If there is no physics shape set, the entity probably doesn't like physics so leave it alone
     if(entity->physicsShape() != nullptr) {
         EntityMotionState* motionstate = new EntityMotionState(btTransform(btQuaternion(0, 0, entity->rotation()), btVector3(entity->position().x, entity->position().y, 0)), entity);
@@ -153,17 +167,27 @@ void State::initializeEntity(std::shared_ptr<Entity> entity) {
     }
 }
 
-glm::vec2 State::getMousePosition() {
+glm::vec2 State::getMousePosition(bool local) {
     sf::Vector2i windowCoords = sf::Mouse::getPosition(*Root().window);
-    sf::Vector2f worldCoords = Root().window->mapPixelToCoords(windowCoords);
-    return glm::vec2(worldCoords.x, worldCoords.y);
+    if(local) {
+        sf::Vector2f worldCoords = Root().window->mapPixelToCoords(windowCoords);
+        return glm::vec2(worldCoords.x, worldCoords.y);
+    } else {
+        return glm::vec2(windowCoords.x, windowCoords.y);
+    }
 }
 
 void State::drawEntities(sf::RenderTarget& target) {
-    std::sort(m_entities.begin(), m_entities.end(), [](std::shared_ptr<Entity> a, std::shared_ptr<Entity> b) { return a->zLevel() - b->zLevel(); });
+    std::sort(m_entities.begin(), m_entities.end(), [](std::shared_ptr<Entity> a, std::shared_ptr<Entity> b) -> bool { 
+        if(a->zLevel() != b->zLevel()) {
+            return a->zLevel() < b->zLevel(); 
+        } else {
+            return a->position().y < b->position().y;
+        }
+    });
 
     for(auto entity : m_entities) {
-        entity->onDraw(this, target);
+        entity->onDraw(target);
     }
 }
 
@@ -183,8 +207,14 @@ void State::loadFromFile(const std::string& filename) {
     std::ifstream stream;
     stream.open(filename);
 
-    cereal::JSONInputArchive ar(stream);
-    ar(cereal::make_nvp("entities", m_entities));
+    // cereal::JSONInputArchive ar(stream);
+    if(filename.substr(filename.length() - 4) == "json") {
+        cereal::JSONInputArchive ar(stream);
+        ar(cereal::make_nvp("entities", m_entities));
+    } else {
+        cereal::BinaryInputArchive ar(stream);
+        ar(cereal::make_nvp("entities", m_entities));
+    }
     stream.close();
 
     // reset the physics world
@@ -200,9 +230,13 @@ void State::saveToFile(const std::string& filename) {
     std::ofstream stream;
     stream.open(filename);
 
-    cereal::JSONOutputArchive ar(stream);
-    ar(cereal::make_nvp("entities", m_entities));
-    ar.finishNode();
+    if(filename.substr(filename.length() - 4) == "json") {
+        cereal::JSONOutputArchive ar(stream);
+        ar(cereal::make_nvp("entities", m_entities));
+    } else {
+        cereal::BinaryOutputArchive ar(stream);
+        ar(cereal::make_nvp("entities", m_entities));
+    }
 
     stream.close();
 }
@@ -247,4 +281,16 @@ std::map<Entity*, std::vector<EntityCollision>> State::getBodyContacts(btCollisi
         map[obA == from ? b : a] = collisions;
     }
     return map;
+}
+
+float State::getPixelSize() const {
+    return m_pixelSize;
+}
+
+float State::getTime() const {
+    return m_time;
+}    
+
+int State::getFPS() const {
+    return m_fps;
 }

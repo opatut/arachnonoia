@@ -8,11 +8,11 @@
 #include <CppTweener.h>
 
 #include "Root.hpp"
+#include "Marker.hpp"
 #include "Pair.hpp"
 #include "Foot.hpp"
 
-Player::Player()
-{
+Player::Player() {
     m_sprite.setTexture(* Root().resources.getTexture("player").get());
 
     m_mass = 1.f;
@@ -22,6 +22,9 @@ Player::Player()
     for(size_t i = 0; i < 4; ++i) {
         m_foregroundFeet.push_back(std::make_shared<Foot>(this, i));
     }
+
+    m_zLevel = 1000;
+    m_rotation = thor::Pi;
 }
 
 std::string Player::getTypeName() const {
@@ -29,25 +32,27 @@ std::string Player::getTypeName() const {
 }
 
 void Player::onUpdate(double dt) {
-    auto lin = m_physicsBody->getLinearVelocity();
+    btVector3 ZAXIS(0, 0, 1);
+    btVector3 lin = m_physicsBody->getLinearVelocity();
+    lin = lin.rotate(ZAXIS, -m_rotation);
+
     float speed = 1.5;
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        // Moving backward
-        m_physicsBody->setLinearVelocity(btVector3(-speed, lin.y(), lin.z()));
+        lin.setX(speed);
         for(auto foot : m_foregroundFeet)
             foot->setDirection(-1);
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        // Moving forward
-        m_physicsBody->setLinearVelocity(btVector3(speed, lin.y(), lin.z()));
+        lin.setX(-speed);
         for(auto foot : m_foregroundFeet)
             foot->setDirection(1);
     } else {
-        // Falling but not actively moving
-        m_physicsBody->setLinearVelocity(btVector3(0, lin.y(), 0));
+        lin.setX(0);
         for(auto foot : m_foregroundFeet)
             foot->setDirection(0);
     }
+    lin = lin.rotate(ZAXIS, m_rotation);
+    m_physicsBody->setLinearVelocity(lin);
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         // TODO
@@ -76,17 +81,29 @@ void Player::onUpdate(double dt) {
     for(auto pair : m) {
         if(pair.first == this) continue;
         for(auto c : pair.second) {
-            total += c.position - m_ghostObject->getWorldTransform().getOrigin();
+            if(c.other->getTypeName() == "CollisionShape" || c.other->getTypeName() == "Toy") {
+                total += c.position - m_ghostObject->getWorldTransform().getOrigin();
+            }
         }
     }
+
+    float targetRotation = thor::Pi;
     if(total.length2() > 0) {
-        setPhysicsRotation(thor::Pi / 2 + atan2(total.y(), total.x()));
-    } else {
-        setPhysicsRotation(thor::Pi);
+        targetRotation = thor::Pi / 2 + atan2(total.y(), total.x());
     }
+    if(m_rotation - targetRotation > thor::Pi) {
+        targetRotation += thor::Pi * 2;
+    }
+    if(m_rotation - targetRotation < -thor::Pi) {
+        targetRotation -= thor::Pi * 2;
+    }
+
+    float rotSpeed = 10;
+    float rot = m_rotation * (1 - rotSpeed * dt) + targetRotation * (rotSpeed * dt);
+    setPhysicsRotation(rot);
 }
 
-void Player::onDraw(State* state, sf::RenderTarget& target) {
+void Player::onDraw(sf::RenderTarget& target) {
     // Draw body
     sf::CircleShape body;
     body.setPosition(m_position.x, m_position.y);
@@ -138,8 +155,19 @@ void Player::onAdd(State* state) {
 
 bool Player::onCollide(Entity* other, const EntityCollision& c) {
     if(other->getTypeName() == "Pair") {
-        ((Pair*)other)->activate();
+        Pair* p = (Pair*)other;
+        p->activate();
         return true;
+    } else if(other->getTypeName() == "Marker") {
+        Marker* m = (Marker*)other;
+        if(m->getType() == Marker::GOAL) {
+            auto p = getPairsLeft();
+            if(p == 0) {
+                Root().game_state.nextLevel();
+            } else {
+                Root().game_state.message(std::to_string(p / 2) + " pair" + (p == 2 ? "" : "s") + " missing");
+            }
+        }
     }
     return false;
 }

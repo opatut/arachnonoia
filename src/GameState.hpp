@@ -6,6 +6,8 @@
 #include "State.hpp"
 #include "Player.hpp"
 
+#define LEVEL_COUNT 2
+
 class GameState : public State {
 public:
     GameState();
@@ -17,14 +19,23 @@ public:
 
     void resize();
 
-    std::shared_ptr<Player> m_player;
-    sf::RenderTexture m_renderTexture;
+    void loadLevel(int num);
+    void spawnPlayer(const glm::vec2& pos);
+    void switchLevel(int num);
+    void nextLevel();
 
-    enum m_CollisionTypes {
-        COL_NOTHING = 0,
-        COL_WALL = 1 << 1,
-        COL_PLAYER = 1 << 2
-    };
+    void message(const std::string& msg);
+
+private:
+    int m_currentLevel;
+    int m_nextLevel;
+    std::string m_message;
+    float m_messageTime = 0.f;
+
+    std::shared_ptr<Player> m_player;
+    sf::RenderTexture m_renderTextures[2];
+
+    float m_levelFade;
 };
 
 #endif

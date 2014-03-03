@@ -11,10 +11,10 @@ class Player : public Entity {
 public:
     Player();
 
-    std::string getTypeName() const;
+    std::string getTypeName() const override;
 
     void onUpdate(double dt) override;
-    void onDraw(State *state, sf::RenderTarget& target) override;
+    void onDraw(sf::RenderTarget& target) override;
     void onAdd(State *state);
     bool onCollide(Entity* other, const EntityCollision& c);
 

@@ -20,8 +20,9 @@ void Entity::handleAddedToState(State* state) {
 }
 
 void Entity::onUpdate(double dt) {}
-void Entity::onDraw(State* state, sf::RenderTarget& target) {}
+void Entity::onDraw(sf::RenderTarget& target) {}
 void Entity::onHandleEvent(sf::Event& event) {}
+void Entity::onInitialize() {}
 void Entity::onAdd(State* state) {}
 void Entity::onRemove(State* state) {}
 bool Entity::onCollide(Entity* other, const EntityCollision& c) {

@@ -5,45 +5,46 @@
 
 #include "Entity.hpp"
 
+#define PAIR_TYPE_MIN 1
+#define PAIR_TYPE_MAX 4
+
 class Pair : public Entity {
 public:
     Pair();
 
-    std::string getTypeName() const;
+    std::string getTypeName() const override;
 
     void onUpdate(double dt) override;
-    void onDraw(State* state, sf::RenderTarget& target) override;
+    void onDraw(sf::RenderTarget& target) override;
     void onAdd(State* state);
 
     void setMetadata(int data);
 
-    void setGlyphNumber(int number);
-
     std::vector<std::shared_ptr<Pair>> findMatchingPairs();
+    void deactivateAllOtherPairs();
 
+    void setType(int type);
     void activate();
+    void deactivate();
     void solve();
+
+    sf::Color getColor() const;
 
     bool isActive() const;
     bool isSolved() const;
 
-    static std::string getGlyphName(int number);
-
     template<class Archive>
     void serialize(Archive& ar) {
         ar(cereal::make_nvp("entity", cereal::base_class<Entity>(this)));
-        ar(cereal::make_nvp("m_glyphNumber", m_glyphNumber));
+        ar(cereal::make_nvp("type", m_type));
     }
 
-
 private:
-    int m_glyphNumber;
+    int m_type;
     bool m_active;
     bool m_solved;
     float m_activationTime;
-
-    sf::Sprite m_sprite;
-    sf::Sprite m_glyphSprite;
+    float m_solvedTime;
 };
 
 #endif

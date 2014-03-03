@@ -7,15 +7,17 @@
 const std::string Wall::types[] = {
     "box",
     "platform-1",
-    "platform-2"
+    "platform-2",
+    "gradient"
 };
 
 Wall::Wall() {
     setType(types[0]);
     m_mass = 0;
+    m_zLevel = 0;
 
     // maybe split this physics stuff out into its own function if the logic becomes complex
-    m_physicsShape = new btBoxShape(btVector3(0.5f, 0.5f, 1));
+    // m_physicsShape = new btBoxShape(btVector3(0.5f, 0.5f, 1));
 }
 
 std::string Wall::getTypeName() const {
@@ -23,11 +25,11 @@ std::string Wall::getTypeName() const {
 }
 
 void Wall::onUpdate(double dt) {
-    m_physicsShape->setLocalScaling(btVector3(m_scale.x, m_scale.y, 1));
+    // m_physicsShape->setLocalScaling(btVector3(m_scale.x, m_scale.y, 1));
 }
 
-void Wall::onDraw(State* state, sf::RenderTarget& target) {
-    auto s = getSize();
+void Wall::onDraw(sf::RenderTarget& target) {
+    glm::vec2 s(m_sprite.getTexture()->getSize().x, m_sprite.getTexture()->getSize().y);
     m_sprite.setOrigin(s.x / 2, s.y / 2);
     m_sprite.setPosition(m_position.x, m_position.y);
     m_sprite.setScale(m_scale.x / s.x, m_scale.y / s.y);
@@ -37,7 +39,7 @@ void Wall::onDraw(State* state, sf::RenderTarget& target) {
 
 void Wall::setMetadata(int data) {
     data--;
-    if(data >= 0 && data < 3) {
+    if(data >= 0 && data < WALL_TYPE_COUNT) {
         setType(types[data]);
         auto s = getSize();
         m_scale = s / (float)fmax(s.x, s.y);
@@ -54,5 +56,5 @@ void Wall::setType(const std::string& type) {
 }
 
 glm::vec2 Wall::getSize() {
-    return glm::vec2(m_sprite.getTexture()->getSize().x, m_sprite.getTexture()->getSize().y);
+    return glm::vec2(1, 1);
 }

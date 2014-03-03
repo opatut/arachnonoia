@@ -16,12 +16,23 @@ public:
         FOLLOW,
         INSERT,
         SAVE,
-        LOAD
+        LOAD,
+        ADD_POINT
+    };
+
+    enum Axis {
+        ALL,
+        GLOBAL_X,
+        GLOBAL_Y,
+        LOCAL_X,
+        LOCAL_Y
     };
 
     enum EntityType {
         WALL = 1,
-        PAIR = 2
+        PAIR = 2,
+        COLLISION = 3,
+        MARKER = 4
     };
 
     EditorState();
@@ -50,13 +61,18 @@ private:
     std::string m_typingString;
     glm::vec2 m_modeStartPosition;
     glm::vec2 m_modeStartValue;
+    Axis m_editAxis;
     int m_currentZLevel;
+    int m_addPointInsertIndex;
 
     EntityType m_insertModeCurrentType;
     std::string m_followModeInput;
 
     std::string m_statusText;
     float m_statusTime = 1000.f;
+
+    bool m_showHelp;
+    std::vector<std::pair<std::string, std::string>> m_keys;
 
     std::string m_currentFilename;
 };

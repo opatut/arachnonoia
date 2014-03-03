@@ -8,7 +8,7 @@ class Foot : public Entity {
 public:
     Foot(Entity* player, int offset);
 
-    std::string getTypeName() const;
+    std::string getTypeName() const override;
 
     void onUpdate(float dt);
     void onDraw(sf::RenderTarget &target);

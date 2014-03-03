@@ -8,15 +8,17 @@
 
 #include "Entity.hpp"
 
+#define WALL_TYPE_COUNT 4
+
 class Wall : public Entity {
 public:
-    static const std::string types[3];
+    static const std::string types[WALL_TYPE_COUNT];
     Wall();
     
-    std::string getTypeName() const;
+    std::string getTypeName() const override;
 
     void onUpdate(double dt) override;
-    void onDraw(State *state, sf::RenderTarget& target) override;
+    void onDraw(sf::RenderTarget& target) override;
     void onAdd(State* state);
 
     void setMetadata(int data);

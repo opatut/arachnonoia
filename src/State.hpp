@@ -34,7 +34,7 @@ public:
     void remove(std::shared_ptr<Entity> entity);
     void initializeEntity(std::shared_ptr<Entity> entity);
 
-    glm::vec2 getMousePosition();
+    glm::vec2 getMousePosition(bool local = true);
 
     btDiscreteDynamicsWorld* dynamicsWorld() const;
 
@@ -60,6 +60,10 @@ public:
     std::map<Entity*, std::vector<EntityCollision>> getBodyContacts(btCollisionObject* from);
 
     bool m_debugDrawEnabled = false;
+    float getPixelSize() const;
+    float getTime() const;
+
+    int getFPS() const;
 
 protected:
     void drawEntities(sf::RenderTarget& target);
@@ -71,6 +75,11 @@ protected:
     glm::vec2 m_center;
     sf::View m_view;
     float m_pixelSize;
+    float m_time = 0;
+
+    int m_fps = -1;
+    float m_fpsTimer = 0.f;
+    int m_fpsCurrentCounter = 0;
 
     // physics stuff
     btBroadphaseInterface* m_broadphase = nullptr;
