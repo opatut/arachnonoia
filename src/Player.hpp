@@ -15,9 +15,11 @@ public:
 
     void onUpdate(double dt) override;
     void onDraw(sf::RenderTarget& target) override;
-    void onAdd(State *state);
-    bool onCollide(Entity* other, const EntityCollision& c);
+    void onAdd(State *state) override;
+    bool onCollide(Entity* other, const EntityCollision& c) override;
+    void onHandleEvent(sf::Event& event) override;
 
+    void jump();
     int getPairsLeft() const;
 
     enum Ability {
@@ -34,6 +36,7 @@ private:
     sf::Sprite m_sprite;
     btGhostObject* m_ghostObject;
     float m_scale_y = 0;
+    float m_springPower = 0;
     std::vector<std::shared_ptr<Foot>> m_foregroundFeet;
 
     Ability m_ability;

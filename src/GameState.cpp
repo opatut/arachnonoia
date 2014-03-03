@@ -248,6 +248,15 @@ void GameState::loadLevel(int num) {
 
     m_currentLevel = num;
 
+    // set player abilities
+    switch(m_currentLevel) {
+        case 1:
+        case 2:
+            m_player->setAbility(Player::WALK); break;
+        default:
+            m_player->setAbility(Player::RAPPEL); break;
+    }
+
     m_levelFade = 1.f;
     tween::TweenerParam p2(500, tween::SINE, tween::EASE_IN_OUT);
     p2.addProperty(&m_levelFade, 0.f);

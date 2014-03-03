@@ -33,39 +33,8 @@ std::string Player::getTypeName() const {
 }
 
 void Player::onUpdate(double dt) {
-    btVector3 ZAXIS(0, 0, 1);
-    btVector3 lin = m_physicsBody->getLinearVelocity();
-    lin = lin.rotate(ZAXIS, -m_rotation);
-
-    if(m_ability >= WALK) {
-        float walkSpeed = 1.5;
-
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            lin.setX(walkSpeed);
-            for(auto foot : m_foregroundFeet) foot->setDirection(-1);
-        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            lin.setX(-walkSpeed);
-            for(auto foot : m_foregroundFeet) foot->setDirection(1);
-        } else {
-            lin.setX(0);
-            for(auto foot : m_foregroundFeet) foot->setDirection(0);
-        }
-        lin = lin.rotate(ZAXIS, m_rotation);
-        m_physicsBody->setLinearVelocity(lin);
-    }
-
-    // update feed
-    for(auto foot : m_foregroundFeet) foot->onUpdate(dt);
-
-    // Apply manual gravity in the direction of current rotation to simulate stickyness to walls
-    if(m_ability >= WALLS) {
-        m_physicsBody->clearForces();
-        m_physicsBody->applyCentralForce(btVector3(0, -5, 0).rotate(btVector3(0, 0, 1), m_rotation));
-    }
-
-    m_ghostObject->setWorldTransform(m_physicsBody->getWorldTransform());
-
     // Check ghost collisions
+    m_ghostObject->setWorldTransform(m_physicsBody->getWorldTransform());
     auto m = m_state->getBodyContacts(m_ghostObject);
     btVector3 total(0, 0, 0);
     for(auto pair : m) {
@@ -80,8 +49,11 @@ void Player::onUpdate(double dt) {
         }
     }
 
+    bool onGround = total.length2() > 0;
+
+    // set rotation
     float targetRotation = thor::Pi;
-    if(total.length2() > 0) {
+    if(onGround) {
         targetRotation = thor::Pi / 2 + atan2(total.y(), total.x());
     }
     if(m_rotation - targetRotation > thor::Pi) {
@@ -94,6 +66,56 @@ void Player::onUpdate(double dt) {
     float rotSpeed = 10;
     float rot = m_rotation * (1 - rotSpeed * dt) + targetRotation * (rotSpeed * dt);
     setPhysicsRotation(rot);
+
+    // movement
+    btVector3 ZAXIS(0, 0, 1);
+    btVector3 lin = m_physicsBody->getLinearVelocity();
+    lin = lin.rotate(ZAXIS, -m_rotation);
+
+    if(m_ability >= WALK) {
+        float walkSpeed = 1.5;
+        float airAccel = 2.f;
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+            if(onGround) {
+                lin.setX(walkSpeed);
+            } else {
+                lin.setX(lin.getX() + airAccel * dt);
+            }
+            for(auto foot : m_foregroundFeet) foot->setDirection(-1);
+        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            if(onGround) {
+                lin.setX(-walkSpeed);
+            } else {
+                lin.setX(lin.getX() - airAccel * dt);
+            }
+            for(auto foot : m_foregroundFeet) foot->setDirection(1);
+        } else {
+            if(onGround) {
+                lin.setX(0);
+            }
+            for(auto foot : m_foregroundFeet) foot->setDirection(0);
+        }
+        lin = lin.rotate(ZAXIS, m_rotation);
+        m_physicsBody->setLinearVelocity(lin);
+    }
+
+    if(m_ability >= JUMP) {
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+            float powerSpeed = 2.f;
+            m_springPower = fmin(1, m_springPower + powerSpeed * dt);
+        }
+    }
+
+    // update feed
+    for(auto foot : m_foregroundFeet) foot->onUpdate(dt);
+
+    // Apply manual gravity in the direction of current rotation to simulate stickyness to walls
+    if(m_ability >= WALLS) {
+        m_physicsBody->applyCentralForce(btVector3(0, -9.81, 0));
+        m_physicsBody->applyCentralForce(btVector3(0, -5, 0).rotate(btVector3(0, 0, 1), m_rotation));
+    }
+
 }
 
 void Player::onDraw(sf::RenderTarget& target) {
@@ -101,7 +123,7 @@ void Player::onDraw(sf::RenderTarget& target) {
     sf::CircleShape body;
     body.setPosition(m_position.x, m_position.y);
     body.setRadius(1);
-    body.setOrigin(1, 1);
+    body.setOrigin(1, 1 + m_springPower);
     body.setScale(0.2, m_scale_y);
     body.setFillColor(sf::Color::Black);
     body.setRotation(thor::toDegree(m_rotation));
@@ -163,6 +185,26 @@ bool Player::onCollide(Entity* other, const EntityCollision& c) {
         }
     }
     return false;
+}
+
+void Player::onHandleEvent(sf::Event& event) {
+    if(event.type == sf::Event::KeyReleased) {
+        if(event.key.code == sf::Keyboard::Space) {
+            jump();
+        }
+    }
+}
+
+void Player::jump() {
+    if(m_ability < JUMP) return;
+
+    float strength = 7.f * m_springPower;
+    btVector3 impulse(0, -1, 0);
+    impulse = impulse.rotate(btVector3(0, 0, 1), thor::Pi + m_rotation);
+    impulse *= strength;
+    m_physicsBody->applyCentralImpulse(impulse);
+
+    m_springPower = 0;
 }
 
 int Player::getPairsLeft() const {
