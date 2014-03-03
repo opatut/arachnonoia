@@ -20,9 +20,10 @@ Player::Player() {
     m_physicsShape = new btSphereShape(0.2);
 
     // Create foreground feet
-    for(size_t i = 0; i < 4; ++i) {
-        m_foregroundFeet.push_back(std::make_shared<Foot>(this, i));
-    }
+    for(size_t i = 0; i < 4; ++i) m_foregroundFeet.push_back(std::make_shared<Foot>(this, i, false));
+
+    // Create background feet
+    for(size_t i = 0; i < 4; ++i) m_backgroundFeet.push_back(std::make_shared<Foot>(this, i, true));
 
     m_zLevel = 1;
     m_rotation = thor::Pi;
@@ -109,6 +110,7 @@ void Player::onUpdate(double dt) {
 
     // update feet
     for(auto foot : m_foregroundFeet) foot->handleUpdate(dt);
+    for(auto foot : m_backgroundFeet) foot->handleUpdate(dt);
 
     // Apply manual gravity in the direction of current rotation to simulate stickyness to walls
     if(m_ability >= WALLS) {
@@ -119,6 +121,9 @@ void Player::onUpdate(double dt) {
 }
 
 void Player::onDraw(sf::RenderTarget& target) {
+    // Draw background legs
+    for(auto foot : m_backgroundFeet) foot->handleDraw(target);
+
     // Draw body
     sf::CircleShape body;
     body.setPosition(m_position.x, m_position.y);
@@ -128,10 +133,6 @@ void Player::onDraw(sf::RenderTarget& target) {
     body.setFillColor(sf::Color::Black);
     body.setRotation(thor::toDegree(m_rotation));
     target.draw(body);
-
-    // Draw foreground legs
-    for(auto foot : m_foregroundFeet)
-        foot->handleDraw(target);
 
     // Draw eyes
     for(auto i = 0; i < 2; ++i) {
@@ -146,6 +147,9 @@ void Player::onDraw(sf::RenderTarget& target) {
         eye.setFillColor(sf::Color::White);
         target.draw(eye);
     }
+
+    // Draw foreground legs
+    for(auto foot : m_foregroundFeet) foot->handleDraw(target);
 }
 
 void Player::onAdd(State* state) {

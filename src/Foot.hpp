@@ -4,9 +4,10 @@
 #include "Entity.hpp"
 #include "State.hpp"
 
+class Player;
 class Foot : public Entity {
 public:
-    Foot(Entity* player, int offset);
+    Foot(Player *player, int offset, bool background);
 
     std::string getTypeName() const override;
 
@@ -20,15 +21,15 @@ public:
     void setDirection(int direction);
 
 private:
-    Entity* m_player;
+    Player* m_player;
 
     int m_offset;
 
     int m_direction = 0;
     float m_phase = 0;
-    bool m_reverse = false;
 
     glm::vec2 m_anklePosition;
+    bool m_background;
 };
 
 #endif // FOOT_HPP
