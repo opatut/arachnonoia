@@ -46,7 +46,7 @@ void Foot::onUpdate(float dt) {
     float leg_offset_factor = 0.7f; // distance between legs
     float leg_phase_factor = 0.2f; // distance of leg move per phase
 
-    sf::Vector2f offsetFootRayEnd(m_phase * leg_phase_factor + (m_offset - 1.5) * leg_offset_factor, 0.5f);
+    sf::Vector2f offsetFootRayEnd(m_phase * leg_phase_factor + (m_offset - 1.5) * leg_offset_factor, 1.f);
     sf::Vector2f relFootRayEnd = thor::rotatedVector(offsetFootRayEnd, thor::toDegree(m_player->rotation()));
     sf::Vector2f absFootRayEnd(m_player->position().x - relFootRayEnd.x, m_player->position().y - relFootRayEnd.y);
 
