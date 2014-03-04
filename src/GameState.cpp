@@ -142,24 +142,29 @@ void GameState::onDraw(sf::RenderTarget& target) {
     auto verticalBlur   = Root().resources.getShader("blur-vertical");
     auto horizontalBlur = Root().resources.getShader("blur-horizontal");
 
-    horizontalBlur->setParameter("blurSize", 5 / w);
-    verticalBlur->setParameter("blurSize", 5 / h);
+    horizontalBlur->setParameter("blurSize", 2.5 / w);
+    verticalBlur->setParameter("blurSize", 2.5 / h);
+    // pixel->setParameter("center", m_center.x, m_center.y);
+    pixel->setParameter("size", w, h);
 
     m_renderTextures[0].setView(m_renderTextures[0].getDefaultView());
     m_renderTextures[1].setView(m_renderTextures[1].getDefaultView());
     m_renderTextures[0].setSmooth(true);
     m_renderTextures[1].setSmooth(true);
 
-    sprite = sf::Sprite(m_renderTextures[0].getTexture());
     if(!m_debugDrawEnabled) {
-        m_renderTextures[1].draw(sprite);//, pixel.get());
+        sprite = sf::Sprite(m_renderTextures[0].getTexture());
+        m_renderTextures[1].draw(sprite, horizontalBlur.get());
 
         sprite = sf::Sprite(m_renderTextures[1].getTexture());
-        m_renderTextures[0].draw(sprite, horizontalBlur.get());
+        m_renderTextures[0].draw(sprite, verticalBlur.get());
 
         sprite = sf::Sprite(m_renderTextures[0].getTexture());
+        target.draw(sprite, pixel.get());
+    } else {
+        sprite = sf::Sprite(m_renderTextures[0].getTexture());
+        target.draw(sprite);
     }
-    target.draw(sprite);//, verticalBlur.get());
 
     // message
     target.setView(target.getDefaultView());
@@ -254,7 +259,7 @@ void GameState::loadLevel(int num) {
     }
 
     m_levelFade = 1.f;
-    tween::TweenerParam p2(500, tween::SINE, tween::EASE_IN_OUT);
+    tween::TweenerParam p2(1000, tween::SINE, tween::EASE_IN_OUT);
     p2.addProperty(&m_levelFade, 0.f);
     m_tweener.addTween(p2);
 
