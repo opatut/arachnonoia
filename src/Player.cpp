@@ -52,11 +52,11 @@ void Player::onUpdate(double dt) {
         }
     }
 
-    bool onGround = total.length2() > 0;
+    m_onGround = total.length2() > 0;
 
     // set rotation
     float targetRotation = thor::Pi;
-    if(onGround) {
+    if(m_onGround) {
         targetRotation = thor::Pi / 2 + atan2(total.y(), total.x());
     }
     if(m_rotation - targetRotation > thor::Pi) {
@@ -66,51 +66,61 @@ void Player::onUpdate(double dt) {
         targetRotation -= thor::Pi * 2;
     }
 
+    if(m_springPower > 0) {
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+            targetRotation -= 0.5f;
+        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            targetRotation += 0.5f;
+        }
+    }
+
     float rotSpeed = 10;
     float rot = m_rotation * (1 - rotSpeed * dt) + targetRotation * (rotSpeed * dt);
     setPhysicsRotation(rot);
 
     // movement
     btVector3 ZAXIS(0, 0, 1);
-    btVector3 lin = m_physicsBody->getLinearVelocity();
-    lin = lin.rotate(ZAXIS, -m_rotation);
 
     if(m_ability >= WALK) {
         float walkSpeed = 1.5;
         float airAccel = 2.f;
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            if(onGround) {
+        btVector3 lin = m_physicsBody->getLinearVelocity();
+        lin = lin.rotate(ZAXIS, -m_rotation);
+
+        m_walkSound.pause();
+        for(auto foot : m_foregroundFeet) foot->setDirection(0);
+        for(auto foot : m_backgroundFeet) foot->setDirection(0);
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) && m_springPower == 0) {
+            if(m_onGround) {
                 lin.setX(walkSpeed);
+                for(auto foot : m_foregroundFeet) foot->setDirection(-1);
+                for(auto foot : m_backgroundFeet) foot->setDirection(1);
+                m_walkSound.play();
             } else {
                 lin.setX(lin.getX() + airAccel * dt);
             }
-            for(auto foot : m_foregroundFeet) foot->setDirection(-1);
-            for(auto foot : m_backgroundFeet) foot->setDirection(1);
-            m_walkSound.play();
-        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            if(onGround) {
+        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) && m_springPower == 0) {
+            if(m_onGround) {
                 lin.setX(-walkSpeed);
+                for(auto foot : m_foregroundFeet) foot->setDirection(1);
+                for(auto foot : m_backgroundFeet) foot->setDirection(-1);
+                m_walkSound.play();
             } else {
                 lin.setX(lin.getX() - airAccel * dt);
             }
-            for(auto foot : m_foregroundFeet) foot->setDirection(1);
-            for(auto foot : m_backgroundFeet) foot->setDirection(-1);
-            m_walkSound.play();
-        } else {
-            if(onGround) {
-                lin.setX(0);
-            }
-            for(auto foot : m_foregroundFeet) foot->setDirection(0);
-            for(auto foot : m_backgroundFeet) foot->setDirection(0);
-            m_walkSound.pause();
+        } else if(m_onGround) {
+            lin.setX(0);
         }
         lin = lin.rotate(ZAXIS, m_rotation);
         m_physicsBody->setLinearVelocity(lin);
     }
 
     if(m_ability >= JUMP) {
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+        if(!m_onGround) {
+            m_springPower = 0;
+        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
             float powerSpeed = 2.f;
             m_springPower = fmin(1, m_springPower + powerSpeed * dt);
         }

@@ -40,6 +40,7 @@ private:
     sf::Sprite m_sprite;
     btGhostObject* m_ghostObject;
     float m_springPower = 0;
+    bool m_onGround = false;
 
     sf::Sound m_walkSound;
 
