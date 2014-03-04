@@ -133,7 +133,7 @@ void Player::onUpdate(double dt) {
     // Apply manual gravity in the direction of current rotation to simulate stickyness to walls
     if(m_ability >= WALLS) {
         m_physicsBody->applyCentralForce(btVector3(0, -9.81, 0));
-        m_physicsBody->applyCentralForce(btVector3(0, 9.81, 0).rotate(btVector3(0, 0, 1), m_rotation));
+        m_physicsBody->applyCentralForce(btVector3(0, -9.81, 0).rotate(btVector3(0, 0, 1), m_rotation));
     }
 
 }
