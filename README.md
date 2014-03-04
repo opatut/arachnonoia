@@ -9,6 +9,12 @@ A tiny spider's tale.
 * Sven-Hendrik 'svenstaro' Haase
 * Paul 'opatut' Bienkowski
 
+### Music and Sound
+
+* [Eggs cracking - krb21](http://www.freesound.org/people/krb21/sounds/118608/)
+* [Horror Ambience - klankbeeld](http://www.freesound.org/people/klankbeeld/sounds/211559/)
+* [Fire 2 - Partners in Rhyme](http://www.freesoundeffects.com/free-track/fire2-89307/)
+
 ## License
 
 This project is licensed under the terms of the **zlib license**:
