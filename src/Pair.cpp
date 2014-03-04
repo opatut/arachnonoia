@@ -85,7 +85,7 @@ void Pair::onDraw(sf::RenderTarget& target) {
         sprite.setColor(c);
         sprite.setPosition(m_position.x, m_position.y);
         sprite.setScale(0.3 / s.x, (0.3 + 0.2 * abs(sin(m_activationTime * 2))) / s.y);
-        sprite.setOrigin(0.5 * s.x, 0.5 * s.y);
+        sprite.setOrigin(0.6 * s.x, 0.6 * s.y);
         sprite.setRotation(thor::toDegree(m_rotation));
         target.draw(sprite);
     }
@@ -155,17 +155,17 @@ void Pair::solve() {
 
 sf::Color Pair::getColor() const {
     if(m_type == 1) {
-        return sf::Color::Red;
+        return sf::Color::Cyan;
     } else if(m_type == 2) {
-        return sf::Color::Green;
+        return sf::Color::Yellow;
     } else if(m_type == 3) {
         return sf::Color::Blue;
     } else if(m_type == 4) {
         return sf::Color::Magenta;
     } else if(m_type == 5) {
-        return sf::Color::Yellow;
+        return sf::Color::Green;
     } else if(m_type == 6) {
-        return sf::Color::Cyan;
+        return sf::Color::Red;
     } else {
         return sf::Color::Black;
     }
