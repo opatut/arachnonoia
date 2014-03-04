@@ -66,9 +66,9 @@ void Foot::onUpdate(double dt) {
     btVector3 hitPoint(0, 0, 0);
     if(rayCallback.hasHit()) {
         hitPoint = rayCallback.m_hitPointWorld;
-//        auto new_pos = glm::vec2(hitPoint.x(), hitPoint.y());
+        auto new_pos = glm::vec2(hitPoint.x(), hitPoint.y());
 //        if((new_pos - m_position).length() > 2.f) {
-//            m_position = new_pos;
+        m_position = new_pos;
 //        }
     } else {
         m_position = glm::vec2(rayEnd.x(), rayEnd.y());

@@ -84,6 +84,7 @@ void Player::onUpdate(double dt) {
                 lin.setX(lin.getX() + airAccel * dt);
             }
             for(auto foot : m_foregroundFeet) foot->setDirection(-1);
+            for(auto foot : m_backgroundFeet) foot->setDirection(1);
         } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             if(onGround) {
                 lin.setX(-walkSpeed);
@@ -91,11 +92,13 @@ void Player::onUpdate(double dt) {
                 lin.setX(lin.getX() - airAccel * dt);
             }
             for(auto foot : m_foregroundFeet) foot->setDirection(1);
+            for(auto foot : m_backgroundFeet) foot->setDirection(-1);
         } else {
             if(onGround) {
                 lin.setX(0);
             }
             for(auto foot : m_foregroundFeet) foot->setDirection(0);
+            for(auto foot : m_backgroundFeet) foot->setDirection(0);
         }
         lin = lin.rotate(ZAXIS, m_rotation);
         m_physicsBody->setLinearVelocity(lin);
