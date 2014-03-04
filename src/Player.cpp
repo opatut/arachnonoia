@@ -140,31 +140,24 @@ void Player::onUpdate(double dt) {
 
 void Player::onDraw(sf::RenderTarget& target) {
     // Draw background legs
-    for(auto foot : m_backgroundFeet) foot->handleDraw(target);
+    for(auto foot : m_backgroundFeet) { foot->handleDraw(target); }
 
     // Draw body
-    sf::CircleShape body;
+    // sf::CircleShape body;
+    // body.setPosition(m_position.x, m_position.y);
+    // body.setRadius(1);
+    // body.setOrigin(1, 1 + m_springPower);
+    // body.setScale(0.2, m_scale_y);
+    // body.setFillColor(sf::Color::Black);
+    // body.setRotation(thor::toDegree(m_rotation));
+    // target.draw(body);
+    auto tex = Root().resources.getTexture("body");
+    sf::Sprite body(*tex.get());
     body.setPosition(m_position.x, m_position.y);
-    body.setRadius(1);
-    body.setOrigin(1, 1 + m_springPower);
-    body.setScale(0.2, m_scale_y);
-    body.setFillColor(sf::Color::Black);
-    body.setRotation(thor::toDegree(m_rotation));
+    body.setScale(0.4 * m_scale.x / tex->getSize().x, 0.4 * m_scale.y / tex->getSize().x);
+    body.setOrigin(tex->getSize().x / 2, tex->getSize().y / 2);
+    body.setRotation(180 + thor::toDegree(m_rotation));
     target.draw(body);
-
-    // Draw eyes
-    for(auto i = 0; i < 2; ++i) {
-        sf::CircleShape eye;
-        sf::Vector2f pos(m_position.x + (0.5-i)*0.1, m_position.y + 0.05);
-        sf::Vector2f diff(m_position.x - pos.x, m_position.y - pos.y);
-        thor::rotate(diff, thor::toDegree(m_rotation));
-        eye.setPosition(m_position.x + diff.x, m_position.y + diff.y);
-        eye.setRadius(1);
-        eye.setOrigin(1, 1);
-        eye.setScale(0.01, 0.01);
-        eye.setFillColor(sf::Color::White);
-        target.draw(eye);
-    }
 
     // Draw foreground legs
     for(auto foot : m_foregroundFeet) foot->handleDraw(target);

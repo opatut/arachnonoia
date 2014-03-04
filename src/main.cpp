@@ -55,6 +55,10 @@ int main() {
     Root().resources.addTexture("egg-top",          "data/textures/egg-top.png");
     Root().resources.addTexture("egg-bottom",       "data/textures/egg-bottom.png");
     Root().resources.addTexture("egg-crack",        "data/textures/egg-crack.png");
+    Root().resources.addTexture("body",             "data/textures/body.png");
+    // Root().resources.addTexture("fang",             "data/textures/fang.png");
+    Root().resources.addTexture("upper-leg",        "data/textures/upper-leg.png");
+    Root().resources.addTexture("lower-leg",        "data/textures/lower-leg.png");
 
     Root().resources.addSound("crack",  "data/sounds/crack.ogg");
     Root().resources.addSound("rumble", "data/sounds/rumble.ogg");
