@@ -43,3 +43,14 @@ void ResourceManager::addShader(const std::string& name, const std::string& file
 std::shared_ptr<sf::Shader> ResourceManager::getShader(const std::string& name) {
     return m_shaders[name];
 }
+
+void ResourceManager::addMusic(const std::string& name, const std::string& filename) {
+    m_musicFiles[name] = filename; 
+}
+
+std::shared_ptr<sf::Music> ResourceManager::getMusic(const std::string& name) {
+    auto music = std::make_shared<sf::Music>();
+    music->openFromFile(m_musicFiles[name]);
+    return music;
+}
+

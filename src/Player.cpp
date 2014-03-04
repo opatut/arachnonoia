@@ -14,6 +14,8 @@
 
 Player::Player() {
     m_sprite.setTexture(* Root().resources.getTexture("player").get());
+    m_walkSound.setBuffer(* Root().resources.getSound("walk").get());
+    m_walkSound.setLoop(true);
 
     m_mass = 1.f;
     m_ability = WALK;
@@ -85,6 +87,7 @@ void Player::onUpdate(double dt) {
             }
             for(auto foot : m_foregroundFeet) foot->setDirection(-1);
             for(auto foot : m_backgroundFeet) foot->setDirection(1);
+            m_walkSound.play();
         } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             if(onGround) {
                 lin.setX(-walkSpeed);
@@ -93,12 +96,14 @@ void Player::onUpdate(double dt) {
             }
             for(auto foot : m_foregroundFeet) foot->setDirection(1);
             for(auto foot : m_backgroundFeet) foot->setDirection(-1);
+            m_walkSound.play();
         } else {
             if(onGround) {
                 lin.setX(0);
             }
             for(auto foot : m_foregroundFeet) foot->setDirection(0);
             for(auto foot : m_backgroundFeet) foot->setDirection(0);
+            m_walkSound.pause();
         }
         lin = lin.rotate(ZAXIS, m_rotation);
         m_physicsBody->setLinearVelocity(lin);
@@ -118,7 +123,7 @@ void Player::onUpdate(double dt) {
     // Apply manual gravity in the direction of current rotation to simulate stickyness to walls
     if(m_ability >= WALLS) {
         m_physicsBody->applyCentralForce(btVector3(0, -9.81, 0));
-        m_physicsBody->applyCentralForce(btVector3(0, -5, 0).rotate(btVector3(0, 0, 1), m_rotation));
+        m_physicsBody->applyCentralForce(btVector3(0, 9.81, 0).rotate(btVector3(0, 0, 1), m_rotation));
     }
 
 }

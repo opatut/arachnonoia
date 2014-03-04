@@ -58,6 +58,9 @@ int main() {
 
     Root().resources.addSound("crack",  "data/sounds/crack.ogg");
     Root().resources.addSound("rumble", "data/sounds/rumble.ogg");
+    Root().resources.addSound("walk",   "data/sounds/walk.ogg");
+
+    Root().resources.addMusic("horror-ambience", "data/music/horror-ambience.wav");
 
     Root().resources.addFont("title",   "data/fonts/Supernova.ttf");
     Root().resources.addFont("default", "data/fonts/what-fish-died.ttf");
@@ -84,6 +87,10 @@ int main() {
     s.setLoop(true);
     s.setVolume(10);
     s.play();
+
+    auto m = Root().resources.getMusic("horror-ambience");
+    m->setVolume(10);
+    m->play();
 
     while(window.isOpen()) {
         float dt = clock.restart().asSeconds();

@@ -20,11 +20,15 @@ public:
     void addShader(const std::string& name, const std::string& filename, sf::Shader::Type type);
     std::shared_ptr<sf::Shader> getShader(const std::string& name);
 
+    void addMusic(const std::string& name, const std::string& filename);
+    std::shared_ptr<sf::Music> getMusic(const std::string& name);
+
 private:
     std::map<std::string, std::shared_ptr<sf::Texture>> m_textures;
     std::map<std::string, std::shared_ptr<sf::Font>> m_fonts;
     std::map<std::string, std::shared_ptr<sf::Shader>> m_shaders;
     std::map<std::string, std::shared_ptr<sf::SoundBuffer>> m_sounds;
+    std::map<std::string, std::string> m_musicFiles;
 };
 
 #endif
