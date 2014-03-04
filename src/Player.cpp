@@ -17,7 +17,7 @@ Player::Player() {
 
     m_mass = 1.f;
     m_ability = WALK;
-    m_physicsShape = new btSphereShape(0.2);
+    m_physicsShape = new btSphereShape(0.25);
 
     // Create foreground feet
     for(size_t i = 0; i < 4; ++i) m_foregroundFeet.push_back(std::make_shared<Foot>(this, i, false));

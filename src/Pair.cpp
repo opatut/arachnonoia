@@ -14,7 +14,9 @@
 Pair::Pair() {
     m_type = 1;
     m_mass = 0.f;
-    m_physicsShape = new btSphereShape(0.01);
+    m_physicsShape = new btSphereShape(0.1);
+    m_solved = false;
+    m_active = false;
     m_solvedTime = 0;
     m_activationTime = 0;
 }

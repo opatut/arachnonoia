@@ -275,9 +275,21 @@ void GameState::spawnPlayer(const glm::vec2& pos) {
 
 void GameState::spawnEgg(const glm::vec2& pos) {
     m_egg = std::make_shared<Egg>();
+    m_egg->setHatching(true);
     add(m_egg);
     m_egg->setPhysicsPosition(pos);
     m_center = m_egg->position();
+
+    for(int i = 0; i < 10; ++i) {
+        auto egg = std::make_shared<Egg>();
+        add(egg);
+        egg->setPhysicsPosition(pos + glm::vec2(thor::random(-1.5f, -0.3f), thor::random(-0.5f, 0.f)));
+        float s = thor::random(0.5f, 0.7f);
+        egg->setScale(glm::vec2(s, s));
+        egg->handleUpdate(0);
+    }
+
+    m_dynamicsWorld->stepSimulation(10.f, 100);
 }
 
 
