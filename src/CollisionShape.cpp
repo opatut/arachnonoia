@@ -30,7 +30,7 @@ void CollisionShape::onDraw(sf::RenderTarget& target) {
         int pointSize = 10;
         for(auto p : points) {
             sf::RectangleShape r(sf::Vector2f(pointSize*pix, pointSize*pix));
-            r.setPosition(m_position.x + p.x - pointSize / 2 * pix, m_position.y + p.y - pointSize / 2 * pix);
+            r.setPosition(m_position.x + p.x * m_scale.x - pointSize / 2 * pix, m_position.y + p.y * m_scale.y - pointSize / 2 * pix);
             r.setFillColor(sf::Color::Magenta);
             target.draw(r);
         }

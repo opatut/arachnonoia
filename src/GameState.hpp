@@ -7,7 +7,7 @@
 #include "Player.hpp"
 #include "Egg.hpp"
 
-#define LEVEL_COUNT 2
+#define LEVEL_COUNT 3
 
 class GameState : public State {
 public:

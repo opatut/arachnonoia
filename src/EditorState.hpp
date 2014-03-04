@@ -13,6 +13,7 @@ public:
         GRAB,
         ROTATE,
         SCALE,
+        SCALE_ALL,
         FOLLOW,
         INSERT,
         SAVE,

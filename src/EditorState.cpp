@@ -34,6 +34,7 @@ EditorState::EditorState() {
     m_keys.push_back(std::make_pair("G",      "Grab / move"));
     m_keys.push_back(std::make_pair("R",      "Rotate"));
     m_keys.push_back(std::make_pair("S",      "Scale"));
+    m_keys.push_back(std::make_pair("Shift+S","Scale all"));
     m_keys.push_back(std::make_pair("+/-",    "Z-Level up/down"));
     m_keys.push_back(std::make_pair("C",      "Edit collision shape"));
     m_keys.push_back(std::make_pair("I",      "Reverse collision shape"));
@@ -137,7 +138,7 @@ void EditorState::onHandleEvent(sf::Event& event) {
             } else if(event.key.code == sf::Keyboard::R) {
                 if(m_mode == NONE) startMode(ROTATE);
             } else if(event.key.code == sf::Keyboard::S) {
-                if(m_mode == NONE) startMode(SCALE);
+                if(m_mode == NONE) startMode(event.key.shift ? SCALE_ALL : SCALE);
             } else if(event.key.code == sf::Keyboard::F) {
                 if(m_mode == NONE) startMode(FOLLOW);
             } else if(event.key.code == sf::Keyboard::Space) {
@@ -432,6 +433,10 @@ void EditorState::startMode(EditorMode mode) {
     } else if(m_mode == SCALE) {
         m_modeStartValue = m_currentEntity->scale();
         m_editAxis = ALL;
+    } else if(m_mode == SCALE_ALL) {
+        m_modeStartValue.x = 1;
+        m_modeStartValue.y = 1;
+        m_editAxis = ALL;
     } else if(m_mode == INSERT) {
         m_currentEntity = createNewEntity(m_insertModeCurrentType);
         add(m_currentEntity);
@@ -552,7 +557,6 @@ void EditorState::updateMode() {
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
             factor = round(factor*10)/10.0;
         }
-
         glm::vec2 scale(factor, factor);
         if(m_editAxis == GLOBAL_X || m_editAxis == LOCAL_X) {
             scale.y = 1;
@@ -563,6 +567,20 @@ void EditorState::updateMode() {
 
         m_currentEntity->setScale(m_modeStartValue * scale);
         setStatus("Scale: " + std::to_string(factor));
+    } else if(m_mode == SCALE_ALL) {
+        auto start_length = glm::length(m_modeStartPosition);
+        auto mouse_length = glm::length(mp);
+
+        float factor = ((mouse_length != 0) ? (mouse_length / start_length) : 0.f);
+        auto f =  factor / m_modeStartValue.x;
+        for(auto e : m_entities) {
+            e->setScale(e->scale() * f);
+            e->setPosition(e->position() * f);
+        }
+        m_modeStartValue.x = factor;
+        m_modeStartValue.y *= f;
+
+        setStatus("Scale all: " + std::to_string(factor));
     } else if(m_mode == INSERT) {
         m_currentEntity->setPhysicsPosition(mp);
         m_currentEntity->setZLevel(m_currentZLevel);
@@ -623,6 +641,11 @@ void EditorState::cancelMode() {
             m_currentEntity->setRotation(m_modeStartValue.x);
         } else if(m_mode == SCALE) {
             m_currentEntity->setScale(m_modeStartValue);
+        } else if(m_mode == SCALE_ALL) {
+            for(auto e : m_entities) {
+                e->setScale(e->scale() / m_modeStartValue.y);
+                e->setPosition(e->position() / m_modeStartValue.y);
+            }
         } else if(m_mode == INSERT) {
             remove(m_currentEntity);
             m_currentEntity.reset();
