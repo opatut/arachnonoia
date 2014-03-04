@@ -287,7 +287,8 @@ void GameState::spawnEgg(const glm::vec2& pos) {
     for(int i = 0; i < 10; ++i) {
         auto egg = std::make_shared<Egg>();
         add(egg);
-        egg->setPhysicsPosition(pos + glm::vec2(thor::random(-1.5f, -0.3f), thor::random(-0.5f, 0.f)));
+        egg->setPhysicsPosition(pos + glm::vec2(thor::random(-2.5f, -1.0f), thor::random(-0.5f, 0.f)));
+        egg->setPhysicsRotation(thor::random(-thor::Pi, thor::Pi));
         float s = thor::random(0.5f, 0.7f);
         egg->setScale(glm::vec2(s, s));
         egg->handleUpdate(0);
