@@ -57,6 +57,7 @@ int main() {
     Root().resources.addTexture("egg-crack",        "data/textures/egg-crack.png");
 
     Root().resources.addSound("crack",  "data/sounds/crack.ogg");
+    Root().resources.addSound("rumble", "data/sounds/rumble.ogg");
 
     Root().resources.addFont("title",   "data/fonts/Supernova.ttf");
     Root().resources.addFont("default", "data/fonts/what-fish-died.ttf");
@@ -77,6 +78,12 @@ int main() {
     std::stack<State*> states;
     states.push(&Root().menu_state);
     states.push(&Root().game_state);
+
+    sf::Sound s;
+    s.setBuffer(*Root().resources.getSound("rumble"));
+    s.setLoop(true);
+    s.setVolume(10);
+    s.play();
 
     while(window.isOpen()) {
         float dt = clock.restart().asSeconds();
