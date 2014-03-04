@@ -42,6 +42,9 @@ public:
     void onUpdate(float dt) override;
     void onDraw(sf::RenderTarget& target) override;
 
+    void addPlayer(const glm::vec2& pos = glm::vec2(0, 0));
+    glm::vec2 removePlayer();
+
     void startMode(EditorMode mode);
     void updateMode();
     void commitMode();
@@ -54,6 +57,8 @@ protected:
 
 private:
     std::shared_ptr<Entity> m_currentEntity;
+    std::shared_ptr<Player> m_player;
+
     std::map<std::shared_ptr<Entity>, std::string> m_entityNumbers;
 
     EditorMode m_mode;

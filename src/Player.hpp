@@ -23,6 +23,7 @@ public:
     int getPairsLeft() const;
 
     enum Ability {
+        NONE = -1,
         WALK = 0,
         JUMP = 1,
         WALLS = 2,
@@ -38,7 +39,7 @@ private:
     sf::Sprite m_sprite;
     btGhostObject* m_ghostObject;
     float m_springPower = 0;
-    
+
     std::vector<std::shared_ptr<Foot>> m_foregroundFeet;
     std::vector<std::shared_ptr<Foot>> m_backgroundFeet;
 

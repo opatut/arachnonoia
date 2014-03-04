@@ -7,6 +7,7 @@
 #include <Thor/Math.hpp>
 
 #include "Wall.hpp"
+#include "Player.hpp"
 #include "Pair.hpp"
 #include "Root.hpp"
 #include "CollisionShape.hpp"
@@ -56,6 +57,23 @@ EditorState::EditorState() {
 
 void EditorState::onInit() {
     setStatus("Press F1 for Help.");
+    addPlayer();
+}
+
+void EditorState::addPlayer(const glm::vec2& pos) {
+    m_player = std::make_shared<Player>();
+    add(m_player);
+    m_player->physicsBody()->setGravity(btVector3(0, 0, 0));
+    m_player->setAbility(Player::NONE);
+    m_player->setPhysicsPosition(pos);
+}
+
+glm::vec2 EditorState::removePlayer() {
+    if(!m_player) return glm::vec2(0, 0);
+
+    auto p = m_player->position();
+    remove(m_player);
+    return p;
 }
 
 void EditorState::onHandleEvent(sf::Event& event) {
@@ -516,7 +534,7 @@ void EditorState::updateMode() {
             diff = glm::rotate(diff, m_currentEntity->rotation());
         }
 
-        m_currentEntity->setPosition(m_modeStartValue + diff);
+        m_currentEntity->setPhysicsPosition(m_modeStartValue + diff);
         setStatus("Move: " + std::to_string(diff.x) + "|" + std::to_string(diff.y));
     } else if(m_mode == ROTATE) {
         float angle = glm::orientedAngle(glm::normalize(entity_start), glm::normalize(entity_mouse));
@@ -546,7 +564,7 @@ void EditorState::updateMode() {
         m_currentEntity->setScale(m_modeStartValue * scale);
         setStatus("Scale: " + std::to_string(factor));
     } else if(m_mode == INSERT) {
-        m_currentEntity->setPosition(mp);
+        m_currentEntity->setPhysicsPosition(mp);
         m_currentEntity->setZLevel(m_currentZLevel);
         setStatus("Select type: (1) Wall (2) Pair (3) CollisionShape (4) Marker");
     } else if(m_mode == FOLLOW) {
@@ -563,14 +581,17 @@ void EditorState::updateMode() {
 void EditorState::commitMode() {
     if(m_mode == SAVE) {
         std::string filename = "levels/" + m_typingString;
+        auto pos = removePlayer();
         saveToFile(filename);
         setStatus("Saved to " + filename + ".");
+        addPlayer(pos);
     } else if(m_mode == LOAD) {
         std::string filename = "levels/" + m_typingString;
         loadFromFile(filename);
         m_currentEntity.reset();
         setStatus("Loaded from " + filename + ".");
         m_currentFilename = m_typingString;
+        addPlayer();
     } else if(m_mode == INSERT) {
         if(m_currentEntity->getTypeName() == "CollisionShape") {
             startMode(ADD_POINT);
@@ -597,7 +618,7 @@ void EditorState::commitMode() {
 void EditorState::cancelMode() {
     if(m_currentEntity) {
         if(m_mode == GRAB) {
-            m_currentEntity->setPosition(m_modeStartValue);
+            m_currentEntity->setPhysicsPosition(m_modeStartValue);
         } else if(m_mode == ROTATE) {
             m_currentEntity->setRotation(m_modeStartValue.x);
         } else if(m_mode == SCALE) {

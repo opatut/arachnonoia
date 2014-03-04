@@ -209,6 +209,10 @@ void GameState::onHandleEvent(sf::Event& event) {
             message("Ability: " + std::to_string(m_player->getAbility()));
         } else if(event.key.code == sf::Keyboard::Escape) {
             Root().window->close();
+        } else if(event.key.code == sf::Keyboard::Add) {
+            switchLevel(m_currentLevel + 1);
+        } else if(event.key.code == sf::Keyboard::Subtract) {
+            switchLevel(m_currentLevel - 1);
         }
     } else if(event.type == sf::Event::Resized) {
         resize();
