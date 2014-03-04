@@ -8,7 +8,8 @@ const std::string Wall::types[] = {
     "box",
     "platform-1",
     "platform-2",
-    "gradient"
+    "gradient",
+    "godrays"
 };
 
 Wall::Wall() {

@@ -47,6 +47,7 @@ int main() {
     Root().resources.addTexture("wall-platform-1",  "data/textures/platform-1.png");
     Root().resources.addTexture("wall-platform-2",  "data/textures/platform-2.png");
     Root().resources.addTexture("wall-gradient",    "data/textures/gradient.png");
+    Root().resources.addTexture("wall-godrays",     "data/textures/godrays.png");
     Root().resources.addTexture("spiderweb",        "data/textures/spiderweb.png");
     Root().resources.addTexture("blob",             "data/textures/blob.png");
     Root().resources.addTexture("cave-1",           "data/textures/cave-1.jpg");
