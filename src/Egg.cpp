@@ -67,8 +67,13 @@ void Egg::onUpdate(double dt) {
         if(m_lifeTime < 2.f) {
             m_progress = 0.0;
         } else if(m_lifeTime < 4.5f) {
+            if(m_progress == 0) {
+                m_sound.setBuffer(*Root().resources.getSound("crack").get());
+                m_sound.play();
+            }
+
             m_progress = (m_lifeTime - 2.f) / 1.8;
-            m_progress = pow(m_progress, 10);
+            m_progress = pow(m_progress, 5);
             m_progress = fmin(0.95, ceil(m_progress * 5) / 5);
         } else {
             if(m_progress < 1) {

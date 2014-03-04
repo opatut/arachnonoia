@@ -23,6 +23,17 @@ std::shared_ptr<sf::Font> ResourceManager::getFont(const std::string& name) {
     return m_fonts[name];
 }
 
+void ResourceManager::addSound(const std::string& name, const std::string& filename) {
+    auto sound = std::make_shared<sf::SoundBuffer>();
+    sound->loadFromFile(filename);
+    m_sounds[name] = sound;
+}
+
+std::shared_ptr<sf::SoundBuffer> ResourceManager::getSound(const std::string& name) {
+    return m_sounds[name];
+}
+
+
 void ResourceManager::addShader(const std::string& name, const std::string& filename, sf::Shader::Type type) {
     auto shader = std::make_shared<sf::Shader>();
     shader->loadFromFile(filename, type);
