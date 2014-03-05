@@ -19,6 +19,8 @@ Pair::Pair() {
     m_active = false;
     m_solvedTime = 0;
     m_activationTime = 0;
+    m_sound.setBuffer(*Root().resources.getSound("bell"));
+    m_sound.setVolume(10);
 }
 
 std::string Pair::getTypeName() const {
@@ -134,11 +136,14 @@ void Pair::activate() {
         for(auto p : pairs) {
             if(p->m_active) activeCount++;
         }
+        m_sound.setPitch(1.f);
         if(activeCount == pairs.size()) {
             for(auto p : pairs) {
                 p->solve();
             }
+            m_sound.setPitch(1.5f);
         }
+        m_sound.play();
     }
 }
 

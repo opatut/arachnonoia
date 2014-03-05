@@ -2,6 +2,7 @@
 #define PAIR_HPP
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include "Entity.hpp"
 
@@ -45,6 +46,7 @@ private:
     bool m_solved;
     float m_activationTime;
     float m_solvedTime;
+    sf::Sound m_sound;
 };
 
 #endif

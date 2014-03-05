@@ -66,6 +66,7 @@ int main() {
     Root().resources.addSound("crack",  "data/sounds/crack.ogg");
     Root().resources.addSound("rumble", "data/sounds/rumble.ogg");
     Root().resources.addSound("walk",   "data/sounds/walk.ogg");
+    Root().resources.addSound("bell",   "data/sounds/bell.wav");
 
     Root().resources.addMusic("horror-ambience", "data/music/horror-ambience.wav");
 
