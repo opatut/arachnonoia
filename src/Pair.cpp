@@ -76,14 +76,15 @@ void Pair::onDraw(sf::RenderTarget& target) {
     shape.setTexture(Root().resources.getTexture("spiderweb").get());
     target.draw(shape);
 
-    if(m_active) {
+    if(m_active || m_solved) {
         auto tex = Root().resources.getTexture("blob");
         auto s = tex->getSize();
         sf::Sprite sprite(*tex.get());
         sf::Color c = getColor();
-        c.a = fmin(255, 255 * m_activationTime);
+        c.a = 255 * fmax(0, fmin(1, m_activationTime)) * fmax(0, fmin(1, 1.5 - m_solvedTime));
         sprite.setColor(c);
-        sprite.setPosition(m_position.x, m_position.y);
+        auto pos = m_position + glm::rotate(glm::vec2(0, -1), m_rotation) * tween::Cubic().easeOut(m_solvedTime, 0, 1, 1);
+        sprite.setPosition(pos.x, pos.y);
         sprite.setScale(0.3 / s.x, (0.3 + 0.2 * abs(sin(m_activationTime * 2))) / s.y);
         sprite.setOrigin(0.6 * s.x, 0.6 * s.y);
         sprite.setRotation(thor::toDegree(m_rotation));
@@ -128,8 +129,8 @@ void Pair::activate() {
 
         deactivateAllOtherPairs();
 
-        unsigned int activeCount = 0;
         auto pairs = findMatchingPairs();
+        unsigned int activeCount = 0;
         for(auto p : pairs) {
             if(p->m_active) activeCount++;
         }
@@ -149,7 +150,6 @@ void Pair::solve() {
     if(!m_solved) {
         m_solved = true;
         m_solvedTime = 0;
-        m_active = false;
     }
 }
 

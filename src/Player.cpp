@@ -184,6 +184,8 @@ void Player::onAdd(State* state) {
 }
 
 bool Player::onCollide(Entity* other, const EntityCollision& c) {
+    if(m_state == &Root().editor_state) return false;
+
     if(other->getTypeName() == "Pair") {
         Pair* p = (Pair*)other;
         p->activate();

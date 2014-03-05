@@ -8,8 +8,6 @@
 #include "Egg.hpp"
 #include "Marker.hpp"
 
-#define LEVEL_COUNT 3
-
 class GameState : public State {
 public:
     GameState();
@@ -32,6 +30,7 @@ public:
 
 private:
     int m_currentLevel;
+    std::string m_currentLevelName;
     int m_nextLevel;
     std::string m_message;
     float m_messageTime = 0.f;
@@ -42,9 +41,10 @@ private:
 
     float m_levelFade;
 
-    Player::Ability m_showHelpForAbility;
+    std::string m_currentHelp;
     float m_helpProgress = 0.f;
-    std::map<int, Player::Ability> m_levelAbility;
+    std::vector<std::pair<std::string, Player::Ability>> m_levels;
+    std::map<std::string, std::string> m_levelHelp;
 };
 
 #endif

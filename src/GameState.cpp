@@ -18,18 +18,26 @@
 GameState::GameState() {
     m_zoom = 6;
     m_debugDrawEnabled = false;
-    m_showHelpForAbility = Player::NONE;
 
-    m_levelAbility[1] = Player::WALK;
-    m_levelAbility[2] = Player::JUMP;
-    m_levelAbility[3] = Player::WALLS;
-    m_levelAbility[4] = Player::RAPPEL;
+    m_currentHelp = "";
+
+    m_levels.push_back(std::make_pair("spawn", Player::WALK));
+    m_levels.push_back(std::make_pair("pairs", Player::WALK));
+    m_levels.push_back(std::make_pair("jump-1", Player::JUMP));
+    m_levels.push_back(std::make_pair("jump-2", Player::JUMP));
+    m_levels.push_back(std::make_pair("walls", Player::WALLS));
+    m_levels.push_back(std::make_pair("upside-down", Player::WALLS));
+
+    // help points
+    m_levelHelp["spawn"] = "walk";
+    m_levelHelp["jump-1"] = "jump";
+    m_levelHelp["walls"] = "walls";
 }
 
 void GameState::onInit() {
     resize();
 
-    loadLevel(1);
+    loadLevel(0);
 }
 
 void GameState::onUpdate(float dt) {
@@ -54,13 +62,13 @@ void GameState::onUpdate(float dt) {
         m_center = m_center * (1 - dt * zoomSpeed) + new_center * (dt * zoomSpeed);
 
         if(m_helpProgress < 1.f) {
-            if(m_showHelpForAbility == Player::NONE) {
+            if(m_currentHelp == "") {
                 // check marker distance
                 auto trigger = getMarker(Marker::HELP_TRIGGER);
                 if(trigger) {
                     float d = glm::length(trigger->position() - m_player->position());
                     if(d < 2.f) { // trigger distance
-                        m_showHelpForAbility = m_levelAbility[m_currentLevel];
+                        m_currentHelp = m_levelHelp[m_currentLevelName];
                     }
                 }
             } else {
@@ -116,7 +124,7 @@ void GameState::onDraw(sf::RenderTarget& target) {
         sf::Color(250, 200, 0),
         sf::Color(255, 0, 128)
     };
-    back.setColor(*(levelColor.begin() + (m_currentLevel - 0) % levelColor.size()));
+    back.setColor(*(levelColor.begin() + (m_currentLevel) % levelColor.size()));
     t.draw(back);
 
     s = 8.0;
@@ -192,7 +200,7 @@ void GameState::onDraw(sf::RenderTarget& target) {
 
     // help
     setView(target);
-    if(m_showHelpForAbility != Player::NONE && m_helpProgress > 0 && m_helpProgress < 1) {
+    if(m_currentHelp != "" && m_helpProgress > 0 && m_helpProgress < 1) {
         float fade = glm::smoothstep(0.f, 0.1f, m_helpProgress) - glm::smoothstep(0.9f, 1.f, m_helpProgress);
         float wobble = sin(m_time * 5);
 
@@ -200,16 +208,7 @@ void GameState::onDraw(sf::RenderTarget& target) {
         float angle = tween::Cubic().easeIn(1 - fade, 0, 1, 1) * 0.2;
         float scale = (0.6 + 0.01 * wobble) * m_pixelSize;
 
-        std::string texture = "help-";
-        if(m_showHelpForAbility == Player::WALK) {
-            texture += "walk";
-        } else if(m_showHelpForAbility == Player::JUMP) {
-            texture += "jump";
-        } else if(m_showHelpForAbility == Player::WALLS) {
-            texture += "walls";
-        } else if(m_showHelpForAbility == Player::RAPPEL) {
-            texture += "rappel";
-        } 
+        std::string texture = "help-" + m_currentHelp;
         auto tex = Root().resources.getTexture(texture);
         if(tex) {
             sf::Sprite sprite(*tex.get());
@@ -277,7 +276,7 @@ void GameState::onHandleEvent(sf::Event& event) {
         } else if(event.key.code == sf::Keyboard::Subtract) {
             switchLevel(m_currentLevel - 1);
         } else if(event.key.code == sf::Keyboard::H) {
-            m_showHelpForAbility = m_levelAbility[m_currentLevel];
+            m_currentHelp = m_levelHelp[m_currentLevelName];
         }
     } else if(event.type == sf::Event::Resized) {
         resize();
@@ -291,16 +290,17 @@ void GameState::resize() {
 
 
 void GameState::loadLevel(int num) {
-    if(num < 1 || num > LEVEL_COUNT) {
+    if(num < 0 || num >= m_levels.size()) {
         std::cout << "Warning: level number " << num << " does not exist." << std::endl;
         return;
     }
 
     m_currentLevel = num;
+    m_currentLevelName = m_levels[m_currentLevel].first;
     m_helpProgress = 0.f;
-    m_showHelpForAbility = Player::NONE;
+    m_currentHelp = "";
 
-    std::string filename = "level" + std::to_string(num) + ".dat";
+    std::string filename = m_currentLevelName + ".dat";
     loadFromFile("levels/" + filename);
 
     // spawn something
@@ -313,7 +313,7 @@ void GameState::loadLevel(int num) {
         std::cout << "Warning: level " << filename << " does not contain any spawn marker. Spawning at (0, 0)." << std::endl;
     }
 
-    if(m_currentLevel == 1) {
+    if(m_currentLevelName == "spawn") {
         spawnEgg(pos);
     } else {
         spawnPlayer(pos);
@@ -324,7 +324,7 @@ void GameState::loadLevel(int num) {
     p2.addProperty(&m_levelFade, 0.f);
     m_tweener.addTween(p2);
 
-    message("Level " + std::to_string(num));
+    message(m_currentLevelName);
 }
 
 void GameState::spawnPlayer(const glm::vec2& pos) {
@@ -334,7 +334,7 @@ void GameState::spawnPlayer(const glm::vec2& pos) {
     m_center = m_player->position();
 
     // set player abilities
-    m_player->setAbility(m_levelAbility[m_currentLevel]);
+    m_player->setAbility(m_levels[m_currentLevel].second);
 }
 
 void GameState::spawnEgg(const glm::vec2& pos) {
@@ -387,7 +387,7 @@ std::shared_ptr<Marker> GameState::getMarker(Marker::Type type) {
     for(auto marker : getEntitiesByType<Marker>("Marker")) {
         if(marker->getType() == type) {
             if(result) {
-                std::cerr << "Warning: multiple markers of type " << type << " found in level " << m_currentLevel << "." << std::endl;
+                std::cerr << "Warning: multiple markers of type " << type << " found in level " << m_currentLevelName << "." << std::endl;
             } else { 
                 result = marker;
             }
