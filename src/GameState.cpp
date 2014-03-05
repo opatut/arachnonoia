@@ -75,8 +75,8 @@ void GameState::onUpdate(float dt) {
                 // check marker distance
                 auto trigger = getMarker(Marker::HELP_TRIGGER);
                 if(trigger) {
-                    float d = glm::length(trigger->position() - m_player->position());
-                    if(d < 2.f) { // trigger distance
+                    float distance = glm::length(trigger->position() - m_player->position());
+                    if(distance < 2.f) { // trigger distance
                         m_currentHelp = m_levelHelp[m_currentLevelName];
                     }
                 }
@@ -288,6 +288,7 @@ void GameState::onHandleEvent(sf::Event& event) {
             m_currentHelp = m_levelHelp[m_currentLevelName];
         } else if(event.key.code == sf::Keyboard::Tab) {
             Root().states.push(&Root().editor_state);
+            if(m_player) m_player->m_walkSound.pause();
         }
     } else if(event.type == sf::Event::Resized) {
         resize();
@@ -301,6 +302,7 @@ void GameState::resize() {
 
 
 void GameState::loadLevel(int num) {
+    if(Root().game_state.m_player) Root().game_state.m_player->m_walkSound.pause();
     if(num < 0 || num >= m_levels.size()) {
         Root().menu_state.setGameOver(num > 0);
         Root().states.pop();

@@ -67,11 +67,9 @@ void Foot::onUpdate(double dt) {
     btVector3 hitPoint;
     if(rayCallback.hasHit()) {
         hitPoint = rayCallback.m_hitPointWorld;
-        hitPoint += btVector3(0, -1, 0).rotate(btVector3(0, 0, 1), m_player->rotation()) * 0.05;
         auto new_pos = glm::vec2(hitPoint.x(), hitPoint.y());
-        if(glm::length(new_pos - m_position) > 1.f) {
+        if(glm::length(new_pos - m_position) > 1.f)
             m_position = new_pos;
-        }
     } else {
         m_position = glm::vec2(rayEnd.x(), rayEnd.y());
     }
@@ -80,10 +78,13 @@ void Foot::onUpdate(double dt) {
 void Foot::onDraw(sf::RenderTarget &target) {
     sf::Color color(0, 0, 0);
 
-    float s = 0.05f;
+    float scaleFactor = 0.05f;
+
+    btVector3 hitPointOffset(0, 0.1, 0);
+    hitPointOffset.rotate(btVector3(0, 0, 1), m_player->rotation());
 
     // Draw lower leg
-    sf::Vector2f lowerLegVec(m_anklePosition.x - m_position.x, m_anklePosition.y - m_position.y);
+    sf::Vector2f lowerLegVec(m_anklePosition.x - m_position.x - hitPointOffset.x(), m_anklePosition.y - m_position.y - hitPointOffset.y());
     if(lowerLegVec == sf::Vector2f()) lowerLegVec.y = 1;
     float lowerLegLength = thor::length(lowerLegVec);
 
@@ -96,17 +97,17 @@ void Foot::onDraw(sf::RenderTarget &target) {
     auto size = tex->getSize();
     sf::Sprite upperLeg(*tex.get());
     upperLeg.setOrigin(size.x / 2, size.y * 0.96);
-    upperLeg.setScale(s / size.x * 2, upperLegLength / size.y);
+    upperLeg.setScale(scaleFactor / size.x * 2, upperLegLength / size.y);
     upperLeg.setPosition(m_anklePosition.x, m_anklePosition.y);
-    upperLeg.setRotation(90+thor::polarAngle(upperLegVec));
+    upperLeg.setRotation(90 + thor::polarAngle(upperLegVec));
     target.draw(upperLeg);
 
     tex = Root().resources.getTexture("lower-leg");
     size = tex->getSize();
     sf::Sprite lowerLeg(*tex.get());
     lowerLeg.setOrigin(size.x / 2, size.y);
-    lowerLeg.setScale(s / size.x * 2, (lowerLegLength + 0.03) / size.y);
-    lowerLeg.setPosition(m_position.x, m_position.y);
+    lowerLeg.setScale(scaleFactor / size.x * 2, (lowerLegLength + 0.03) / size.y);
+    lowerLeg.setPosition(m_position.x + hitPointOffset.x(), m_position.y + hitPointOffset.y());
     lowerLeg.setRotation(90+thor::polarAngle(lowerLegVec));
     target.draw(lowerLeg);
 

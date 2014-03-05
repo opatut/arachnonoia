@@ -41,14 +41,14 @@ public:
     int direction() const;
     void setDirection(int direction);
 
+    sf::Sound m_walkSound;
+
 private:
     sf::Sprite m_sprite;
     btGhostObject* m_ghostObject;
     float m_springPower = 0;
     bool m_onGround = false;
     int m_direction = 1;
-
-    sf::Sound m_walkSound;
 
     std::vector<std::shared_ptr<Foot>> m_foregroundFeet;
     std::vector<std::shared_ptr<Foot>> m_backgroundFeet;

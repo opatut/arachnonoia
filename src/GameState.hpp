@@ -27,6 +27,7 @@ public:
 
     void message(const std::string& msg);
     std::shared_ptr<Marker> getMarker(Marker::Type type);
+    std::shared_ptr<Player> m_player;
 
 private:
     int m_currentLevel;
@@ -35,7 +36,6 @@ private:
     std::string m_message;
     float m_messageTime = 0.f;
 
-    std::shared_ptr<Player> m_player;
     std::shared_ptr<Egg> m_egg;
     sf::RenderTexture m_renderTextures[2];
 

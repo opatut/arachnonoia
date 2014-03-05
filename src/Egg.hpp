@@ -30,7 +30,6 @@ private:
     float m_progress;
     Type m_type;
     sf::Sound m_sound;
-
 };
 
 #endif
