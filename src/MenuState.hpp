@@ -17,9 +17,12 @@ public:
 
     void resize();
 
+    void setGameOver(bool gameOver);
+
 private:
     sf::RenderTexture m_renderTextures[2];        
     std::shared_ptr<Egg> m_egg;
+    bool m_gameOver;
 };
 
 #endif

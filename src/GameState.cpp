@@ -302,7 +302,8 @@ void GameState::resize() {
 
 void GameState::loadLevel(int num) {
     if(num < 0 || num >= m_levels.size()) {
-        std::cout << "Warning: level number " << num << " does not exist." << std::endl;
+        Root().menu_state.setGameOver(num > 0);
+        Root().states.pop();
         return;
     }
 

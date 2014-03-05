@@ -68,29 +68,32 @@ void MenuState::onDraw(sf::RenderTarget &target) {
     sf::Text text;
     text.setFont(* Root().resources.getFont("default"));
     text.setCharacterSize(80);
-    text.setString("Arachnonoia");
+    text.setString(m_gameOver ? "Game over" : "Arachnonoia");
     text.setPosition(w / 2 - text.getLocalBounds().width / 2, 100);
     text.setColor(sf::Color::White);
     target.draw(text);
 
     text.setCharacterSize(24);
     text.setStyle(sf::Text::Bold);
-    text.setString("Press any key to start the adventure");
+    text.setString(std::string("Press any key to ") + (m_gameOver ? "play again" : "start the adventure"));
     text.setPosition(w / 2 - text.getLocalBounds().width / 2, 200);//target.getSize().y - 100);
     text.setColor(sf::Color(255, 255, 255, fabs(sin(m_time * 2)) * 128 + 127));
     target.draw(text);
 
-    text.setCharacterSize(24);
-    text.setString("Oh, and this is you!");
-    text.setStyle(sf::Text::Regular);
-    text.setPosition(w / 2 - text.getLocalBounds().width / 2, h * 0.7);//target.getSize().y - 100);
-    text.setColor(sf::Color::White);
-    target.draw(text);
+    if(!m_gameOver) {
+        text.setCharacterSize(24);
+        text.setString("Oh, and this is you!");
+        text.setStyle(sf::Text::Regular);
+        text.setPosition(w / 2 - text.getLocalBounds().width / 2, h * 0.7);//target.getSize().y - 100);
+        text.setColor(sf::Color::White);
+        target.draw(text);
+    }
 
     text.setCharacterSize(20);
-    text.setString("Created by Sven-Hendrik 'Svenstaro' Haase and Paul 'opatut' Bienkowski for");
+    text.setString("Created by Sven-Hendrik 'svenstaro' Haase and Paul 'opatut' Bienkowski for");
     text.setPosition(w / 2 - text.getLocalBounds().width / 2, h - 70);
     text.setColor(sf::Color::White);
+    text.setStyle(sf::Text::Bold);
     target.draw(text);
     text.setString("Programmierung interaktiver Visualisierungen\" - University of Hamburg - 2013/14");
     text.setPosition(w / 2 - text.getLocalBounds().width / 2, h - 40);
@@ -115,3 +118,6 @@ void MenuState::resize() {
     m_renderTextures[1].create(Root().window->getSize().x, Root().window->getSize().y);
 }
 
+void MenuState::setGameOver(bool gameOver) {
+    m_gameOver = gameOver;
+}
