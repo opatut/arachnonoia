@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "State.hpp"
+#include "Egg.hpp"
 
 class MenuState : public State {
 public:
@@ -18,6 +19,7 @@ public:
 
 private:
     sf::RenderTexture m_renderTextures[2];        
+    std::shared_ptr<Egg> m_egg;
 };
 
 #endif
