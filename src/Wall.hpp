@@ -8,7 +8,7 @@
 
 #include "Entity.hpp"
 
-#define WALL_TYPE_COUNT 4
+#define WALL_TYPE_COUNT 5
 
 class Wall : public Entity {
 public:
