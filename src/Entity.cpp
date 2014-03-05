@@ -2,6 +2,9 @@
 
 #include "EntityMotionState.hpp"
 
+#define GLM_FORCE_RADIANS
+#include <glm/gtx/vector_angle.hpp>
+
 Entity::Entity() 
     : m_freshman(true) {}
 
@@ -159,4 +162,12 @@ void Entity::kill() {
 
 bool Entity::isDeleted() const {
     return m_deleted;
+}
+
+glm::vec2 Entity::transformToLocal(const glm::vec2& global) const {
+    return glm::rotate(global - m_position, -m_rotation) / m_scale;
+}
+
+glm::vec2 Entity::transformToGlobal(const glm::vec2& local) const {
+    return glm::rotate(local * m_scale, m_rotation) + m_position;
 }

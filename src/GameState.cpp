@@ -5,6 +5,9 @@
 
 #include <Thor/Math.hpp>
 
+#define GLM_FORCE_RADIANS
+#include <glm/gtx/vector_angle.hpp>
+
 #include "Wall.hpp"
 #include "Pair.hpp"
 #include "Root.hpp"
@@ -15,6 +18,12 @@
 GameState::GameState() {
     m_zoom = 6;
     m_debugDrawEnabled = false;
+    m_showHelpForAbility = Player::NONE;
+
+    m_levelAbility[1] = Player::WALK;
+    m_levelAbility[2] = Player::JUMP;
+    m_levelAbility[3] = Player::WALLS;
+    m_levelAbility[4] = Player::RAPPEL;
 }
 
 void GameState::onInit() {
@@ -43,6 +52,21 @@ void GameState::onUpdate(float dt) {
         auto new_center = target - diff;
         zoomSpeed = 8;
         m_center = m_center * (1 - dt * zoomSpeed) + new_center * (dt * zoomSpeed);
+
+        if(m_helpProgress < 1.f) {
+            if(m_showHelpForAbility == Player::NONE) {
+                // check marker distance
+                auto trigger = getMarker(Marker::HELP_TRIGGER);
+                if(trigger) {
+                    float d = glm::length(trigger->position() - m_player->position());
+                    if(d < 2.f) { // trigger distance
+                        m_showHelpForAbility = m_levelAbility[m_currentLevel];
+                    }
+                }
+            } else {
+                m_helpProgress = fmin(1.f, m_helpProgress + dt / 5.f);
+            }
+        }
     }
 
     if(m_message != "") {
@@ -166,6 +190,40 @@ void GameState::onDraw(sf::RenderTarget& target) {
         target.draw(sprite);
     }
 
+    // help
+    setView(target);
+    if(m_showHelpForAbility != Player::NONE && m_helpProgress > 0 && m_helpProgress < 1) {
+        float fade = glm::smoothstep(0.f, 0.1f, m_helpProgress) - glm::smoothstep(0.9f, 1.f, m_helpProgress);
+        float wobble = sin(m_time * 5);
+
+        float alpha = fade;
+        float angle = tween::Cubic().easeIn(1 - fade, 0, 1, 1) * 0.2;
+        float scale = (0.6 + 0.01 * wobble) * m_pixelSize;
+
+        std::string texture = "help-";
+        if(m_showHelpForAbility == Player::WALK) {
+            texture += "walk";
+        } else if(m_showHelpForAbility == Player::JUMP) {
+            texture += "jump";
+        } else if(m_showHelpForAbility == Player::WALLS) {
+            texture += "walls";
+        } else if(m_showHelpForAbility == Player::RAPPEL) {
+            texture += "rappel";
+        } 
+        auto tex = Root().resources.getTexture(texture);
+        if(tex) {
+            sf::Sprite sprite(*tex.get());
+            glm::vec2 ang(-1, 0);
+            glm::vec2 pos = m_player->position() - glm::vec2(0, 1.1f) + ang - glm::rotate(ang, angle);
+            sprite.setPosition(pos.x, pos.y);
+            sprite.setOrigin(tex->getSize().x / 2, tex->getSize().y / 2);
+            sprite.setColor(sf::Color(255, 255, 255, 255 * alpha));
+            sprite.setScale(scale, scale);
+            sprite.setRotation(wobble + thor::toDegree(angle));
+            target.draw(sprite);
+        }
+    }
+
     // message
     target.setView(target.getDefaultView());
     if(m_message != "") {
@@ -218,6 +276,8 @@ void GameState::onHandleEvent(sf::Event& event) {
             switchLevel(m_currentLevel + 1);
         } else if(event.key.code == sf::Keyboard::Subtract) {
             switchLevel(m_currentLevel - 1);
+        } else if(event.key.code == sf::Keyboard::H) {
+            m_showHelpForAbility = m_levelAbility[m_currentLevel];
         }
     } else if(event.type == sf::Event::Resized) {
         resize();
@@ -237,25 +297,26 @@ void GameState::loadLevel(int num) {
     }
 
     m_currentLevel = num;
+    m_helpProgress = 0.f;
+    m_showHelpForAbility = Player::NONE;
 
     std::string filename = "level" + std::to_string(num) + ".dat";
     loadFromFile("levels/" + filename);
 
+    // spawn something
+    auto spawn = getMarker(Marker::SPAWN);
     m_player = nullptr;
-    for(auto marker : getEntitiesByType<Marker>("Marker")) {
-        if(marker->getType() == Marker::SPAWN) {
-            if(num == 1) {
-                spawnEgg(marker->position());
-            } else {
-                spawnPlayer(marker->position());
-            }
-            break;
-        }
+    auto pos = glm::vec2(0, 0);
+    if(spawn) {
+        pos = spawn->position();
+    } else {
+        std::cout << "Warning: level " << filename << " does not contain any spawn marker. Spawning at (0, 0)." << std::endl;
     }
 
-    if(!m_player && !m_egg) {
-        std::cout << "Warning: level " << filename << " does not contain any spawn marker. Spawning at (0, 0)." << std::endl;
-        spawnPlayer(glm::vec2(0, 0));
+    if(m_currentLevel == 1) {
+        spawnEgg(pos);
+    } else {
+        spawnPlayer(pos);
     }
 
     m_levelFade = 1.f;
@@ -273,13 +334,7 @@ void GameState::spawnPlayer(const glm::vec2& pos) {
     m_center = m_player->position();
 
     // set player abilities
-    switch(m_currentLevel) {
-        case 1:
-        case 2:
-            m_player->setAbility(Player::WALK); break;
-        default:
-            m_player->setAbility(Player::RAPPEL); break;
-    }
+    m_player->setAbility(m_levelAbility[m_currentLevel]);
 }
 
 void GameState::spawnEgg(const glm::vec2& pos) {
@@ -324,4 +379,19 @@ void GameState::message(const std::string& msg) {
 
     m_message = msg;
     m_messageTime = 0.f;
+}
+
+std::shared_ptr<Marker> GameState::getMarker(Marker::Type type) {
+    std::shared_ptr<Marker> result = nullptr;
+
+    for(auto marker : getEntitiesByType<Marker>("Marker")) {
+        if(marker->getType() == type) {
+            if(result) {
+                std::cerr << "Warning: multiple markers of type " << type << " found in level " << m_currentLevel << "." << std::endl;
+            } else { 
+                result = marker;
+            }
+        }
+    }
+    return result;
 }

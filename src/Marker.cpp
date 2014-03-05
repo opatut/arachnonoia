@@ -37,6 +37,8 @@ void Marker::onDraw(sf::RenderTarget& target) {
         shape.setFillColor(sf::Color::Red);
     } else if(m_type == GOAL) {
         shape.setFillColor(sf::Color::Green);
+    } else if(m_type == HELP_TRIGGER) {
+        shape.setFillColor(sf::Color::Yellow);
     } else {
         shape.setFillColor(sf::Color::White);
     }
@@ -44,7 +46,7 @@ void Marker::onDraw(sf::RenderTarget& target) {
 }
 
 void Marker::setMetadata(int data) {
-    if(data >= 1 && data <= 2) {
+    if(data >= 1 && data <= 3) {
         m_type = (Type)data;
     }
 }

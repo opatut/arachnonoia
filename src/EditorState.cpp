@@ -166,14 +166,14 @@ void EditorState::onHandleEvent(sf::Event& event) {
                     if(m_currentEntity && m_currentEntity->getTypeName() == "CollisionShape") {
                         startMode(ADD_POINT);
 
-                        auto mp = getMousePosition();
                         auto c = std::static_pointer_cast<CollisionShape>(m_currentEntity);
+                        auto mp = c->transformToLocal(getMousePosition());
                         m_addPointInsertIndex = -1;
                         float minDist = 0;
                         if(c->shapes().size() > 0) {
                             const auto& v = c->shapes()[0];
                             for(unsigned int i = 0; i < v.size(); ++i) {
-                                float dist = glm::length(m_currentEntity->position() + v[i] - mp);
+                                float dist = glm::length(v[i] - mp);
                                 if(dist < minDist || m_addPointInsertIndex == -1) {
                                     minDist = dist;
                                     m_addPointInsertIndex = i;
@@ -346,8 +346,8 @@ void EditorState::onDraw(sf::RenderTarget& target) {
             auto v = c->shapes()[0];
             if(v.size() > 0) {
                 auto mp = getMousePosition();
-                auto from = v[m_addPointInsertIndex] + m_currentEntity->position();
-                auto to   = v[(m_addPointInsertIndex + 1)%v.size()] + m_currentEntity->position();
+                auto from = c->transformToGlobal(v[m_addPointInsertIndex]);
+                auto to   = c->transformToGlobal(v[(m_addPointInsertIndex + 1)%v.size()]);
                 sf::Vertex line[] = {
                     sf::Vertex(sf::Vector2f(from.x, from.y), sf::Color::White),
                     sf::Vertex(sf::Vector2f(mp.x, mp.y),     sf::Color::Green),
@@ -624,7 +624,7 @@ void EditorState::commitMode() {
                 c->shapes().push_back(std::vector<glm::vec2>());
             }
             auto& v = c->shapes()[0];
-            v.insert(v.begin() + 1 + m_addPointInsertIndex, getMousePosition() - m_currentEntity->position());
+            v.insert(v.begin() + 1 + m_addPointInsertIndex, c->transformToLocal(getMousePosition()));
             m_addPointInsertIndex++;
         }
         return; // stay in this mode

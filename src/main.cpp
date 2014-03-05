@@ -60,6 +60,8 @@ int main() {
     // Root().resources.addTexture("fang",             "data/textures/fang.png");
     Root().resources.addTexture("upper-leg",        "data/textures/upper-leg.png");
     Root().resources.addTexture("lower-leg",        "data/textures/lower-leg.png");
+    Root().resources.addTexture("help-walk",        "data/textures/help/walk.png");
+    Root().resources.addTexture("help-jump",        "data/textures/help/jump.png");
 
     Root().resources.addSound("crack",  "data/sounds/crack.ogg");
     Root().resources.addSound("rumble", "data/sounds/rumble.ogg");

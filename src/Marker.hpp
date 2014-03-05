@@ -18,7 +18,8 @@ public:
     enum Type {
         NONE = 0,
         SPAWN = 1,
-        GOAL = 2
+        GOAL = 2,
+        HELP_TRIGGER = 3
     };
 
 public:

@@ -6,6 +6,7 @@
 #include "State.hpp"
 #include "Player.hpp"
 #include "Egg.hpp"
+#include "Marker.hpp"
 
 #define LEVEL_COUNT 3
 
@@ -27,6 +28,7 @@ public:
     void nextLevel();
 
     void message(const std::string& msg);
+    std::shared_ptr<Marker> getMarker(Marker::Type type);
 
 private:
     int m_currentLevel;
@@ -39,6 +41,10 @@ private:
     sf::RenderTexture m_renderTextures[2];
 
     float m_levelFade;
+
+    Player::Ability m_showHelpForAbility;
+    float m_helpProgress = 0.f;
+    std::map<int, Player::Ability> m_levelAbility;
 };
 
 #endif

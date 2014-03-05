@@ -84,6 +84,9 @@ public:
     void kill();
     bool isDeleted() const;
 
+    glm::vec2 transformToLocal(const glm::vec2& global) const;
+    glm::vec2 transformToGlobal(const glm::vec2& local) const;
+
 protected:
     glm::vec2 m_position = glm::vec2(0, 0);
     float m_rotation = 0.f;
