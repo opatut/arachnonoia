@@ -101,6 +101,7 @@ void Player::onUpdate(double dt) {
             } else {
                 lin.setX(lin.getX() + airAccel * dt);
             }
+            m_direction = -1;
         } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) && m_springPower == 0) {
             if(m_onGround) {
                 lin.setX(-walkSpeed);
@@ -110,6 +111,7 @@ void Player::onUpdate(double dt) {
             } else {
                 lin.setX(lin.getX() - airAccel * dt);
             }
+            m_direction = 1;
         } else if(m_onGround) {
             lin.setX(0);
         }
@@ -152,7 +154,7 @@ void Player::onDraw(sf::RenderTarget& target) {
     // body.setRotation(thor::toDegree(m_rotation));
     // target.draw(body);
     m_sprite.setPosition(m_position.x, m_position.y);
-    m_sprite.setScale(0.4 * m_scale.x / m_sprite.getTexture()->getSize().x, 0.4 * m_scale.y / m_sprite.getTexture()->getSize().x);
+    m_sprite.setScale(0.4 * m_scale.x / m_sprite.getTexture()->getSize().x * m_direction, 0.4 * m_scale.y / m_sprite.getTexture()->getSize().x);
     m_sprite.setOrigin(m_sprite.getTexture()->getSize().x / 2, m_sprite.getTexture()->getSize().y / 2);
     m_sprite.setRotation(180 + thor::toDegree(m_rotation));
     target.draw(m_sprite);
@@ -237,4 +239,12 @@ Player::Ability Player::getAbility() const {
 
 float Player::getSpringPower() const {
     return m_springPower;
+}
+
+int Player::direction() const {
+    return m_direction;
+}
+
+void Player::setDirection(int direction) {
+    m_direction = direction;
 }

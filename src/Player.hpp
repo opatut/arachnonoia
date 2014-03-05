@@ -38,11 +38,15 @@ public:
 
     float getSpringPower() const;
 
+    int direction() const;
+    void setDirection(int direction);
+
 private:
     sf::Sprite m_sprite;
     btGhostObject* m_ghostObject;
     float m_springPower = 0;
     bool m_onGround = false;
+    int m_direction = 1;
 
     sf::Sound m_walkSound;
 
