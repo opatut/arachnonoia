@@ -64,12 +64,12 @@ void Foot::onUpdate(double dt) {
 
     m_player->m_state->dynamicsWorld()->rayTest(rayStart, rayEnd, rayCallback);
 
-    btVector3 hitPoint(0, 0, 0);
+    btVector3 hitPoint;
     if(rayCallback.hasHit()) {
         hitPoint = rayCallback.m_hitPointWorld;
         hitPoint += btVector3(0, -1, 0).rotate(btVector3(0, 0, 1), m_player->rotation()) * 0.05;
         auto new_pos = glm::vec2(hitPoint.x(), hitPoint.y());
-        if((new_pos - m_position).length() > 2.f) {
+        if(glm::length(new_pos - m_position) > 1.f) {
             m_position = new_pos;
         }
     } else {
