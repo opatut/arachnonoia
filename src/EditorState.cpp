@@ -598,13 +598,13 @@ void EditorState::updateMode() {
 
 void EditorState::commitMode() {
     if(m_mode == SAVE) {
-        std::string filename = "levels/" + m_typingString;
+        std::string filename = "levels/" + m_typingString + ".dat";
         auto pos = removePlayer();
         saveToFile(filename);
         setStatus("Saved to " + filename + ".");
         addPlayer(pos);
     } else if(m_mode == LOAD) {
-        std::string filename = "levels/" + m_typingString;
+        std::string filename = "levels/" + m_typingString + ".dat";
         loadFromFile(filename);
         m_currentEntity.reset();
         setStatus("Loaded from " + filename + ".");
