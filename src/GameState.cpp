@@ -25,7 +25,7 @@ GameState::GameState() {
     m_levels.push_back(std::make_pair("pairs", Player::WALK));
     m_levels.push_back(std::make_pair("jump-1", Player::JUMP));
     m_levels.push_back(std::make_pair("jump-2", Player::JUMP));
-    // m_levels.push_back(std::make_pair("walls", Player::WALLS));
+    m_levels.push_back(std::make_pair("walls", Player::WALLS));
     m_levels.push_back(std::make_pair("upside-down", Player::WALLS));
 
     // help points
