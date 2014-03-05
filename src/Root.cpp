@@ -6,3 +6,5 @@ EditorState Root::editor_state;
 MenuState Root::menu_state;
 std::stack<State*> Root::states;
 sf::RenderWindow* Root::window;
+
+bool Root::debug = false;

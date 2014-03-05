@@ -255,13 +255,15 @@ void GameState::onDraw(sf::RenderTarget& target) {
         target.draw(text);
     }
 
-    sf::Text text;
-    text.setFont(* Root().resources.getFont("mono"));
-    text.setCharacterSize(20);
-    text.setString(std::to_string(getFPS()) + " FPS");
-    text.setPosition(sf::Vector2f(10, 10));
-    text.setColor(sf::Color(255, 255, 255, 100));
-    target.draw(text);
+    if(Root().debug) {
+        sf::Text text;
+        text.setFont(* Root().resources.getFont("mono"));
+        text.setCharacterSize(20);
+        text.setString(std::to_string(getFPS()) + " FPS");
+        text.setPosition(sf::Vector2f(10, 10));
+        text.setColor(sf::Color(255, 255, 255, 100));
+        target.draw(text);
+    }
 
     if(m_levelFade) {
         sf::RectangleShape rect(sf::Vector2f(target.getSize()));
@@ -271,7 +273,7 @@ void GameState::onDraw(sf::RenderTarget& target) {
 }
 
 void GameState::onHandleEvent(sf::Event& event) {
-    if(event.type == sf::Event::KeyPressed) {
+    if(event.type == sf::Event::KeyPressed && Root().debug) {
         if(event.key.code == sf::Keyboard::Period) {
             m_debugDrawEnabled = !m_debugDrawEnabled;
             message("Debug draws toggled");

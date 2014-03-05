@@ -19,6 +19,8 @@ public:
     static std::stack<State*> states;
 
     static sf::RenderWindow* window;
+
+    static bool debug;
 };
 
 #endif
