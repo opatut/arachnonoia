@@ -90,12 +90,13 @@ void MenuState::onDraw(sf::RenderTarget &target) {
     }
 
     text.setCharacterSize(20);
-    text.setString("Created by Sven-Hendrik 'svenstaro' Haase and Paul 'opatut' Bienkowski for");
+    text.setString("Created by Sven-Hendrik 'svenstaro' Haase and Paul 'opatut' Bienkowski");
     text.setPosition(w / 2 - text.getLocalBounds().width / 2, h - 70);
     text.setColor(sf::Color::White);
     text.setStyle(sf::Text::Bold);
     target.draw(text);
-    text.setString("Programmierung interaktiver Visualisierungen\" - University of Hamburg - 2013/14");
+    text.setString("for \"Programmierung interaktiver Visualisierungen / Game Development\" - University of Hamburg - 2013/14");
+    text.setStyle(sf::Text::Regular);
     text.setPosition(w / 2 - text.getLocalBounds().width / 2, h - 40);
     target.draw(text);
     
