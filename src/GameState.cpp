@@ -273,24 +273,30 @@ void GameState::onDraw(sf::RenderTarget& target) {
 }
 
 void GameState::onHandleEvent(sf::Event& event) {
-    if(event.type == sf::Event::KeyPressed && Root().debug) {
-        if(event.key.code == sf::Keyboard::Period) {
-            m_debugDrawEnabled = !m_debugDrawEnabled;
-            message("Debug draws toggled");
-        } else if(event.key.code == sf::Keyboard::Q) {
-            m_player->setAbility((Player::Ability)(((int)m_player->getAbility() + 1) % ((int)Player::RAPPEL + 1)));
-            message("Ability: " + std::to_string(m_player->getAbility()));
-        } else if(event.key.code == sf::Keyboard::Escape) {
-            Root().window->close();
-        } else if(event.key.code == sf::Keyboard::Add) {
-            switchLevel(m_currentLevel + 1);
-        } else if(event.key.code == sf::Keyboard::Subtract) {
-            switchLevel(m_currentLevel - 1);
-        } else if(event.key.code == sf::Keyboard::H) {
-            m_currentHelp = m_levelHelp[m_currentLevelName];
-        } else if(event.key.code == sf::Keyboard::Tab) {
-            Root().states.push(&Root().editor_state);
-            if(m_player) m_player->m_walkSound.pause();
+    if(event.type == sf::Event::KeyPressed) {
+        if(Root().debug) {
+            if(event.key.code == sf::Keyboard::Period) {
+                m_debugDrawEnabled = !m_debugDrawEnabled;
+                message("Debug draws toggled");
+            } else if(event.key.code == sf::Keyboard::Q) {
+                m_player->setAbility((Player::Ability)(((int)m_player->getAbility() + 1) % ((int)Player::RAPPEL + 1)));
+                message("Ability: " + std::to_string(m_player->getAbility()));
+            } else if(event.key.code == sf::Keyboard::Escape) {
+                Root().window->close();
+            } else if(event.key.code == sf::Keyboard::Add) {
+                switchLevel(m_currentLevel + 1);
+            } else if(event.key.code == sf::Keyboard::Subtract) {
+                switchLevel(m_currentLevel - 1);
+            } else if(event.key.code == sf::Keyboard::H) {
+                m_currentHelp = m_levelHelp[m_currentLevelName];
+            } else if(event.key.code == sf::Keyboard::Tab) {
+                Root().states.push(&Root().editor_state);
+                if(m_player) m_player->m_walkSound.pause();
+            }
+        } else {
+            if(event.key.code == sf::Keyboard::Escape) {
+                Root().states.pop();
+            }
         }
     } else if(event.type == sf::Event::Resized) {
         resize();
@@ -340,7 +346,9 @@ void GameState::loadLevel(int num) {
     p2.addProperty(&m_levelFade, 0.f);
     m_tweener.addTween(p2);
 
-    message(m_currentLevelName);
+    if(Root().debug) {
+        message(m_currentLevelName);
+    }
 }
 
 void GameState::spawnPlayer(const glm::vec2& pos) {
@@ -375,16 +383,22 @@ void GameState::spawnEgg(const glm::vec2& pos) {
 }
 
 
-void GameState::switchLevel(int num) {
-    if(m_nextLevel == num) return;
-    tween::TweenerParam p(1500, tween::SINE, tween::EASE_IN_OUT);
-    m_levelFade = 0;
+void GameState::switchLevel(int num, bool reset) {
+    if(m_nextLevel == num && !reset) return;
+
     m_nextLevel = num;
-    p.addProperty(&m_levelFade, 1.f);
-    p.onCompleteCallBack = []() {
-        Root().game_state.loadLevel(Root().game_state.m_nextLevel);
-    };
-    m_tweener.addTween(p);
+
+    if(reset) {
+        loadLevel(num);
+    } else {
+        tween::TweenerParam p(1500, tween::SINE, tween::EASE_IN_OUT);
+        m_levelFade = 0;
+        p.addProperty(&m_levelFade, 1.f);
+        p.onCompleteCallBack = []() {
+            Root().game_state.loadLevel(Root().game_state.m_nextLevel);
+        };
+        m_tweener.addTween(p);
+    }
 }
 
 void GameState::nextLevel() {

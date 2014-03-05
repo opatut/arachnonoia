@@ -107,6 +107,7 @@ void MenuState::onHandleEvent(sf::Event& event) {
         if(event.key.code == sf::Keyboard::Escape) {
             Root().states.pop();
         } else {
+            Root().game_state.switchLevel(0, true);
             Root().states.push(&Root().game_state);
         }
     } else if(event.type == sf::Event::Resized) {

@@ -22,7 +22,7 @@ public:
     void loadLevel(int num);
     void spawnPlayer(const glm::vec2& pos);
     void spawnEgg(const glm::vec2& pos);
-    void switchLevel(int num);
+    void switchLevel(int num, bool reset = false);
     void nextLevel();
 
     void message(const std::string& msg);
