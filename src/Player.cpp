@@ -13,7 +13,7 @@
 #include "Foot.hpp"
 
 Player::Player() {
-    m_sprite.setTexture(* Root().resources.getTexture("player").get());
+    m_sprite.setTexture(* Root().resources.getTexture("body").get());
     m_walkSound.setBuffer(* Root().resources.getSound("walk").get());
     m_walkSound.setLoop(true);
 
@@ -151,13 +151,11 @@ void Player::onDraw(sf::RenderTarget& target) {
     // body.setFillColor(sf::Color::Black);
     // body.setRotation(thor::toDegree(m_rotation));
     // target.draw(body);
-    auto tex = Root().resources.getTexture("body");
-    sf::Sprite body(*tex.get());
-    body.setPosition(m_position.x, m_position.y);
-    body.setScale(0.4 * m_scale.x / tex->getSize().x, 0.4 * m_scale.y / tex->getSize().x);
-    body.setOrigin(tex->getSize().x / 2, tex->getSize().y / 2);
-    body.setRotation(180 + thor::toDegree(m_rotation));
-    target.draw(body);
+    m_sprite.setPosition(m_position.x, m_position.y);
+    m_sprite.setScale(0.4 * m_scale.x / m_sprite.getTexture()->getSize().x, 0.4 * m_scale.y / m_sprite.getTexture()->getSize().x);
+    m_sprite.setOrigin(m_sprite.getTexture()->getSize().x / 2, m_sprite.getTexture()->getSize().y / 2);
+    m_sprite.setRotation(180 + thor::toDegree(m_rotation));
+    target.draw(m_sprite);
 
     // Draw foreground legs
     for(auto foot : m_foregroundFeet) foot->handleDraw(target);
