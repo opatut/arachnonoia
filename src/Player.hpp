@@ -36,6 +36,8 @@ public:
 
     float m_scale_y = 0;
 
+    float getSpringPower() const;
+
 private:
     sf::Sprite m_sprite;
     btGhostObject* m_ghostObject;

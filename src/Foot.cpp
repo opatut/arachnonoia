@@ -22,7 +22,7 @@ void Foot::onUpdate(double dt) {
     float speedFactor = 16; // speed of leg movement
     m_phase += speed * speedFactor * dt;
 
-    float ankleOffsetFactor = 0.2f; // distance between ankle
+    float ankleOffsetFactor = 0.2f - 0.1 * m_player->getSpringPower(); // distance between ankle
     float anklePhaseFactor = 0.1f; // distance of ankle move per phase
 
     float p = sin(m_phase);

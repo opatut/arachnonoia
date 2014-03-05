@@ -236,3 +236,7 @@ void Player::setAbility(Player::Ability ability) {
 Player::Ability Player::getAbility() const {
     return m_ability;
 }
+
+float Player::getSpringPower() const {
+    return m_springPower;
+}
