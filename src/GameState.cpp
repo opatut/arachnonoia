@@ -38,6 +38,15 @@ void GameState::onInit() {
     resize();
 
     loadLevel(0);
+
+    m_rumbleSound.setBuffer(*Root().resources.getSound("rumble"));
+    m_rumbleSound.setLoop(true);
+    m_rumbleSound.setVolume(10);
+    m_rumbleSound.play();
+
+    m_music = Root().resources.getMusic("horror-ambience");
+    m_music->setVolume(10);
+    m_music->play();
 }
 
 void GameState::onUpdate(float dt) {
@@ -277,6 +286,8 @@ void GameState::onHandleEvent(sf::Event& event) {
             switchLevel(m_currentLevel - 1);
         } else if(event.key.code == sf::Keyboard::H) {
             m_currentHelp = m_levelHelp[m_currentLevelName];
+        } else if(event.key.code == sf::Keyboard::Tab) {
+            Root().states.push(&Root().editor_state);
         }
     } else if(event.type == sf::Event::Resized) {
         resize();
@@ -342,6 +353,7 @@ void GameState::spawnEgg(const glm::vec2& pos) {
     m_egg->setHatching(true);
     add(m_egg);
     m_egg->setPhysicsPosition(pos);
+    m_egg->setPhysicsRotation(thor::Pi / 2);
     m_center = m_egg->position();
 
     for(int i = 0; i < 10; ++i) {

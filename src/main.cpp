@@ -87,19 +87,7 @@ int main() {
     Root().menu_state.init();
 
     // Setup game stack
-    std::stack<State*> states;
-    states.push(&Root().menu_state);
-    states.push(&Root().game_state);
-
-    sf::Sound s;
-    s.setBuffer(*Root().resources.getSound("rumble"));
-    s.setLoop(true);
-    s.setVolume(10);
-    s.play();
-
-    auto m = Root().resources.getMusic("horror-ambience");
-    m->setVolume(10);
-    m->play();
+    Root().states.push(&Root().menu_state);
 
     while(window.isOpen()) {
         float dt = clock.restart().asSeconds();
@@ -108,30 +96,27 @@ int main() {
         while(window.pollEvent(event)) {
             if(event.type == sf::Event::Closed) {
                 window.close();
+                break;
             } else if(event.type == sf::Event::KeyPressed) {
-                if(event.key.code == sf::Keyboard::Escape) {
-                    // window.close();
-                } else if(event.key.code == sf::Keyboard::Tab) {
-                    if(states.top() == &Root().game_state) {
-                        states.push(&Root().editor_state);
-                    } else {
-                        states.pop();
-                    }
-                } else if(event.key.code == sf::Keyboard::F12) {
+                if(event.key.code == sf::Keyboard::F12) {
                     isFullscreen = !isFullscreen;
                     createWindow();
+                    break;
                 }
             }
-
-            states.top()->handleEvent(event);
+            Root().states.top()->handleEvent(event);
         }
 
         // update
-        states.top()->update(dt);
+        Root().states.top()->update(dt);
+        if(Root().states.size() == 0) {
+            window.close();
+            break;
+        }
 
         // render
         window.clear();
-        states.top()->draw(window);
+        Root().states.top()->draw(window);
         window.display();
     }
 

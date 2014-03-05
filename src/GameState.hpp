@@ -45,6 +45,9 @@ private:
     float m_helpProgress = 0.f;
     std::vector<std::pair<std::string, Player::Ability>> m_levels;
     std::map<std::string, std::string> m_levelHelp;
+
+    sf::Sound m_rumbleSound;
+    std::shared_ptr<sf::Music> m_music;
 };
 
 #endif

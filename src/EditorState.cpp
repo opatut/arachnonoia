@@ -133,7 +133,9 @@ void EditorState::onHandleEvent(sf::Event& event) {
                 }
             }
         } else {
-            if(event.key.code == sf::Keyboard::G) {
+            if(event.key.code == sf::Keyboard::Tab) {
+                Root().states.pop();
+            } else if(event.key.code == sf::Keyboard::G) {
                 if(m_mode == NONE) startMode(GRAB);
             } else if(event.key.code == sf::Keyboard::R) {
                 if(m_mode == NONE) startMode(ROTATE);

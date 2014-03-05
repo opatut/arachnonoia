@@ -11,7 +11,6 @@ Egg::Egg(Type type)
     : m_progress(0),
       m_type(type) {
     m_mass = 0.5f;
-    m_rotation = thor::Pi / 2;
     m_scale = glm::vec2(0.8, 0.8);
     m_hatching = false;
 }
