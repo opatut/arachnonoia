@@ -193,7 +193,7 @@ void GameState::onDraw(sf::RenderTarget& target) {
     m_renderTextures[0].setSmooth(true);
     m_renderTextures[1].setSmooth(true);
 
-    if(!m_debugDrawEnabled) {
+    if(m_shadersEnabled) {
         sprite = sf::Sprite(m_renderTextures[0].getTexture());
         m_renderTextures[1].draw(sprite, horizontalBlur.get());
 
@@ -278,6 +278,9 @@ void GameState::onHandleEvent(sf::Event& event) {
             if(event.key.code == sf::Keyboard::Period) {
                 m_debugDrawEnabled = !m_debugDrawEnabled;
                 message("Debug draws toggled");
+            } else if(event.key.code == sf::Keyboard::Comma) {
+                m_shadersEnabled = !m_shadersEnabled;
+                message("Shaders toggled.");
             } else if(event.key.code == sf::Keyboard::Q) {
                 m_player->setAbility((Player::Ability)(((int)m_player->getAbility() + 1) % ((int)Player::RAPPEL + 1)));
                 message("Ability: " + std::to_string(m_player->getAbility()));
@@ -346,7 +349,7 @@ void GameState::loadLevel(int num) {
     p2.addProperty(&m_levelFade, 0.f);
     m_tweener.addTween(p2);
 
-    if(Root().debug) {
+    if(Root().debug && m_debugDrawEnabled) {
         message(m_currentLevelName);
     }
 }

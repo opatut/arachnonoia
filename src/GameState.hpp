@@ -35,6 +35,7 @@ private:
     int m_nextLevel;
     std::string m_message;
     float m_messageTime = 0.f;
+    bool m_shadersEnabled = true;
 
     std::shared_ptr<Egg> m_egg;
     sf::RenderTexture m_renderTextures[2];
