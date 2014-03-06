@@ -5,6 +5,7 @@
 #include "Marker.hpp"
 
 #include <cereal/archives/binary.hpp>
+#include <cereal/archives/portable_binary.hpp>
 #include <cereal/archives/xml.hpp>
 #include <cereal/archives/json.hpp>
 
@@ -15,4 +16,3 @@ CEREAL_REGISTER_TYPE(Wall)
 CEREAL_REGISTER_TYPE(Pair)
 CEREAL_REGISTER_TYPE(CollisionShape)
 CEREAL_REGISTER_TYPE(Marker)
-

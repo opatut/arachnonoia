@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cereal/archives/json.hpp>
 #include <cereal/archives/binary.hpp>
+#include <cereal/archives/portable_binary.hpp>
 #include <cereal/types/vector.hpp>
 #include <cereal/types/memory.hpp>
 
@@ -223,7 +224,7 @@ void State::loadFromFile(const std::string& filename) {
         cereal::JSONInputArchive ar(stream);
         ar(cereal::make_nvp("entities", m_entities));
     } else {
-        cereal::BinaryInputArchive ar(stream);
+        cereal::PortableBinaryInputArchive ar(stream);
         ar(cereal::make_nvp("entities", m_entities));
     }
     stream.close();
@@ -245,7 +246,7 @@ void State::saveToFile(const std::string& filename) {
         cereal::JSONOutputArchive ar(stream);
         ar(cereal::make_nvp("entities", m_entities));
     } else {
-        cereal::BinaryOutputArchive ar(stream);
+        cereal::PortableBinaryOutputArchive ar(stream);
         ar(cereal::make_nvp("entities", m_entities));
     }
 
